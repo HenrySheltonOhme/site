@@ -219,7 +219,7 @@
             this.radius = Math.random() * 2 + 1;
             this.damping = 0.98; // Slightly more friction for a smoother flow
             this.maxSpeed = 2; // <-- INCREASED THIS VALUE
-            this.color = `rgba(180, 200, 255, ${Math.random() * 0.4 + 0.3})`; 
+            this.color = `rgba(180, 200, 255, ${Math.random() * 0.3 + 0.2})`; 
             this.noiseOffset = Math.random() * 1000; // Unique offset for Perlin noise
         }
     
@@ -412,7 +412,7 @@
                 if (distSq < NEIGHBOR_RADIUS * NEIGHBOR_RADIUS) {
                     // The closer they are, the more opaque the connection
                     const opacity = 1 - (distSq / (NEIGHBOR_RADIUS * NEIGHBOR_RADIUS));
-                    ctx.strokeStyle = `rgba(120, 150, 255, ${opacity * 0.25})`;
+                    ctx.strokeStyle = `rgba(120, 150, 255, ${opacity * 0.15})`;
                     ctx.lineWidth = 0.5;
                     ctx.beginPath();
                     ctx.moveTo(ni.pos.x, ni.pos.y);
