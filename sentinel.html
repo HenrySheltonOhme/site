@@ -22,6 +22,7 @@
     </style>
 </head>
 <body>
+    <canvas id="bg"></canvas>
     <div class="container">
         <div>
             <h1 class="title">Sentinel</h1>
@@ -34,5 +35,64 @@
     </div>
     <div class="accent-dot"></div>
     <div class="footer">Squad Pluto</div>
+    <script>
+    'use strict';
+    const canvas = document.getElementById('bg');
+    const ctx = canvas.getContext('2d');
+    const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+    function resize() {
+        const w = Math.floor(window.innerWidth);
+        const h = Math.floor(window.innerHeight);
+        canvas.style.width = w + 'px';
+        canvas.style.height = h + 'px';
+        canvas.width = Math.floor(w * dpr);
+        canvas.height = Math.floor(h * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    window.addEventListener('resize', resize, { passive: true });
+    resize();
+    const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#8fffe3';
+    function hexToRgb(hex) {
+        const m = hex.replace('#', '');
+        const int = parseInt(m, 16);
+        if (m.length === 6 && !Number.isNaN(int)) {
+            return { r: (int >> 16) & 255, g: (int >> 8) & 255, b: int & 255 };
+        }
+        return { r: 143, g: 255, b: 227 };
+    }
+    const { r, g, b } = hexToRgb(accent);
+    let t = 0;
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const cx = canvas.width / dpr / 2;
+        const cy = canvas.height / dpr / 2;
+        const maxR = Math.hypot(cx, cy);
+        for (let i = 0; i < 6; i++) {
+            const progress = ((t * 0.6) + i / 6) % 1;
+            const radius = progress * maxR;
+            const alpha = (1 - progress) * 0.12;
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+            ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+            ctx.lineWidth = 1.2;
+            ctx.stroke();
+        }
+        // rotating sweep
+        ctx.save();
+        const angle = t * 0.6;
+        ctx.translate(cx, cy);
+        ctx.rotate(angle);
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(maxR, 0);
+        ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, 0.08)`;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        ctx.restore();
+        t += 0.008;
+        requestAnimationFrame(animate);
+    }
+    animate();
+    </script>
 </body>
 </html>
