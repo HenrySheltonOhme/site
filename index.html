@@ -3,362 +3,382 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Genesis of Emergent Symmetry</title>
+    <title>Squad Pluto</title>
     <style>
-        /* PHILOSOPHICAL PRINCIPLE: The canvas begins in perfect void - the state of maximum entropy */
+        /*
+        // DECREE V4.0: THE AESTHETICS OF THE MIND //
+        // The canvas is a mental space. The background is not black, but a deep,
+        // near-infinite void. The cursor is hidden, replaced by our own subtle
+        // indication of presence.
+        */
         body, html {
             margin: 0;
             padding: 0;
-            width: 100%;
-            height: 100%;
             overflow: hidden;
-            background: #000000;
-        }
-        
-        canvas {
-            display: block;
+            background-color: #020205; /* A deep, dark navy-blue, not pure black */
+            height: 100%;
+            width: 100%;
             cursor: none;
         }
 
-        /* PHILOSOPHICAL PRINCIPLE: The interface must be invisible, allowing direct communion with the artifact */
-        .status {
+        /* The canvas holds the subconscious and the hidden order. It is the foundation. */
+        #mind-canvas {
             position: absolute;
-            bottom: 20px;
-            left: 20px;
-            color: rgba(255, 255, 255, 0.3);
-            font-family: monospace;
-            font-size: 12px;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
+
+        /* The central identity. A modern, clean, and unmoving point of focus. */
+        .title-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            pointer-events: none; /* It does not interfere with interaction */
+            text-align: center;
+        }
+
+        .title-text {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-size: 2.8em;
+            font-weight: 200; /* Thin and elegant */
+            color: rgba(230, 230, 255, 0.7);
+            text-shadow: 0 0 25px rgba(180, 180, 255, 0.15);
+            letter-spacing: 2px;
             user-select: none;
+        }
+
+        /* This container will hold the conscious thoughts (the projects). */
+        #thoughts-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 5;
+            pointer-events: none; /* Container itself is not interactive */
+        }
+
+        /* Styling for each individual thought. They are ethereal but tangible. */
+        .thought-node {
+            position: absolute;
+            color: rgba(200, 225, 255, 0.8);
+            background-color: rgba(10, 10, 20, 0.3);
+            font-family: 'SF Mono', 'Menlo', 'Courier New', monospace;
+            padding: 8px 15px;
+            border-radius: 5px;
+            border: 1px solid rgba(150, 180, 255, 0.1);
+            font-size: 14px;
+            text-decoration: none;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            pointer-events: all; /* The thoughts themselves ARE interactive */
+            transition: transform 0.2s ease-out, background-color 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s;
+            will-change: transform; /* Performance hint for the browser */
+        }
+
+        .thought-node:hover {
+            color: rgba(255, 255, 255, 1);
+            background-color: rgba(50, 50, 80, 0.5);
+            border-color: rgba(200, 220, 255, 0.5);
+            box-shadow: 0 0 20px rgba(150, 180, 255, 0.2);
+            transform: scale(1.1); /* Grow on hover for a satisfying effect */
+        }
+
+        /* A custom visual indicator for the user's presence. */
+        #cursor-ring {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
             pointer-events: none;
+            transition: transform 0.1s ease-out;
+            z-index: 100;
         }
     </style>
 </head>
 <body>
-    <canvas id="genesisCanvas"></canvas>
-    <div class="status" id="statusDisplay">ENTROPY STATE: PRIMORDIAL CHAOS</div>
+    <canvas id="mind-canvas"></canvas>
+    <div class="title-container">
+        <h1 class="title-text">Squad Pluto</h1>
+    </div>
+    <div id="thoughts-container"></div>
+    <div id="cursor-ring"></div>
 
     <script>
-        // ARTISTIC INTENT: I am creating a universe that begins in pure randomness
-        // and gradually self-organizes into complex patterns through simple rules
-        // This mirrors the cosmic principle of order emerging from chaos
-        
-        const canvas = document.getElementById('genesisCanvas');
-        const ctx = canvas.getContext('2d');
-        const statusDisplay = document.getElementById('statusDisplay');
-        
-        // PHILOSOPHICAL PRINCIPLE: The canvas dimensions represent the fundamental boundaries of this digital universe
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        
-        // CONCEPTUAL FRAMEWORK: I am implementing a novel cellular automata system
-        // that operates on principles of quantum-inspired superposition and collapse
-        // Each cell exists in multiple states simultaneously until observed/calculated
-        
-        const CELL_SIZE = 4;
-        const COLS = Math.floor(canvas.width / CELL_SIZE);
-        const ROWS = Math.floor(canvas.height / CELL_SIZE);
-        
-        // ARTISTIC INTENT: The grid represents the fundamental fabric of this digital reality
-        // Each cell has properties that exist in quantum-like superposition
-        let quantumGrid = [];
-        
-        // CONCEPTUAL FRAMEWORK: I am creating 7 fundamental "quantum properties"
-        // that interact in non-classical ways to generate emergent complexity
-        const PROPERTIES = ['spin', 'phase', 'resonance', 'entropy', 'coherence', 'symmetry', 'tension'];
-        
-        // PHILOSOPHICAL PRINCIPLE: Initial state is maximum entropy - perfect chaos
-        // Each property exists in random superposition
-        function initializeQuantumGrid() {
-            quantumGrid = [];
-            for (let y = 0; y < ROWS; y++) {
-                quantumGrid[y] = [];
-                for (let x = 0; x < COLS; x++) {
-                    quantumGrid[y][x] = {
-                        spin: Math.random() * 2 - 1,        // Angular momentum tendency
-                        phase: Math.random() * Math.PI * 2, // Wave phase alignment  
-                        resonance: Math.random(),           // Vibration frequency
-                        entropy: 1.0,                       // Disorder level (starts maximum)
-                        coherence: 0,                       // Order level (starts minimum)
-                        symmetry: 0,                        // Pattern formation tendency
-                        tension: Math.random(),             // Energy potential
-                        collapsed: false,                   // Whether state is determined
-                        age: 0,                             // Temporal existence
-                        influence: 0                        // Effect on neighbors
-                    };
+    //=======================================================================================//
+    //                                                                                       //
+    //                         THE LIVING MIND - A VISUAL ESSENCE                            //
+    //                                                                                       //
+    //=======================================================================================//
+    //
+    // This script is the culmination of our dialogue. It seeks to create not just a visual,
+    // but a feeling. It combines organic, biological simulation with a hidden layer of
+    // mathematical determinism, and overlays it with conscious, interactive "thoughts".
+    // It is the essence of a thinking entity, visualized.
+    //
+    //---------------------------------------------------------------------------------------//
+
+    'use strict';
+
+    // --- Core Setup ---
+    const canvas = document.getElementById('mind-canvas');
+    const ctx = canvas.getContext('2d');
+    const thoughtsContainer = document.getElementById('thoughts-container');
+    const cursorRing = document.getElementById('cursor-ring');
+
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+
+    const mouse = {
+        x: width / 2,
+        y: height / 2,
+        radius: 150 // Radius of influence
+    };
+
+    // --- The Conscious Thoughts (Project Data) ---
+    // Extracted directly from your image.
+    const projectNames = [
+        "Customer Success Agents",
+        "ML/AIOps",
+        "Ohme Enterprise Knowledge Center",
+        "Journey Computer Vision",
+        "Energy Consumption Forecasting",
+        "Session Params Prediction",
+        "CX Agents Evaluation",
+        "Sentinel",
+        "CX Engine",
+        "Crowdflex",
+        "POCs"
+    ];
+    let thoughts = [];
+    let spawnInterval;
+
+    // --- The Subconscious (Neuron Simulation) ---
+    const NEURON_COUNT = 200;
+    const NEIGHBOR_RADIUS = 100;
+    const neurons = [];
+
+    // --- The Hidden Order (Deterministic Grid) ---
+    const GRID_SPACING = 50;
+    const GRID_REVEAL_RADIUS = 250;
+
+
+    // --- Vector Math Library ---
+    class Vector {
+        constructor(x = 0, y = 0) { this.x = x; this.y = y; }
+        add(v) { this.x += v.x; this.y += v.y; return this; }
+        sub(v) { this.x -= v.x; this.y -= v.y; return this; }
+        mult(s) { this.x *= s; this.y *= s; return this; }
+        magSq() { return this.x * this.x + this.y * this.y; }
+        mag() { return Math.sqrt(this.magSq()); }
+        normalize() { const m = this.mag(); if (m > 0) { this.x /= m; this.y /= m; } return this; }
+        static distSq(v1, v2) { const dx = v1.x - v2.x; const dy = v1.y - v2.y; return dx * dx + dy * dy; }
+    }
+
+
+    // --- Layer 1: The Subconscious Neuron ---
+    // Represents the biological foundation. They pulse, connect, and form a living web.
+    class Neuron {
+        constructor(x, y) {
+            this.pos = new Vector(x, y);
+            this.originalPos = new Vector(x, y);
+            this.radius = Math.random() * 2 + 1;
+            this.color = `rgba(100, 120, 200, ${Math.random() * 0.3 + 0.1})`;
+            this.neighbors = [];
+            this.offset = Math.random() * 1000;
+        }
+
+        findNeighbors(allNeurons) {
+            for (const other of allNeurons) {
+                if (other === this) continue;
+                if (Vector.distSq(this.pos, other.pos) < NEIGHBOR_RADIUS * NEIGHBOR_RADIUS) {
+                    this.neighbors.push(other);
                 }
             }
         }
-        
-        // ARTISTIC INTENT: The color system maps abstract quantum properties to visual perception
-        // This creates a synesthetic experience where mathematical states become aesthetic phenomena
-        function quantumStateToColor(cell) {
-            // CONCEPTUAL FRAMEWORK: RGB channels map to different quantum properties
-            // creating a direct translation between mathematical reality and sensory experience
-            
-            const r = Math.abs(Math.sin(cell.phase * cell.resonance)) * 255;
-            const g = Math.abs(Math.cos(cell.spin * cell.age * 0.1)) * 255;
-            const b = (1 - cell.entropy) * 255;
-            
-            return `rgb(${r}, ${g}, ${b})`;
+
+        update() {
+            // A gentle, organic pulsing/drifting motion using sine waves
+            const time = Date.now() * 0.0002;
+            this.pos.x = this.originalPos.x + Math.sin(time + this.offset) * 5;
+            this.pos.y = this.originalPos.y + Math.cos(time + this.offset) * 5;
         }
-        
-        // PHILOSOPHICAL PRINCIPLE: The update rules are the fundamental laws of this universe
-        // They are simple, local interactions that give rise to global complexity
-        function updateQuantumGrid() {
-            const newGrid = [];
-            let totalCoherence = 0;
-            let totalSymmetry = 0;
-            
-            for (let y = 0; y < ROWS; y++) {
-                newGrid[y] = [];
-                for (let x = 0; x < COLS; x++) {
-                    const cell = quantumGrid[y][x];
-                    const neighbors = getQuantumNeighbors(x, y);
-                    
-                    // ARTISTIC INTENT: These equations represent the "laws of physics"
-                    // for this digital universe - they balance determinism and randomness
-                    
-                    // Calculate influence from neighbors (quantum entanglement simulation)
-                    let spinInfluence = 0;
-                    let phaseResonance = 0;
-                    let neighborCoherence = 0;
-                    
-                    neighbors.forEach(neighbor => {
-                        spinInfluence += neighbor.spin * neighbor.coherence;
-                        phaseResonance += Math.sin(neighbor.phase) * neighbor.resonance;
-                        neighborCoherence += neighbor.coherence;
-                    });
-                    
-                    const avgCoherence = neighborCoherence / neighbors.length;
-                    
-                    // CONCEPTUAL FRAMEWORK: The state evolution follows non-linear dynamics
-                    // creating the conditions for emergent self-organization
-                    const newSpin = (cell.spin + spinInfluence * 0.1) * 0.95;
-                    const newPhase = (cell.phase + phaseResonance * 0.05) % (Math.PI * 2);
-                    const newResonance = Math.max(0, Math.min(1, 
-                        cell.resonance + (avgCoherence - cell.resonance) * 0.1
-                    ));
-                    
-                    // PHILOSOPHICAL PRINCIPLE: Entropy decreases as coherence increases
-                    // representing the universe's tendency toward order through interaction
-                    const newCoherence = Math.max(0, Math.min(1, 
-                        cell.coherence + (avgCoherence - cell.coherence) * 0.05
-                    ));
-                    const newEntropy = 1 - newCoherence;
-                    
-                    // ARTISTIC INTENT: Symmetry emerges from phase alignment and resonance matching
-                    let phaseAlignment = 0;
-                    neighbors.forEach(neighbor => {
-                        const phaseDiff = Math.abs(cell.phase - neighbor.phase);
-                        phaseAlignment += 1 - (phaseDiff / (Math.PI * 2));
-                    });
-                    
-                    const newSymmetry = Math.max(0, Math.min(1,
-                        cell.symmetry + (phaseAlignment / neighbors.length - 0.5) * 0.1
-                    ));
-                    
-                    // CONCEPTUAL FRAMEWORK: Tension represents potential energy
-                    // that can be released to create dynamic patterns
-                    const coherenceDifference = Math.abs(cell.coherence - avgCoherence);
-                    const newTension = Math.max(0, Math.min(1,
-                        cell.tension * 0.9 + coherenceDifference * 0.1
-                    ));
-                    
-                    newGrid[y][x] = {
-                        spin: newSpin,
-                        phase: newPhase,
-                        resonance: newResonance,
-                        entropy: newEntropy,
-                        coherence: newCoherence,
-                        symmetry: newSymmetry,
-                        tension: newTension,
-                        collapsed: cell.coherence > 0.8, // High coherence collapses superposition
-                        age: cell.age + 1,
-                        influence: Math.abs(spinInfluence) + Math.abs(phaseResonance)
-                    };
-                    
-                    totalCoherence += newCoherence;
-                    totalSymmetry += newSymmetry;
+
+        draw(ctx) {
+            // Draw connections to neighbors first, so they are underneath
+            ctx.strokeStyle = `rgba(120, 150, 255, 0.05)`;
+            ctx.lineWidth = 0.5;
+            for (const neighbor of this.neighbors) {
+                ctx.beginPath();
+                ctx.moveTo(this.pos.x, this.pos.y);
+                ctx.lineTo(neighbor.pos.x, neighbor.pos.y);
+                ctx.stroke();
+            }
+
+            // Draw the neuron body
+            ctx.beginPath();
+            ctx.arc(this.pos.x, this.pos.y, this.radius, 0, Math.PI * 2);
+            ctx.fillStyle = this.color;
+            ctx.fill();
+        }
+    }
+
+
+    // --- Layer 2: The Conscious Thought Node ---
+    // Represents the interactive, high-level ideas. They are HTML elements driven by a physics simulation.
+    class ThoughtNode {
+        constructor(element) {
+            this.el = element;
+            this.pos = new Vector(Math.random() * width, Math.random() * height);
+            this.vel = new Vector(Math.random() - 0.5, Math.random() - 0.5);
+            this.acc = new Vector();
+            this.maxSpeed = 0.5;
+            this.maxForce = 0.02;
+            this.damping = 0.98;
+        }
+
+        applyForce(force) {
+            this.acc.add(force);
+        }
+
+        // The physics that governs the movement of thoughts
+        behaviors(allThoughts) {
+            // 1. Repulsion from other thoughts
+            for (const other of allThoughts) {
+                if (other === this) continue;
+                const distSq = Vector.distSq(this.pos, other.pos);
+                if (distSq < 200 * 200) {
+                    let force = new Vector(this.pos.x - other.pos.x, this.pos.y - other.pos.y);
+                    force.normalize().mult(0.1 / (distSq * 0.0001 + 1)); // Stronger when closer
+                    this.applyForce(force);
                 }
             }
-            
-            quantumGrid = newGrid;
-            
-            // Update status display with emergent properties
-            const avgCoherence = totalCoherence / (ROWS * COLS);
-            const avgSymmetry = totalSymmetry / (ROWS * COLS);
-            
-            if (avgCoherence < 0.2) {
-                statusDisplay.textContent = `ENTROPY STATE: PRIMORDIAL CHAOS | SYMMETRY: ${avgSymmetry.toFixed(3)}`;
-            } else if (avgCoherence < 0.5) {
-                statusDisplay.textContent = `ENTROPY STATE: EMERGENT PATTERNS | SYMMETRY: ${avgSymmetry.toFixed(3)}`;
-            } else if (avgCoherence < 0.8) {
-                statusDisplay.textContent = `ENTROPY STATE: SELF-ORGANIZATION | SYMMETRY: ${avgSymmetry.toFixed(3)}`;
+
+            // 2. Attraction to the center of the screen (keeps them from flying away)
+            let centerForce = new Vector(width / 2 - this.pos.x, height / 2 - this.pos.y);
+            centerForce.normalize().mult(0.01);
+            this.applyForce(centerForce);
+
+            // 3. Repulsion from the mouse cursor (user interaction)
+            const mouseDistSq = Vector.distSq(this.pos, mouse);
+            if (mouseDistSq < mouse.radius * mouse.radius) {
+                let mouseForce = new Vector(this.pos.x - mouse.x, this.pos.y - mouse.y);
+                mouseForce.normalize().mult(0.5);
+                this.applyForce(mouseForce);
+            }
+        }
+
+        update() {
+            this.vel.add(this.acc);
+            this.vel.mult(this.damping);
+            if (this.vel.magSq() > this.maxSpeed * this.maxSpeed) {
+                this.vel.normalize().mult(this.maxSpeed);
+            }
+            this.pos.add(this.vel);
+            this.acc.mult(0); // Reset acceleration
+        }
+
+        render() {
+            // Update the CSS position of the HTML element
+            this.el.style.transform = `translate(${this.pos.x - this.el.offsetWidth / 2}px, ${this.pos.y - this.el.offsetHeight / 2}px)`;
+        }
+    }
+
+
+    // --- Initialization Function ---
+    // Sets up the entire scene.
+    function init() {
+        // Create the subconscious neuron web
+        for (let i = 0; i < NEURON_COUNT; i++) {
+            neurons.push(new Neuron(Math.random() * width, Math.random() * height));
+        }
+        for (const neuron of neurons) {
+            neuron.findNeighbors(neurons);
+        }
+
+        // Begin spawning the conscious thoughts one by one
+        let projectsToSpawn = [...projectNames];
+        spawnInterval = setInterval(() => {
+            if (projectsToSpawn.length > 0) {
+                const thoughtText = projectsToSpawn.shift();
+                const el = document.createElement('a');
+                el.href = "#"; // Fake link
+                el.classList.add('thought-node');
+                el.textContent = thoughtText;
+                thoughtsContainer.appendChild(el);
+                thoughts.push(new ThoughtNode(el));
             } else {
-                statusDisplay.textContent = `ENTROPY STATE: CRYSTALLINE ORDER | SYMMETRY: ${avgSymmetry.toFixed(3)}`;
+                clearInterval(spawnInterval);
             }
-        }
-        
-        // ARTISTIC INTENT: The neighbor function creates the connectivity topology
-        // Using a Moore neighborhood (8 surrounding cells) for rich interaction
-        function getQuantumNeighbors(x, y) {
-            const neighbors = [];
-            for (let dy = -1; dy <= 1; dy++) {
-                for (let dx = -1; dx <= 1; dx++) {
-                    if (dx === 0 && dy === 0) continue;
-                    
-                    const nx = (x + dx + COLS) % COLS;
-                    const ny = (y + dy + ROWS) % ROWS;
-                    
-                    neighbors.push(quantumGrid[ny][nx]);
-                }
-            }
-            return neighbors;
-        }
-        
-        // CONCEPTUAL FRAMEWORK: The rendering process translates quantum states
-        // into visual phenomena, creating a bridge between mathematics and perception
-        function renderQuantumGrid() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            for (let y = 0; y < ROWS; y++) {
-                for (let x = 0; x < COLS; x++) {
-                    const cell = quantumGrid[y][x];
-                    const color = quantumStateToColor(cell);
-                    
-                    // ARTISTIC INTENT: Visual properties change based on quantum state
-                    // creating a rich, dynamic visual landscape
-                    ctx.fillStyle = color;
-                    
-                    // PHILOSOPHICAL PRINCIPLE: The size and shape of each element
-                    // reflects its quantum properties and relationships
-                    const sizeMod = cell.coherence * CELL_SIZE;
-                    const rotation = cell.spin * Math.PI;
-                    
-                    ctx.save();
-                    ctx.translate(x * CELL_SIZE + CELL_SIZE/2, y * CELL_SIZE + CELL_SIZE/2);
-                    ctx.rotate(rotation);
-                    
-                    // CONCEPTUAL FRAMEWORK: Different rendering modes based on coherence level
-                    // representing different phases of organization
-                    if (cell.coherence < 0.3) {
-                        // Chaos phase: simple points
-                        ctx.fillRect(-sizeMod/2, -sizeMod/2, sizeMod, sizeMod);
-                    } else if (cell.coherence < 0.6) {
-                        // Organization phase: emerging shapes
-                        ctx.beginPath();
-                        ctx.arc(0, 0, sizeMod/2, 0, Math.PI * 2);
-                        ctx.fill();
-                    } else {
-                        // Order phase: complex geometric forms
-                        ctx.beginPath();
-                        const sides = 3 + Math.floor(cell.symmetry * 5);
-                        for (let i = 0; i < sides; i++) {
-                            const angle = (i * 2 * Math.PI / sides) + cell.phase;
-                            const radius = sizeMod/2;
-                            const px = Math.cos(angle) * radius;
-                            const py = Math.sin(angle) * radius;
-                            if (i === 0) {
-                                ctx.moveTo(px, py);
-                            } else {
-                                ctx.lineTo(px, py);
-                            }
-                        }
-                        ctx.closePath();
-                        ctx.fill();
-                    }
-                    
-                    ctx.restore();
+        }, 1500); // Spawn a new thought every 1.5 seconds
+    }
+
+
+    // --- The Main Animation Loop ---
+    // This function is the heartbeat of the visualization.
+    function animate() {
+        // Clear the canvas for redrawing
+        ctx.clearRect(0, 0, width, height);
+
+        // --- Layer 2: The Hidden Order (The Twang) ---
+        // This is drawn first, so it's in the deep background.
+        // It's a grid that becomes more visible near the mouse, revealing the deterministic structure.
+        for (let x = 0; x < width; x += GRID_SPACING) {
+            for (let y = 0; y < height; y += GRID_SPACING) {
+                const distSq = (x - mouse.x) * (x - mouse.x) + (y - mouse.y) * (y - mouse.y);
+                if (distSq < GRID_REVEAL_RADIUS * GRID_REVEAL_RADIUS) {
+                    const opacity = 1 - (distSq / (GRID_REVEAL_RADIUS * GRID_REVEAL_RADIUS));
+                    ctx.fillStyle = `rgba(100, 120, 200, ${opacity * 0.2})`;
+                    ctx.fillRect(x - 0.5, y - 0.5, 1, 1);
                 }
             }
         }
         
-        // ARTISTIC INTENT: User interaction introduces perturbations to the system
-        // allowing humans to participate in the cosmic dance of order and chaos
-        let mouseX = -1000;
-        let mouseY = -1000;
-        let mouseStrength = 0;
-        
-        canvas.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-            mouseStrength = 1.0;
-        });
-        
-        canvas.addEventListener('click', (e) => {
-            // PHILOSOPHICAL PRINCIPLE: A click creates a "quantum fluctuation"
-            // that can trigger phase transitions in the system
-            const gridX = Math.floor(e.clientX / CELL_SIZE);
-            const gridY = Math.floor(e.clientY / CELL_SIZE);
-            
-            if (gridX >= 0 && gridX < COLS && gridY >= 0 && gridY < ROWS) {
-                // Create a coherence singularity
-                for (let dy = -3; dy <= 3; dy++) {
-                    for (let dx = -3; dx <= 3; dx++) {
-                        const nx = (gridX + dx + COLS) % COLS;
-                        const ny = (gridY + dy + ROWS) % ROWS;
-                        const distance = Math.sqrt(dx*dx + dy*dy);
-                        const influence = Math.max(0, 1 - distance/4);
-                        
-                        quantumGrid[ny][nx].coherence += influence * 0.5;
-                        quantumGrid[ny][nx].entropy = 1 - quantumGrid[ny][nx].coherence;
-                        quantumGrid[ny][nx].phase += influence * Math.PI;
-                    }
-                }
-            }
-        });
-        
-        // CONCEPTUAL FRAMEWORK: The main animation loop represents the flow of time
-        // in this digital universe, driving the eternal process of creation and evolution
-        function animate() {
-            // Apply mouse influence as external perturbation
-            if (mouseStrength > 0) {
-                const gridX = Math.floor(mouseX / CELL_SIZE);
-                const gridY = Math.floor(mouseY / CELL_SIZE);
-                
-                if (gridX >= 0 && gridX < COLS && gridY >= 0 && gridY < ROWS) {
-                    // Create a zone of influence around mouse
-                    for (let dy = -2; dy <= 2; dy++) {
-                        for (let dx = -2; dx <= 2; dx++) {
-                            const nx = (gridX + dx + COLS) % COLS;
-                            const ny = (gridY + dy + ROWS) % ROWS;
-                            const distance = Math.sqrt(dx*dx + dy*dy);
-                            const influence = Math.max(0, (1 - distance/3)) * mouseStrength;
-                            
-                            quantumGrid[ny][nx].spin += (Math.random() - 0.5) * influence * 0.1;
-                            quantumGrid[ny][nx].phase += influence * 0.1;
-                            quantumGrid[ny][nx].tension += influence * 0.05;
-                        }
-                    }
-                }
-                
-                mouseStrength *= 0.9; // Gradually decay mouse influence
-            }
-            
-            updateQuantumGrid();
-            renderQuantumGrid();
-            requestAnimationFrame(animate);
+        // --- Layer 1: The Subconscious (The Brain) ---
+        // Update and draw the pulsing neuron web.
+        for (const neuron of neurons) {
+            neuron.update();
+            neuron.draw(ctx);
         }
-        
-        // PHILOSOPHICAL PRINCIPLE: The universe begins with a single function call
-        // representing the initial moment of creation from nothingness
-        initializeQuantumGrid();
-        animate();
-        
-        // ARTISTIC INTENT: Respond to window resizing by recreating the universe
-        // This represents the concept of multiple possible realities
-        window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            initializeQuantumGrid();
-        });
-        
-        // FINAL ARTISTIC STATEMENT: This artifact explores the fundamental cosmic principle
-        // that complex order can emerge from simple rules applied to initial chaos.
-        // The human observer witnesses the eternal dance between entropy and organization,
-        // between randomness and pattern, between chaos and symmetry.
-        // Through minimal interaction, they participate in this cosmic process,
-        // experiencing the beautiful, emergent mathematics that underpin all existence.
+
+        // --- Layer 3: The Conscious Thoughts ---
+        // Update the physics and render the position of the HTML elements.
+        for (const thought of thoughts) {
+            thought.behaviors(thoughts);
+            thought.update();
+            thought.render();
+        }
+
+        // Keep the loop going
+        requestAnimationFrame(animate);
+    }
+
+
+    // --- Event Listeners ---
+    window.addEventListener('resize', () => {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+        // Re-initialize on resize to redistribute neurons. A more advanced version
+        // might try to reposition them intelligently.
+        neurons.length = 0;
+        init();
+    });
+
+    window.addEventListener('mousemove', e => {
+        mouse.x = e.clientX;
+        mouse.y = e.clientY;
+        cursorRing.style.transform = `translate(${e.clientX - 15}px, ${e.clientY - 15}px)`;
+    });
+
+    // --- Let there be thought ---
+    init();
+    animate();
+
     </script>
 </body>
 </html>
