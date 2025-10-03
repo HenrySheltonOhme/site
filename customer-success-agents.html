@@ -76,7 +76,8 @@
     const threads = Array.from({ length: 24 }, spawnThread);
     let t = 0;
     function draw() {
-        ctx.fillStyle = 'rgba(2,2,5,0.04)';
+        // keep color presence; don't overfade the trail
+        ctx.fillStyle = 'rgba(2,2,5,0.015)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         for (let i = 0; i < threads.length; i++) {
             const th = threads[i];
