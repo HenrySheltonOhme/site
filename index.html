@@ -126,6 +126,18 @@
     const canvas = document.getElementById('mind-canvas');
     const ctx = canvas.getContext('2d');
     const thoughtsContainer = document.getElementById('thoughts-container');
+    const titleContainer = document.querySelector('.title-container');
+    let titleBounds = { cx: 0, cy: 0, halfW: 0, halfH: 0 };
+    function updateTitleBounds() {
+        if (!titleContainer) return;
+        const rect = titleContainer.getBoundingClientRect();
+        titleBounds = {
+            cx: rect.left + rect.width / 2,
+            cy: rect.top + rect.height / 2,
+            halfW: rect.width / 2 + 20,
+            halfH: rect.height / 2 + 20
+        };
+    }
 
     let width = window.innerWidth;
     let height = window.innerHeight;
@@ -353,6 +365,14 @@
                 mouseForce.normalize().mult(0.5);
                 this.applyForce(mouseForce);
             }
+        // 4. Repel from centered title to prevent overlap
+        const dxTitle = this.pos.x - titleBounds.cx;
+        const dyTitle = this.pos.y - titleBounds.cy;
+        if (Math.abs(dxTitle) < titleBounds.halfW && Math.abs(dyTitle) < titleBounds.halfH) {
+            let titleForce = new Vector(dxTitle, dyTitle);
+            titleForce.normalize().mult(0.6);
+            this.applyForce(titleForce);
+        }
         }
 
         update() {
@@ -366,8 +386,19 @@
         }
 
         render() {
-            // Update the CSS position of the HTML element
-            this.el.style.transform = `translate(${this.pos.x - this.el.offsetWidth / 2}px, ${this.pos.y - this.el.offsetHeight / 2}px)`;
+        // Keep within viewport bounds and update CSS position
+        const halfW = this.el.offsetWidth / 2;
+        const halfH = this.el.offsetHeight / 2;
+        const pad = 12;
+        const minX = halfW + pad;
+        const maxX = width - halfW - pad;
+        const minY = halfH + pad;
+        const maxY = height - halfH - pad;
+        if (this.pos.x < minX) { this.pos.x = minX; this.vel.x *= -0.3; }
+        if (this.pos.x > maxX) { this.pos.x = maxX; this.vel.x *= -0.3; }
+        if (this.pos.y < minY) { this.pos.y = minY; this.vel.y *= -0.3; }
+        if (this.pos.y > maxY) { this.pos.y = maxY; this.vel.y *= -0.3; }
+        this.el.style.transform = `translate(${this.pos.x - halfW}px, ${this.pos.y - halfH}px)`;
         }
     }
 
@@ -469,6 +500,7 @@
     window.addEventListener('resize', () => {
         resizeCanvas();
         // Re-initialize on resize to recreate all elements for the new size
+        updateTitleBounds();
         init();
     }, { passive: true });
 
@@ -479,6 +511,7 @@
 
     // --- Let there be thought ---
     resizeCanvas();
+    updateTitleBounds();
     init();
     animate();
 
