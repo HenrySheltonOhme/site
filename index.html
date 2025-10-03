@@ -43,16 +43,13 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             font-size: 2.8em;
             font-weight: 200; /* Thin and elegant */
-            background-image: linear-gradient(180deg, rgba(235, 235, 255, 0.92), rgba(170, 185, 255, 0.65));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
+            color: rgba(235, 240, 255, 0.92);
             text-shadow: none;
             letter-spacing: 2px;
             user-select: none;
         }
-        .title-text a { color: inherit; text-decoration: none; pointer-events: all; cursor: pointer; position: relative; transition: color 0.2s ease; }
-        .title-text a:hover { color: rgba(240, 245, 255, 0.95); }
+        .title-text a { background-image: linear-gradient(180deg, rgba(235,235,255,0.92), rgba(170,185,255,0.65)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: inherit; text-decoration: none; pointer-events: all; cursor: pointer; position: relative; transition: none; }
+        .title-text a:hover { color: inherit; }
         .title-text a::after { content: ""; position: absolute; left: 50%; bottom: -6px; width: 0; height: 1px; background: linear-gradient(90deg, rgba(180,210,255,0), rgba(180,210,255,0.6), rgba(180,210,255,0)); transition: width 180ms ease, left 180ms ease; }
         .title-text a:hover::after { width: 100%; left: 0; }
 
