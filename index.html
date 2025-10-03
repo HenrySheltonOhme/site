@@ -469,6 +469,8 @@
     // --- The Main Animation Loop ---
     // This function is the heartbeat of the visualization.
     function animate() {
+        // Update title bounds to keep exclusion accurate (handles font/resize/layout changes)
+        updateTitleBounds();
         // Clear the canvas for redrawing
         ctx.clearRect(0, 0, width, height);
 
