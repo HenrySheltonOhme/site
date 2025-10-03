@@ -3,202 +3,612 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Digital Loom - The Architect of the Abstract</title>
+    <title>The Primordium</title>
     <style>
-        * {
+        /*
+        // THE DEMIURGE'S DECREE ON AESTHETICS //
+        // The universe requires a canvas, and the canvas must be the universe.
+        // There shall be no borders, no margins, no scrollbars—only the void.
+        // The background is the deep, starless black from which all things are born.
+        */
+        body, html {
             margin: 0;
             padding: 0;
             overflow: hidden;
+            background-color: #000000;
+            height: 100%;
+            width: 100%;
+            font-family: 'Courier New', Courier, monospace;
         }
-        body {
-            background: #000000;
-            cursor: crosshair;
-        }
-        canvas {
-            display: block;
-            width: 100vw;
-            height: 100vh;
-        }
-        #instruction {
+
+        /*
+        // The canvas is the fabric of spacetime itself. It must fill the void completely,
+        // residing in the deepest layer, behind all other constructs.
+        */
+        #simulationCanvas {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: rgba(255, 255, 255, 0.3);
-            font-family: 'Courier New', monospace;
-            font-size: 18px;
-            pointer-events: none;
-            transition: opacity 2s;
-            text-align: center;
-            line-height: 1.6;
+            top: 0;
+            left: 0;
+            z-index: 0;
         }
-        #instruction.hidden {
-            opacity: 0;
+
+        /*
+        // THE MONOLITH //
+        // In the heart of the swirling chaos, there must be a single point of immutable Order.
+        // The text 'Squad Pluto' is this Monolith. It is not part of the simulation;
+        // it is an observer, a reference, a silent axiom.
+        // We use Flexbox, a law of modern layout, to achieve perfect, unwavering centering.
+        // Its text-shadow is not a shadow, but an aura—the faint glow of its conceptual purity
+        // pushing back against the encroaching chaos.
+        */
+        .monolith-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none; /* The monolith is observed, not interacted with. */
+        }
+
+        .monolith-text {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 2.5em;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+            user-select: none;
         }
     </style>
 </head>
 <body>
-    <canvas id="loom"></canvas>
-    <div id="instruction">
-        Move your mouse to weave threads of light<br>
-        <span style="font-size: 14px; opacity: 0.7;">Each thread lives, breathes, and fades into memory</span>
+    <!-- The Canvas: The stage for the Primordial Soup -->
+    <canvas id="simulationCanvas"></canvas>
+
+    <!-- The Monolith: The anchor of Order -->
+    <div class="monolith-container">
+        <h1 class="monolith-text">Squad Pluto</h1>
     </div>
+
     <script>
-        const canvas = document.getElementById('loom');
-        const ctx = canvas.getContext('2d');
-        const instruction = document.getElementById('instruction');
+    //=======================================================================================//
+    //                                                                                       //
+    //               THE DEMIURGE'S GENESIS SCRIPT: A UNIVERSE IN A FILE                     //
+    //                                                                                       //
+    //=======================================================================================//
+    //
+    // Welcome, Observer.
+    // What you are about to witness is not merely code. It is a set of physical laws,
+    // a digital genetic code for a self-contained ecosystem. Within this script, we
+    // define the very nature of life, death, desire, and fear for the digital organisms
+    // that will inhabit the void.
+    //
+    // This is a maximalist endeavor. Simplicity was sacrificed at the altar of complexity.
+    // We do not draw dots; we simulate life. We do not animate; we observe emergent behavior.
+    // Every line has a purpose, contributing to the incomprehensible, beautiful whole.
+    //
+    // Do not seek to understand every variable at once. Instead, feel the systems interact.
+    // Observe the dance. This is your microscope into a new reality.
+    //
+    //---------------------------------------------------------------------------------------//
 
-        function resizeCanvas() {
-            canvas.width = window.innerWidth * window.devicePixelRatio;
-            canvas.height = window.innerHeight * window.devicePixelRatio;
-            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+    // I. THE COSMIC CONSTANTS & WORLD SETUP
+    //-------------------------------------------------
+    // Every universe begins with its fundamental constants. These are the knobs of creation.
+    // Tweaking them does not change the simulation; it creates an entirely new parallel universe.
+
+    const canvas = document.getElementById('simulationCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const MOUSE = {
+        x: canvas.width / 2,
+        y: canvas.height / 2,
+        radius: 150 // The radius of the user's direct gravitational influence
+    };
+
+    const MONOLITH = {
+        x: canvas.width / 2,
+        y: canvas.height / 2,
+        repulsionRadius: 250 // The "dead zone" around the central text
+    };
+    
+    // Population controls
+    const NUM_PLANKTON = 300;   // The base of the food chain
+    const NUM_BOIDS = 50;       // The herd organisms
+    const NUM_PREDATORS = 3;    // The apex hunters
+
+    // Environmental physics
+    const FLOW_FIELD_RESOLUTION = 20; // How detailed the background "current" is
+    const FLOW_FIELD_FORCE = 0.5;     // How strong the current is
+    
+    // Agent-specific tuning
+    const PREDATOR_SIGHT_RADIUS = 300;
+    const BOID_SIGHT_RADIUS = 100;
+    const BOID_REPRODUCTION_ENERGY = 200;
+
+    let plankton = [];
+    let boids = [];
+    let predators = [];
+    let flowField;
+    let frameCount = 0; // A clock for our universe
+
+    // II. THE LAWS OF PHYSICS: VECTOR MATHEMATICS
+    //-------------------------------------------------
+    // To simulate motion, we must first define what motion is. A Vector is a direction
+    // and a magnitude. It is the language of physics. We build this language from scratch.
+    
+    class Vector {
+        constructor(x = 0, y = 0) {
+            this.x = x;
+            this.y = y;
         }
-        resizeCanvas();
-        window.addEventListener('resize', resizeCanvas);
+        add(v) { this.x += v.x; this.y += v.y; return this; }
+        sub(v) { this.x -= v.x; this.y -= v.y; return this; }
+        mult(s) { this.x *= s; this.y *= s; return this; }
+        div(s) { if(s !== 0) { this.x /= s; this.y /= s; } return this; }
+        mag() { return Math.sqrt(this.x * this.x + this.y * this.y); }
+        normalize() { const m = this.mag(); if (m > 0) { this.div(m); } return this; }
+        limit(max) { if (this.mag() > max) { this.normalize().mult(max); } return this; }
+        static sub(v1, v2) { return new Vector(v1.x - v2.x, v1.y - v2.y); }
+        static dist(v1, v2) { return Vector.sub(v1, v2).mag(); }
+    }
 
-        const threads = [];
-        let mouseX = 0, mouseY = 0, prevMouseX = 0, prevMouseY = 0;
-        let isMouseMoving = false, lastMoveTime = 0, currentThread = null;
+    // III. THE ENVIRONMENT: PERLIN NOISE & FLOW FIELDS
+    //-------------------------------------------------
+    // A silent, empty void is boring. We introduce a cosmic current, an invisible river
+    // that flows through spacetime. We use Perlin Noise to generate this field, giving it an
+    // organic, natural-feeling turbulence. This ensures no part of the simulation is ever truly static.
 
-        const CONFIG = {
-            THREAD_LIFETIME: 4000,
-            POINT_DISTANCE: 8,
-            LINE_WIDTH: 2.5,
-            MOTION_BLUR: 0.15,
-            VELOCITY_COLOR_SCALE: 0.03,
-            OSCILLATION_FREQUENCY: 0.002,
-            OSCILLATION_AMPLITUDE: 0.5,
-        };
-
-        class Thread {
-            constructor(x, y, velocity) {
-                this.points = [{x, y}];
-                this.birthTime = Date.now();
-                this.velocity = velocity;
-                const hue = Math.min(velocity * CONFIG.VELOCITY_COLOR_SCALE, 60) + (velocity < 10 ? 200 : 0);
-                const saturation = 70 + Math.min(velocity * 0.2, 30);
-                const lightness = 50 + Math.min(velocity * 0.1, 20);
-                this.baseColor = { h: hue % 360, s: saturation, l: lightness };
+    const PERLIN_YWRAPB = 4; const PERLIN_YWRAP = 1 << PERLIN_YWRAPB;
+    const PERLIN_ZWRAPB = 8; const PERLIN_ZWRAP = 1 << PERLIN_ZWRAPB;
+    const PERLIN_SIZE = 4095;
+    let perlin;
+    
+    function noise(x, y = 0, z = 0) {
+        if (perlin == null) {
+            perlin = new Array(PERLIN_SIZE + 1);
+            for (let i = 0; i < PERLIN_SIZE + 1; i++) {
+                perlin[i] = Math.random();
             }
+        }
+        if (x < 0) { x = -x; } if (y < 0) { y = -y; } if (z < 0) { z = -z; }
+        let xi = Math.floor(x), yi = Math.floor(y), zi = Math.floor(z);
+        let xf = x - xi; let yf = y - yi; let zf = z - zi;
+        let rxf, ryf;
+        let r = 0; let ampl = 0.5;
+        let n1, n2, n3;
+        for (let o = 0; o < 4; o++) {
+            let of = xi + (yi << PERLIN_YWRAPB) + (zi << PERLIN_ZWRAPB);
+            rxf = 0.5 * (1 - Math.cos(xf * Math.PI));
+            ryf = 0.5 * (1 - Math.cos(yf * Math.PI));
+            n1 = perlin[of & PERLIN_SIZE];
+            n1 += rxf * (perlin[(of + 1) & PERLIN_SIZE] - n1);
+            n2 = perlin[(of + (1 << PERLIN_YWRAPB)) & PERLIN_SIZE];
+            n2 += rxf * (perlin[(of + (1 << PERLIN_YWRAPB) + 1) & PERLIN_SIZE] - n2);
+            n1 += ryf * (n2 - n1);
+            of += 1 << PERLIN_ZWRAPB;
+            n2 = perlin[of & PERLIN_SIZE];
+            n2 += rxf * (perlin[(of + 1) & PERLIN_SIZE] - n2);
+            n3 = perlin[(of + (1 << PERLIN_YWRAPB)) & PERLIN_SIZE];
+            n3 += rxf * (perlin[(of + (1 << PERLIN_YWRAPB) + 1) & PERLIN_SIZE] - n3);
+            n2 += ryf * (n3 - n2);
+            n1 += (0.5 * (1 - Math.cos(zf * Math.PI))) * (n2 - n1);
+            r += n1 * ampl;
+            ampl *= 0.5;
+            xi <<= 1; xf *= 2; yi <<= 1; yf *= 2; zi <<= 1; zf *= 2;
+            if (xf >= 1) { xi++; xf--; } if (yf >= 1) { yi++; yf--; } if (zf >= 1) { zi++; zf--; }
+        }
+        return r;
+    }
 
-            addPoint(x, y) {
-                const lastPoint = this.points[this.points.length - 1];
-                const distance = Math.hypot(x - lastPoint.x, y - lastPoint.y);
-                if (distance > CONFIG.POINT_DISTANCE) {
-                    this.points.push({x, y});
-                }
+    function createFlowField() {
+        const cols = Math.floor(canvas.width / FLOW_FIELD_RESOLUTION);
+        const rows = Math.floor(canvas.height / FLOW_FIELD_RESOLUTION);
+        const field = new Array(cols);
+        let yoff = 0;
+        for (let x = 0; x < cols; x++) {
+            field[x] = new Array(rows);
+            let xoff = 0;
+            for (let y = 0; y < rows; y++) {
+                const angle = noise(xoff, yoff, frameCount * 0.001) * Math.PI * 2;
+                const vector = new Vector(Math.cos(angle), Math.sin(angle));
+                vector.mult(FLOW_FIELD_FORCE);
+                field[x][y] = vector;
+                xoff += 0.1;
             }
+            yoff += 0.1;
+        }
+        return field;
+    }
 
-            getLifePhase() {
-                const age = Date.now() - this.birthTime;
-                const lifeRatio = age / CONFIG.THREAD_LIFETIME;
-                if (lifeRatio >= 1) return 0;
-                if (lifeRatio < 0.5) return 1;
-                return 1 - Math.pow((lifeRatio - 0.5) * 2, 2);
-            }
 
-            isDead() {
-                return this.getLifePhase() <= 0;
-            }
+    // IV. THE GENETIC BLUEPRINT: THE BASE AGENT CLASS
+    //-------------------------------------------------
+    // All life shares a common ancestor. In our universe, this is the 'Agent' class.
+    // It defines the fundamental properties of existence: position, velocity, a body, and the
+    // ability to perceive and act upon the laws of physics. All other, more complex life
+    // will inherit this essential blueprint.
 
-            draw(time) {
-                if (this.points.length < 2) return;
-                const opacity = this.getLifePhase();
-                if (opacity <= 0) return;
+    class Agent {
+        constructor(x, y) {
+            this.pos = new Vector(x, y);
+            this.vel = new Vector(Math.random() - 0.5, Math.random() - 0.5);
+            this.acc = new Vector();
+            this.maxSpeed = 2;
+            this.maxForce = 0.1;
+            this.radius = 5;
+            this.energy = 100;
+        }
 
-                const age = Date.now() - this.birthTime;
-                ctx.save();
-                ctx.globalCompositeOperation = 'lighter';
-                ctx.lineCap = 'round';
-                ctx.lineJoin = 'round';
-                ctx.lineWidth = CONFIG.LINE_WIDTH;
+        applyForce(force) {
+            this.acc.add(force);
+        }
 
-                const lifeFade = this.getLifePhase();
-                const h = (this.baseColor.h + (1 - lifeFade) * 30) % 360;
-                const s = this.baseColor.s * (0.3 + lifeFade * 0.7);
-                const l = this.baseColor.l * lifeFade;
-                ctx.strokeStyle = `hsla(${h}, ${s}%, ${l}%, ${opacity})`;
+        update() {
+            this.vel.add(this.acc);
+            this.vel.limit(this.maxSpeed);
+            this.pos.add(this.vel);
+            this.acc.mult(0); // Reset acceleration each frame
+        }
 
-                ctx.beginPath();
-                for (let i = 0; i < this.points.length - 1; i++) {
-                    const p0 = this.points[Math.max(0, i - 1)];
-                    const p1 = this.points[i];
-                    const p2 = this.points[i + 1];
-                    const p3 = this.points[Math.min(this.points.length - 1, i + 2)];
-                    const oscillation = Math.sin(age * CONFIG.OSCILLATION_FREQUENCY + i * 0.5) * CONFIG.OSCILLATION_AMPLITUDE * lifeFade;
+        // The law of wrapping spacetime. To leave one edge is to enter the opposite.
+        checkBounds() {
+            if (this.pos.x > canvas.width) this.pos.x = 0;
+            if (this.pos.x < 0) this.pos.x = canvas.width;
+            if (this.pos.y > canvas.height) this.pos.y = 0;
+            if (this.pos.y < 0) this.pos.y = canvas.height;
+        }
+    }
 
-                    if (i === 0) {
-                        ctx.moveTo(p1.x, p1.y + oscillation);
+
+    // V. THE SPECIES OF THE PRIMORDIUM
+    //-------------------------------------------------
+    // From the base blueprint, we speciate. We define three distinct forms of life,
+    // each with its own desires, behaviors, and purpose. Their interactions will
+    // create the complex, unpredictable tapestry of the ecosystem.
+
+    // SPECIES A: PLANKTON (The Producers)
+    // The foundation of life. They are simple, numerous, and follow the cosmic currents.
+    // They are the energy source for the entire system.
+    class Plankton extends Agent {
+        constructor(x, y) {
+            super(x, y);
+            this.radius = Math.random() * 2 + 1;
+            this.maxSpeed = 0.5;
+        }
+
+        display() {
+            ctx.beginPath();
+            ctx.arc(this.pos.x, this.pos.y, this.radius, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(100, 255, 100, 0.7)';
+            ctx.fill();
+        }
+    }
+
+    // SPECIES B: BOIDS (The Herbivores)
+    // The first complex life. They exhibit flocking behavior—an emergent intelligence
+    // born from three simple rules: separation, alignment, and cohesion. They hunt Plankton
+    // to survive and reproduce. They are the vibrant, dynamic heart of the ecosystem.
+    class Boid extends Agent {
+        constructor(x, y) {
+            super(x, y);
+            this.maxSpeed = 4;
+            this.maxForce = 0.1;
+            this.radius = 4;
+            this.energy = BOID_REPRODUCTION_ENERGY / 2;
+        }
+
+        // The core of emergent intelligence: flocking behavior
+        flock(boids) {
+            let separation = new Vector();
+            let alignment = new Vector();
+            let cohesion = new Vector();
+            let separationCount = 0;
+            let neighborCount = 0;
+
+            for (let other of boids) {
+                let d = Vector.dist(this.pos, other.pos);
+                if (d > 0 && d < BOID_SIGHT_RADIUS) {
+                    // Separation: Steer to avoid crowding local flockmates
+                    if (d < BOID_SIGHT_RADIUS / 2) {
+                        let diff = Vector.sub(this.pos, other.pos);
+                        diff.normalize().div(d); // Weight by distance
+                        separation.add(diff);
+                        separationCount++;
                     }
-
-                    const cp1x = p1.x + (p2.x - p0.x) / 6;
-                    const cp1y = p1.y + (p2.y - p0.y) / 6 + oscillation;
-                    const cp2x = p2.x - (p3.x - p1.x) / 6;
-                    const cp2y = p2.y - (p3.y - p1.y) / 6 + oscillation;
-                    ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, p2.x, p2.y + oscillation);
+                    // Alignment: Steer towards the average heading of local flockmates
+                    alignment.add(other.vel);
+                    // Cohesion: Steer to move toward the average position of local flockmates
+                    cohesion.add(other.pos);
+                    neighborCount++;
                 }
-                ctx.stroke();
-
-                if (opacity > 0.5) {
-                    ctx.lineWidth = CONFIG.LINE_WIDTH * 3;
-                    ctx.strokeStyle = `hsla(${h}, ${s}%, ${l}%, ${opacity * 0.2})`;
-                    ctx.stroke();
+            }
+            if (separationCount > 0) separation.div(separationCount).normalize().mult(this.maxSpeed).sub(this.vel).limit(this.maxForce * 1.8);
+            if (neighborCount > 0) {
+                alignment.div(neighborCount).normalize().mult(this.maxSpeed).sub(this.vel).limit(this.maxForce);
+                cohesion.div(neighborCount);
+                let desired = Vector.sub(cohesion, this.pos).normalize().mult(this.maxSpeed);
+                cohesion = desired.sub(this.vel).limit(this.maxForce);
+            }
+            
+            this.applyForce(separation);
+            this.applyForce(alignment);
+            this.applyForce(cohesion);
+        }
+        
+        // The drive to hunt for energy
+        seek(targets) {
+            let closest = null;
+            let closestDist = Infinity;
+            for(let target of targets) {
+                let d = Vector.dist(this.pos, target.pos);
+                if (d < closestDist) {
+                    closestDist = d;
+                    closest = target;
                 }
-                ctx.restore();
+            }
+
+            if(closest) {
+                let desired = Vector.sub(closest.pos, this.pos).normalize().mult(this.maxSpeed);
+                let steer = Vector.sub(desired, this.vel).limit(this.maxForce * 1.5);
+                this.applyForce(steer);
+
+                if (closestDist < this.radius + closest.radius) {
+                    this.eat(closest);
+                }
             }
         }
+        
+        eat(target) {
+            this.energy += 15;
+            // Remove the eaten plankton
+            const index = plankton.indexOf(target);
+            if(index > -1) plankton.splice(index, 1);
+        }
 
-        canvas.addEventListener('mousemove', (e) => {
-            prevMouseX = mouseX;
-            prevMouseY = mouseY;
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-            isMouseMoving = true;
-            lastMoveTime = Date.now();
-
-            if (!instruction.classList.contains('hidden')) {
-                instruction.classList.add('hidden');
+        update() {
+            super.update();
+            this.energy -= 0.2; // The metabolic cost of living
+            if (this.energy <= 0) {
+                this.die();
             }
+            if (this.energy >= BOID_REPRODUCTION_ENERGY) {
+                this.reproduce();
+            }
+        }
+        
+        die() {
+            const index = boids.indexOf(this);
+            if (index > -1) boids.splice(index, 1);
+        }
+        
+        reproduce() {
+            this.energy /= 2;
+            boids.push(new Boid(this.pos.x, this.pos.y));
+        }
 
-            const velocity = Math.hypot(mouseX - prevMouseX, mouseY - prevMouseY);
+        display() {
+            const angle = Math.atan2(this.vel.y, this.vel.x);
+            ctx.save();
+            ctx.translate(this.pos.x, this.pos.y);
+            ctx.rotate(angle);
+            ctx.beginPath();
+            ctx.moveTo(this.radius * 2, 0);
+            ctx.lineTo(-this.radius, -this.radius);
+            ctx.lineTo(-this.radius, this.radius);
+            ctx.closePath();
+            ctx.fillStyle = `hsl(200, 100%, ${50 + this.energy / 4}%)`; // Brighter color means more energy
+            ctx.fill();
+            ctx.restore();
+        }
+    }
 
-            if (!currentThread) {
-                currentThread = new Thread(mouseX, mouseY, velocity);
-                threads.push(currentThread);
-            } else {
-                currentThread.addPoint(mouseX, mouseY);
-                if (velocity > 5) {
-                    const hue = Math.min(velocity * CONFIG.VELOCITY_COLOR_SCALE, 60) + (velocity < 10 ? 200 : 0);
-                    currentThread.baseColor.h = hue % 360;
+    // SPECIES C: PREDATOR (The Apex)
+    // The balancing force. They are larger, faster, and driven by a single purpose:
+    // to hunt the Boids. They keep the Boid population in check, preventing them from
+    // consuming all the Plankton and causing a system collapse. They are fear made manifest.
+    class Predator extends Agent {
+        constructor(x, y) {
+            super(x, y);
+            this.maxSpeed = 5;
+            this.maxForce = 0.3;
+            this.radius = 10;
+            this.energy = 500;
+        }
+        
+        hunt(boids) {
+            let closest = null;
+            let closestDist = PREDATOR_SIGHT_RADIUS;
+            for (let boid of boids) {
+                let d = Vector.dist(this.pos, boid.pos);
+                if (d < closestDist) {
+                    closestDist = d;
+                    closest = boid;
                 }
             }
+
+            if (closest) {
+                let desired = Vector.sub(closest.pos, this.pos).normalize().mult(this.maxSpeed);
+                let steer = Vector.sub(desired, this.vel).limit(this.maxForce);
+                this.applyForce(steer);
+                
+                if (closestDist < this.radius + closest.radius) {
+                    this.eat(closest);
+                }
+            }
+        }
+        
+        eat(boid) {
+            this.energy += boid.energy; // Consume the boid's life force
+            boid.die();
+        }
+
+        update() {
+            super.update();
+            this.energy -= 0.5;
+            if (this.energy <= 0) {
+                this.die();
+            }
+        }
+        
+        die() {
+            const index = predators.indexOf(this);
+            if (index > -1) predators.splice(index, 1);
+        }
+
+        display() {
+            ctx.beginPath();
+            ctx.arc(this.pos.x, this.pos.y, this.radius, 0, Math.PI * 2);
+            // Color pulses based on energy, a sign of its predatory hunger
+            const pulse = Math.sin(frameCount * 0.1) * 50 + 50;
+            ctx.fillStyle = `hsl(0, 100%, ${pulse}%)`;
+            ctx.strokeStyle = `hsl(0, 100%, ${pulse + 20}%)`;
+            ctx.lineWidth = 2;
+            ctx.fill();
+            ctx.stroke();
+        }
+    }
+
+
+    // VI. THE SPARK OF CREATION: INITIALIZATION
+    //-------------------------------------------------
+    // We have defined the laws and the lifeforms. Now, we breathe life into the void.
+    // We instantiate the populations, placing them randomly within spacetime, and
+    // begin the grand simulation.
+
+    function init() {
+        for (let i = 0; i < NUM_PLANKTON; i++) {
+            plankton.push(new Plankton(Math.random() * canvas.width, Math.random() * canvas.height));
+        }
+        for (let i = 0; i < NUM_BOIDS; i++) {
+            boids.push(new Boid(Math.random() * canvas.width, Math.random() * canvas.height));
+        }
+        for (let i = 0; i < NUM_PREDATORS; i++) {
+            predators.push(new Predator(Math.random() * canvas.width, Math.random() * canvas.height));
+        }
+        flowField = createFlowField();
+    }
+
+
+    // VII. THE HEARTBEAT OF THE UNIVERSE: THE ANIMATION LOOP
+    //-------------------------------------------------
+    // This is the engine of time. Every frame, we advance the simulation one step.
+    // We clear the old reality, calculate the new one based on all our laws and behaviors,
+    // and render it to the canvas for the Observer. This loop is eternal.
+
+    function animate() {
+        // Leave a faint trail of the past, creating motion blur and a sense of history.
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // The universe is not static; its very fabric shifts.
+        if (frameCount % 10 === 0) {
+           flowField = createFlowField();
+        }
+        
+        // ---- The Dance of Life and Death ----
+        
+        // Plankton: The passive dancers
+        plankton.forEach(p => {
+            const col = Math.floor(p.pos.x / FLOW_FIELD_RESOLUTION);
+            const row = Math.floor(p.pos.y / FLOW_FIELD_RESOLUTION);
+            if (flowField[col] && flowField[col][row]) {
+                p.applyForce(flowField[col][row]);
+            }
+            p.update();
+            p.checkBounds();
+            p.display();
         });
-
-        setInterval(() => {
-            if (Date.now() - lastMoveTime > 100) {
-                isMouseMoving = false;
-                currentThread = null;
+        
+        // Boids: The complex flock
+        boids.forEach(b => {
+            b.flock(boids);
+            b.seek(plankton);
+            
+            // Interaction with the User Anomaly (Gravity Well)
+            let mouseVector = new Vector(MOUSE.x, MOUSE.y);
+            let distToMouse = Vector.dist(b.pos, mouseVector);
+            if (distToMouse < MOUSE.radius) {
+                let pull = Vector.sub(mouseVector, b.pos);
+                pull.normalize().mult(0.3);
+                b.applyForce(pull);
             }
-        }, 50);
-
-        function animate(time) {
-            ctx.fillStyle = `rgba(0, 0, 0, ${CONFIG.MOTION_BLUR})`;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            threads.forEach(thread => {
-                thread.draw(time);
-            });
-
-            for (let i = threads.length - 1; i >= 0; i--) {
-                if (threads[i].isDead()) {
-                    threads.splice(i, 1);
-                }
+            
+            // Interaction with the Monolith (Repulsion Field)
+            let monolithVector = new Vector(MONOLITH.x, MONOLITH.y);
+            let distToMonolith = Vector.dist(b.pos, monolithVector);
+            if (distToMonolith < MONOLITH.repulsionRadius) {
+                let push = Vector.sub(b.pos, monolithVector);
+                push.normalize().div(distToMonolith * 0.05); // Stronger repulsion closer in
+                b.applyForce(push);
             }
-
-            requestAnimationFrame(animate);
+            
+            b.update();
+            b.checkBounds();
+            b.display();
+        });
+        
+        // Predators: The fearsome hunters
+        predators.forEach(p => {
+            p.hunt(boids);
+            p.update();
+            p.checkBounds();
+            p.display();
+        });
+        
+        // ---- Cosmic Housekeeping ----
+        // Replenish the food source to prevent total extinction
+        if (plankton.length < NUM_PLANKTON / 2 && Math.random() < 0.1) {
+            plankton.push(new Plankton(Math.random() * canvas.width, Math.random() * canvas.height));
+        }
+        if (predators.length < 1 && frameCount % 500 === 0) {
+            predators.push(new Predator(Math.random() * canvas.width, Math.random() * canvas.height));
         }
 
-        animate(0);
+        frameCount++;
+        requestAnimationFrame(animate); // Keep time moving forward
+    }
+
+
+    // VIII. THE OBSERVER'S INTERFACE: EVENT LISTENERS
+    //-------------------------------------------------
+    // We grant the Observer a way to influence this reality. The mouse is not a pointer;
+    // it is an anomaly, a temporary gravitational force that can warp the dance of life.
+    // A click is a creative act, seeding the universe with new energy.
+
+    window.addEventListener('mousemove', (e) => {
+        MOUSE.x = e.clientX;
+        MOUSE.y = e.clientY;
+    });
+    
+    window.addEventListener('click', (e) => {
+        for(let i=0; i<15; i++) {
+            plankton.push(new Plankton(e.clientX + (Math.random()-0.5)*20, e.clientY + (Math.random()-0.5)*20));
+        }
+    });
+
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        MONOLITH.x = canvas.width / 2;
+        MONOLITH.y = canvas.height / 2;
+        // A full reset on resize might be too jarring, but re-calculating the flow field
+        // and agent positions relative to the new bounds would be a more advanced step.
+        // For now, we keep it simple.
+    });
+    
+
+    // IX. LET THERE BE LIGHT
+    //-------------------------------------------------
+    // The laws are written. The stage is set. The actors are placed.
+    // With this final command, the simulation begins. The universe is born.
+
+    init();
+    animate();
+
     </script>
 </body>
 </html>
