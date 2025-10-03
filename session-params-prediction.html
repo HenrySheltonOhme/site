@@ -6,8 +6,9 @@
     <title>Session Params Prediction • Squad Pluto</title>
     <style>
         :root { --accent: #ffd38f; --glow: rgba(255, 211, 143, 0.28); --radial-x: 48%; --radial-y: 42%; }
-        html, body { margin: 0; padding: 0; height: 100%; background: radial-gradient(900px 600px at var(--radial-x) var(--radial-y), rgba(120, 95, 50, 0.18), rgba(0,0,0,0)), #020205; color: rgba(230, 235, 255, 0.9); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
-        .container { display: grid; place-items: center; min-height: 100%; text-align: center; padding: 24px; }
+        #bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; display: block; }
+        html, body { margin: 0; padding: 0; height: 100dvh; overflow: hidden; overflow: clip; overscroll-behavior: none; background: radial-gradient(900px 600px at var(--radial-x) var(--radial-y), rgba(120, 95, 50, 0.18), rgba(0,0,0,0)), #020205; color: rgba(230, 235, 255, 0.9); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        .container { display: grid; place-items: center; min-height: 100dvh; text-align: center; padding: 24px; position: relative; z-index: 1; }
         .title { font-weight: 200; font-size: 42px; letter-spacing: 2px; margin: 0 0 12px; background-image: linear-gradient(180deg, rgba(255, 245, 230, 0.95), rgba(255, 220, 170, 0.65)); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: 0 0 24px rgba(170,180,240,0.18); }
         .subtitle { margin: 0 0 28px; color: rgba(190, 200, 240, 0.75); font-weight: 300; }
         .cta-row { display: inline-flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
@@ -17,11 +18,12 @@
         .btn.secondary { background: transparent; color: rgba(220, 230, 255, 0.9); border: 1px solid rgba(170, 200, 255, 0.28); box-shadow: none; }
         .btn.secondary:hover { border-color: rgba(200, 220, 255, 0.5); }
         .accent-dot { position: fixed; top: 22%; left: 16%; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); filter: blur(9px); opacity: 0.25; }
-        .footer { position: fixed; left: 0; right: 0; bottom: 12px; text-align: center; color: rgba(150, 170, 220, 0.5); font-size: 12px; }
+        .footer { position: absolute; left: 50%; transform: translateX(-50%); bottom: 12px; background: transparent; text-align: center; color: rgba(150, 170, 220, 0.5); font-size: 12px; margin: 0; }
         @media (prefers-reduced-motion: reduce) { .btn { transition: none; } }
     </style>
 </head>
 <body>
+    <canvas id="bg"></canvas>
     <div class="container">
         <div>
             <h1 class="title">Session Params Prediction</h1>
@@ -34,5 +36,88 @@
     </div>
     <div class="accent-dot"></div>
     <div class="footer">Squad Pluto</div>
+    <script>
+    'use strict';
+    const canvas = document.getElementById('bg');
+    const ctx = canvas.getContext('2d');
+    const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+    function resize() {
+        const w = Math.floor(window.innerWidth);
+        const h = Math.floor(window.innerHeight);
+        canvas.style.width = w + 'px';
+        canvas.style.height = h + 'px';
+        canvas.width = Math.floor(w * dpr);
+        canvas.height = Math.floor(h * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    window.addEventListener('resize', resize, { passive: true });
+    resize();
+    const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#ffd38f';
+    function hexToRgb(hex) {
+        const m = hex.replace('#', '');
+        const int = parseInt(m, 16);
+        if (m.length === 6 && !Number.isNaN(int)) {
+            return { r: (int >> 16) & 255, g: (int >> 8) & 255, b: int & 255 };
+        }
+        return { r: 255, g: 211, b: 143 };
+    }
+    const { r, g, b } = hexToRgb(accent);
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // Two nodes: start energy (left) and required energy (right). Particles flow left->right.
+    function nodes() {
+        const w = canvas.width / dpr, h = canvas.height / dpr;
+        return {
+            A: { x: w * 0.22, y: h * 0.55 },
+            B: { x: w * 0.78, y: h * 0.45 }
+        };
+    }
+    let { A, B } = nodes();
+    window.addEventListener('resize', () => { ({ A, B } = nodes()); }, { passive: true });
+    const particles = Array.from({ length: 140 }, () => spawn());
+    function spawn() {
+        const w = canvas.width / dpr, h = canvas.height / dpr;
+        return {
+            x: A.x + (Math.random() - 0.5) * 24,
+            y: A.y + (Math.random() - 0.5) * 24,
+            t: Math.random(),
+            speed: 0.006 + Math.random() * 0.01
+        };
+    }
+    function ease(p) { return 1 - Math.pow(1 - p, 3); }
+    let t = 0;
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // draw faint arcs suggesting predicted bands
+        ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, 0.06)`;
+        ctx.lineWidth = 1;
+        for (let i = 0; i < 4; i++) {
+            ctx.beginPath();
+            ctx.arc(A.x, A.y, 26 + i * 10, -Math.PI * 0.6, Math.PI * 0.6);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(B.x, B.y, 26 + i * 10, Math.PI * 0.4, Math.PI * 1.4);
+            ctx.stroke();
+        }
+        // flow particles from A to B along a slightly curved path
+        ctx.fillStyle = `rgba(${r}, ${g}, ${b}, 0.35)`;
+        for (let i = 0; i < particles.length; i++) {
+            const p = particles[i];
+            p.t += prefersReducedMotion ? p.speed * 0.5 : p.speed * 1.6;
+            if (p.t >= 1) { particles[i] = spawn(); continue; }
+            const e = ease(p.t);
+            // quadratic bezier control point creates a smooth arc
+            const ctrlX = (A.x + B.x) / 2 + Math.sin(t * 0.03 + i) * 40;
+            const ctrlY = (A.y + B.y) / 2 + Math.cos(t * 0.028 + i) * 25;
+            const x = (1 - e) * (1 - e) * p.x + 2 * (1 - e) * e * ctrlX + e * e * B.x;
+            const y = (1 - e) * (1 - e) * p.y + 2 * (1 - e) * e * ctrlY + e * e * B.y;
+            ctx.beginPath();
+            ctx.arc(x, y, 0.9, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        t += 1;
+        if (!prefersReducedMotion) requestAnimationFrame(animate);
+    }
+    animate();
+    </script>
 </body>
 </html>
