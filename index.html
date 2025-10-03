@@ -6,10 +6,9 @@
     <title>Squad Pluto</title>
     <style>
         /*
-        // DECREE V4.0: THE AESTHETICS OF THE MIND //
-        // The canvas is a mental space. The background is not black, but a deep,
-        // near-infinite void. The cursor is hidden, replaced by our own subtle
-        // indication of presence.
+        // DECREE V5.0: THE FINAL AESTHETIC //
+        // The space is a living mind. The background is a deep void.
+        // The standard cursor is restored for a responsive, lag-free experience.
         */
         body, html {
             margin: 0;
@@ -18,7 +17,7 @@
             background-color: #020205; /* A deep, dark navy-blue, not pure black */
             height: 100%;
             width: 100%;
-            cursor: none;
+            cursor: default; /* Restored the default cursor */
         }
 
         /* The canvas holds the subconscious and the hidden order. It is the foundation. */
@@ -86,19 +85,6 @@
             box-shadow: 0 0 20px rgba(150, 180, 255, 0.2);
             transform: scale(1.1); /* Grow on hover for a satisfying effect */
         }
-
-        /* A custom visual indicator for the user's presence. */
-        #cursor-ring {
-            position: absolute;
-            width: 30px;
-            height: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            pointer-events: none;
-            transition: transform 0.1s ease-out;
-            z-index: 100;
-        }
     </style>
 </head>
 <body>
@@ -107,19 +93,18 @@
         <h1 class="title-text">Squad Pluto</h1>
     </div>
     <div id="thoughts-container"></div>
-    <div id="cursor-ring"></div>
-
+    
     <script>
     //=======================================================================================//
     //                                                                                       //
-    //                         THE LIVING MIND - A VISUAL ESSENCE                            //
+    //                  THE LIVING MIND - FINAL VERSION (FULLY DYNAMIC)                      //
     //                                                                                       //
     //=======================================================================================//
     //
-    // This script is the culmination of our dialogue. It seeks to create not just a visual,
-    // but a feeling. It combines organic, biological simulation with a hidden layer of
-    // mathematical determinism, and overlays it with conscious, interactive "thoughts".
-    // It is the essence of a thinking entity, visualized.
+    // This is the definitive script, incorporating all refinements from our dialogue.
+    // The background is now a fully dynamic, wandering neural network that interacts with
+    // the user. All project "thoughts" are present from the start. The custom cursor has
+    // been removed for a clean, responsive experience.
     //
     //---------------------------------------------------------------------------------------//
 
@@ -129,7 +114,6 @@
     const canvas = document.getElementById('mind-canvas');
     const ctx = canvas.getContext('2d');
     const thoughtsContainer = document.getElementById('thoughts-container');
-    const cursorRing = document.getElementById('cursor-ring');
 
     let width = canvas.width = window.innerWidth;
     let height = canvas.height = window.innerHeight;
@@ -141,7 +125,6 @@
     };
 
     // --- The Conscious Thoughts (Project Data) ---
-    // Extracted directly from your image.
     const projectNames = [
         "Customer Success Agents",
         "ML/AIOps",
@@ -167,7 +150,7 @@
     const GRID_REVEAL_RADIUS = 250;
 
 
-    // --- Vector Math Library ---
+    // --- Math Libraries ---
     class Vector {
         constructor(x = 0, y = 0) { this.x = x; this.y = y; }
         add(v) { this.x += v.x; this.y += v.y; return this; }
@@ -179,38 +162,94 @@
         static distSq(v1, v2) { const dx = v1.x - v2.x; const dy = v1.y - v2.y; return dx * dx + dy * dy; }
     }
 
+    // Perlin noise function for organic movement
+    function noise(x, y = 0, z = 0) {
+        const p = new Array(512);
+        const permutation = [ 151,160,137,91,90,15,
+        131,13,201,95,96,53,194,233,7,225,140,36,103,30,69,142,8,99,37,240,21,10,23,
+        190, 6,148,247,120,234,75,0,26,197,62,94,252,219,203,117,35,11,32,57,177,33,
+        88,237,149,56,87,174,20,125,136,171,168, 68,175,74,165,71,134,139,48,27,166,
+        77,146,158,231,83,111,229,122,60,211,133,230,220,105,92,41,55,46,245,40,244,
+        102,143,54, 65,25,63,161, 1,216,80,73,209,76,132,187,208, 89,18,169,200,196,
+        135,130,116,188,159,86,164,100,109,198,173,186, 3,64,52,217,226,250,124,123,
+        5,202,38,147,118,126,255,82,85,212,207,206,59,227,47,16,58,17,182,189,28,42,
+        223,183,170,213,119,248,152, 2,44,154,163, 70,221,153,101,155,167, 43,172,9,
+        129,22,39,253, 19,98,108,110,79,113,224,232,178,185, 112,104,218,246,97,228,
+        251,34,242,193,238,210,144,12,191,179,162,241, 81,51,145,235,249,14,239,107,
+        49,192,214, 31,181,199,106,157,184, 84,204,176,115,121,50,45,127, 4,150,254,
+        138,236,205,93,222,114,67,29,24,72,243,141,128,195,78,66,215,61,156,180 ];
+        for (let i=0; i < 256 ; i++) p[256+i] = p[i] = permutation[i];
+        
+        const fade = t => t * t * t * (t * (t * 6 - 15) + 10);
+        const lerp = (t, a, b) => a + t * (b - a);
+        const grad = (hash, x, y, z) => {
+            const h = hash & 15;
+            const u = h < 8 ? x : y;
+            const v = h < 4 ? y : h === 12 || h === 14 ? x : z;
+            return ((h & 1) === 0 ? u : -u) + ((h & 2) === 0 ? v : -v);
+        };
+
+        const X = Math.floor(x) & 255;
+        const Y = Math.floor(y) & 255;
+        const Z = Math.floor(z) & 255;
+        x -= Math.floor(x);
+        y -= Math.floor(y);
+        z -= Math.floor(z);
+        const u = fade(x);
+        const v = fade(y);
+        const w = fade(z);
+        const A = p[X] + Y, AA = p[A] + Z, AB = p[A + 1] + Z;
+        const B = p[X + 1] + Y, BA = p[B] + Z, BB = p[B + 1] + Z;
+
+        return lerp(w, lerp(v, lerp(u, grad(p[AA], x, y, z), grad(p[BA], x-1, y, z)),
+                               lerp(u, grad(p[AB], x, y-1, z), grad(p[BB], x-1, y-1, z))),
+                       lerp(v, lerp(u, grad(p[AA+1], x, y, z-1), grad(p[BA+1], x-1, y, z-1)),
+                               lerp(u, grad(p[AB+1], x, y-1, z-1), grad(p[BB+1], x-1, y-1, z-1))));
+    }
+
 
     // --- Layer 1: The Subconscious Neuron ---
-    // Represents the biological foundation. They now have their own physics and behaviors.
+    // Represents the biological foundation. They now wander freely, creating a dynamic, living web.
     class Neuron {
         constructor(x, y) {
             this.pos = new Vector(x, y);
-            this.originalPos = new Vector(x, y); // A point to be tethered to
-            this.vel = new Vector(Math.random() * 2 - 1, Math.random() * 2 - 1);
+            this.vel = new Vector(Math.random() - 0.5, Math.random() - 0.5);
             this.acc = new Vector();
             this.radius = Math.random() * 2 + 1;
-            this.damping = 0.95; // A bit of friction
+            this.damping = 0.98; // Slightly more friction for a smoother flow
+            this.maxSpeed = 0.3; // A gentle, constant speed
             this.color = `rgba(100, 120, 200, ${Math.random() * 0.3 + 0.1})`;
+            this.noiseOffset = Math.random() * 1000; // Unique offset for Perlin noise
         }
 
         applyForce(force) {
             this.acc.add(force);
         }
 
-        // New method to calculate behaviors
+        // This method now orchestrates all movement behaviors
         behaviors() {
-            // 1. A gentle force pulling it back towards its original position.
-            // This creates a beautiful, stretching, tethered motion.
-            let returnForce = new Vector(this.originalPos.x - this.pos.x, this.originalPos.y - this.pos.y);
-            returnForce.mult(0.0005); // Very weak force
-            this.applyForce(returnForce);
+            this.wander(); // The new primary driving force
+            this.repelMouse(); // The interactive force
+        }
 
-            // 2. Repulsion from the mouse, making them "move out of the way".
+        // Organic wandering behavior using Perlin Noise
+        wander() {
+            // We use Perlin noise to generate a smoothly changing angle, creating a "flow field" effect.
+            // This is what makes the neurons "twirl" and "move around" organically.
+            const time = Date.now() * 0.0001;
+            const angle = (noise(this.pos.x * 0.01, this.pos.y * 0.01, time + this.noiseOffset)) * Math.PI * 4;
+            const wanderForce = new Vector(Math.cos(angle), Math.sin(angle));
+            wanderForce.mult(0.005);
+            this.applyForce(wanderForce);
+        }
+
+        repelMouse() {
             const mouseDistSq = Vector.distSq(this.pos, mouse);
             if (mouseDistSq < mouse.radius * mouse.radius) {
                 let mouseForce = new Vector(this.pos.x - mouse.x, this.pos.y - mouse.y);
                 const distance = Math.sqrt(mouseDistSq);
-                const forceMagnitude = (mouse.radius - distance) * 0.005;
+                // The force is stronger the closer the mouse is
+                const forceMagnitude = (mouse.radius - distance) * 0.01;
                 mouseForce.normalize().mult(forceMagnitude);
                 this.applyForce(mouseForce);
             }
@@ -219,13 +258,26 @@
         update() {
             this.vel.add(this.acc);
             this.vel.mult(this.damping);
+            
+            // Limit speed to prevent them from flying too fast
+            if (this.vel.magSq() > this.maxSpeed * this.maxSpeed) {
+                this.vel.normalize().mult(this.maxSpeed);
+            }
+
             this.pos.add(this.vel);
-            this.acc.mult(0); // Reset acceleration
+            this.acc.mult(0); // Reset acceleration each frame
+            this.checkBounds(); // Keep neurons on the screen
+        }
+        
+        // Screen wrapping behavior
+        checkBounds() {
+            if (this.pos.x < -10) this.pos.x = width + 10;
+            if (this.pos.x > width + 10) this.pos.x = -10;
+            if (this.pos.y < -10) this.pos.y = height + 10;
+            if (this.pos.y > height + 10) this.pos.y = -10;
         }
 
         draw(ctx) {
-            // We only draw the neuron body here now.
-            // Connections will be drawn dynamically in the main loop.
             ctx.beginPath();
             ctx.arc(this.pos.x, this.pos.y, this.radius, 0, Math.PI * 2);
             ctx.fillStyle = this.color;
@@ -391,7 +443,6 @@
     window.addEventListener('mousemove', e => {
         mouse.x = e.clientX;
         mouse.y = e.clientY;
-        cursorRing.style.transform = `translate(${e.clientX - 15}px, ${e.clientY - 15}px)`;
     });
 
     // --- Let there be thought ---
