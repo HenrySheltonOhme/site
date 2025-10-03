@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CX Agents Evaluation • Squad Pluto</title>
+    <title>Customer Success Agents • Squad Pluto</title>
     <style>
-        :root { --accent: #ff8f9a; --glow: rgba(255, 143, 154, 0.28); --radial-x: 62%; --radial-y: 44%; }
+        :root { --accent: #8fb3ff; --glow: rgba(170, 190, 255, 0.35); --radial-x: 50%; --radial-y: 45%; }
         #bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; display: block; }
-        html, body { margin: 0; padding: 0; height: 100dvh; overflow: hidden; overflow: clip; overscroll-behavior: none; background: radial-gradient(900px 600px at var(--radial-x) var(--radial-y), rgba(120, 60, 70, 0.18), rgba(0,0,0,0)), #020205; color: rgba(230, 235, 255, 0.9); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        html, body { margin: 0; padding: 0; height: 100dvh; overflow: hidden; overflow: clip; overscroll-behavior: none; background: radial-gradient(900px 600px at var(--radial-x) var(--radial-y), rgba(60, 70, 120, 0.18), rgba(0,0,0,0)), #020205; color: rgba(230, 235, 255, 0.9); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
         .container { display: grid; place-items: center; min-height: 100dvh; text-align: center; padding: 24px; position: relative; z-index: 1; }
-        .title { font-weight: 200; font-size: 42px; letter-spacing: 2px; margin: 0 0 12px; background-image: linear-gradient(180deg, rgba(255, 235, 240, 0.95), rgba(255, 170, 180, 0.65)); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: 0 0 24px rgba(170,180,240,0.18); }
+        .title { font-weight: 200; font-size: 42px; letter-spacing: 2px; margin: 0 0 12px; background-image: linear-gradient(180deg, rgba(235, 235, 255, 0.92), rgba(170, 185, 255, 0.65)); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: 0 0 24px rgba(170,180,240,0.18); }
         .subtitle { margin: 0 0 28px; color: rgba(190, 200, 240, 0.75); font-weight: 300; }
         .cta-row { display: inline-flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
         .btn { appearance: none; border: 1px solid rgba(170, 200, 255, 0.18); background: linear-gradient(180deg, color-mix(in srgb, var(--accent), #ffffff 10%), color-mix(in srgb, var(--accent), #000000 10%)); color: #0a0b10; padding: 11px 16px; border-radius: 8px; font-size: 14px; font-weight: 600; letter-spacing: 0.3px; text-decoration: none; box-shadow: 0 10px 30px var(--glow); transition: transform 0.15s ease, box-shadow 0.2s ease, filter 0.2s ease; }
@@ -17,8 +17,8 @@
         .btn:active { transform: translateY(0); filter: brightness(0.98); }
         .btn.secondary { background: transparent; color: rgba(220, 230, 255, 0.9); border: 1px solid rgba(170, 200, 255, 0.28); box-shadow: none; }
         .btn.secondary:hover { border-color: rgba(200, 220, 255, 0.5); }
-        .accent-dot { position: fixed; bottom: 18%; left: 20%; width: 14px; height: 14px; border-radius: 50%; background: var(--accent); filter: blur(11px); opacity: 0.22; }
         .footer { position: absolute; left: 50%; transform: translateX(-50%); bottom: 12px; background: transparent; text-align: center; color: rgba(150, 170, 220, 0.5); font-size: 12px; margin: 0; }
+        .accent-dot { position: fixed; top: 12%; right: 10%; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); filter: blur(8px); opacity: 0.25; }
         @media (prefers-reduced-motion: reduce) { .btn { transition: none; } }
     </style>
 </head>
@@ -26,10 +26,10 @@
     <canvas id="bg"></canvas>
     <div class="container">
         <div>
-            <h1 class="title">CX Agents Evaluation</h1>
-            <p class="subtitle">Measuring and improving customer experience agent performance.</p>
+            <h1 class="title">Customer Success Agents</h1>
+            <p class="subtitle">High-signal overview and quick actions for this initiative.</p>
             <div class="cta-row">
-                <a class="btn" href="https://ohmenergy.atlassian.net/wiki/spaces/DS/folder/2808086598?atlOrigin=eyJpIjoiOTVkN2U3OTYwNzU3NGM3NDhhZjQ0MzkyNTYzZjMzYzMiLCJwIjoiYyJ9" target="_blank" rel="noopener noreferrer">Open Knowledge Base</a>
+                <a class="btn" href="https://ohmenergy.atlassian.net/wiki/spaces/DS/folder/2726133815?atlOrigin=eyJpIjoiOWU5ZmFiZjE0NjQwNDliZGI5YzIyMDYwNDRiYmE5MWMiLCJwIjoiYyJ9" target="_blank" rel="noopener noreferrer">Open Knowledge Base</a>
                 <a class="btn secondary" href="./index.html">Back to Home</a>
             </div>
         </div>
@@ -52,64 +52,53 @@
     }
     window.addEventListener('resize', resize, { passive: true });
     resize();
-    const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#ff8f9a';
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#8fb3ff';
     function hexToRgb(hex) {
         const m = hex.replace('#', '');
         const int = parseInt(m, 16);
         if (m.length === 6 && !Number.isNaN(int)) {
             return { r: (int >> 16) & 255, g: (int >> 8) & 255, b: int & 255 };
         }
-        return { r: 255, g: 143, b: 154 };
+        return { r: 143, g: 179, b: 255 };
     }
     const { r, g, b } = hexToRgb(accent);
+    function spawnThread() {
+        const w = canvas.width / dpr, h = canvas.height / dpr;
+        const start = { x: Math.random() * w, y: Math.random() * h };
+        const end = { x: Math.random() * w, y: Math.random() * h };
+        const ctrl = { x: (start.x + end.x) / 2 + (Math.random() - 0.5) * 80,
+                       y: (start.y + end.y) / 2 + (Math.random() - 0.5) * 80 };
+        return { start, end, ctrl, life: 0, ttl: 220 + Math.random() * 120 };
+    }
+    const threads = Array.from({ length: 18 }, spawnThread);
     let t = 0;
-    function drawGauge(cx, cy, radius, value, max, alpha) {
-        const start = -Math.PI * 3/4;
-        const end = Math.PI * 3/4;
-        const span = end - start;
-        ctx.beginPath();
-        ctx.arc(cx, cy, radius, start, end);
-        ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${alpha * 0.35})`;
-        ctx.lineWidth = 1;
-        ctx.stroke();
-        const needle = start + span * (value / max);
-        ctx.beginPath();
-        ctx.moveTo(cx, cy);
-        ctx.lineTo(cx + Math.cos(needle) * radius, cy + Math.sin(needle) * radius);
-        ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
-        ctx.lineWidth = 1;
-        ctx.stroke();
-    }
-    function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        const cx = canvas.width / dpr / 2;
-        const cy = canvas.height / dpr / 2;
-        const base = Math.min(cx, cy) * 0.75;
-        for (let i = 0; i < 5; i++) {
-            const radius = base * (0.35 + i * 0.12);
-            const val = (Math.sin(t * 0.6 + i) + 1) * 50 + 25; // 25..125
-            const alpha = 0.10 - i * 0.014;
-            drawGauge(cx, cy + 10, radius, val, 150, Math.max(alpha, 0.02));
-        }
-        // tick marks
-        ctx.save();
-        ctx.translate(cx, cy + 10);
-        ctx.rotate(-Math.PI * 3/4);
-        ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, 0.06)`;
-        for (let i = 0; i <= 30; i++) {
+    function draw() {
+        ctx.fillStyle = 'rgba(2,2,5,0.06)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        for (let i = 0; i < threads.length; i++) {
+            const th = threads[i];
+            const p = th.life / th.ttl;
+            const alpha = 0.12 * (1 - p);
+            const cx = th.ctrl.x + Math.sin(t * 0.02 + i) * 6;
+            const cy = th.ctrl.y + Math.cos(t * 0.025 + i) * 6;
             ctx.beginPath();
-            ctx.moveTo(base * 0.25, 0);
-            ctx.lineTo(base * 0.26, 0);
-            ctx.lineWidth = 1;
+            ctx.moveTo(th.start.x, th.start.y);
+            ctx.quadraticCurveTo(cx, cy, th.end.x, th.end.y);
+            ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+            ctx.lineWidth = 1.1;
             ctx.stroke();
-            ctx.rotate((Math.PI * 3/2) / 30);
+            // endpoints
+            ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${alpha * 0.6})`;
+            ctx.beginPath(); ctx.arc(th.start.x, th.start.y, 0.8, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(th.end.x, th.end.y, 0.8, 0, Math.PI * 2); ctx.fill();
+            th.life += 1;
+            if (th.life >= th.ttl) threads[i] = spawnThread();
         }
-        ctx.restore();
-        t += 0.01;
-        requestAnimationFrame(animate);
+        t += 1;
+        if (!prefersReducedMotion) requestAnimationFrame(draw);
     }
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (!prefersReducedMotion) animate();
+    draw();
     </script>
 </body>
 </html>
