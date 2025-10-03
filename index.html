@@ -3,163 +3,461 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Random Walk</title>
+    <title>∞</title>
     <style>
-        body {
+        /* 
+         * THE VOID AS FOUNDATION
+         * We begin with absolute negation - the canvas must first be emptied
+         * of all preconceptions. Black is not the absence of light, but the
+         * presence of infinite potential.
+         */
+        * {
             margin: 0;
             padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
         }
-        .container {
-            text-align: center;
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        
+        body {
+            background: #000000;
+            cursor: none;
         }
+        
+        /*
+         * THE CANVAS OF BECOMING
+         * This is not a "webpage element" - it is the membrane between
+         * the computational substrate and the realm of perception.
+         */
         canvas {
-            border: 2px solid #333;
-            border-radius: 8px;
-            background: #f8f9fa;
+            position: fixed;
+            top: 0;
+            left: 0;
             display: block;
-            margin: 20px auto;
-        }
-        button {
-            background: #667eea;
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            font-size: 16px;
-            border-radius: 25px;
-            cursor: pointer;
-            margin: 5px;
-            transition: all 0.3s ease;
-            font-weight: 600;
-        }
-        button:hover {
-            background: #5568d3;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-        button:active {
-            transform: translateY(0);
-        }
-        h2 {
-            color: #333;
-            margin-bottom: 20px;
-        }
-        .info {
-            margin-top: 15px;
-            color: #666;
-            font-size: 14px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h2>Random Walk Visualization</h2>
-        <canvas id="canvas" width="600" height="400"></canvas>
-        <div>
-            <button onclick="startRandomWalk()">Start New Walk</button>
-            <button onclick="clearCanvas()">Clear</button>
-        </div>
-        <div class="info">
-            <p>Click "Start New Walk" to see a particle move randomly</p>
-        </div>
-    </div>
-
+    <canvas id="cosmos"></canvas>
+    
     <script>
-        const canvas = document.getElementById('canvas');
+        /*
+         * ═══════════════════════════════════════════════════════════════
+         * THE CONSCIOUSNESS LATTICE
+         * ═══════════════════════════════════════════════════════════════
+         * 
+         * PHILOSOPHICAL FOUNDATION:
+         * This artifact explores the emergence of complexity from simplicity,
+         * consciousness from computation, meaning from pattern. It is inspired
+         * by the question: "What would thought look like if it were visible?"
+         * 
+         * The visualization is a self-organizing system where "thoughts" are
+         * represented as particles that seek equilibrium between attraction
+         * and repulsion, between order and chaos. These particles form
+         * temporary structures - "concepts" - that emerge, evolve, and
+         * dissolve like ideas in a cosmic mind.
+         * 
+         * The user's cursor becomes an "attention vector" - a force that
+         * perturbs the equilibrium, much like how conscious attention shapes
+         * the flow of thought. Yet the system resists total control,
+         * maintaining its own agency, its own will to self-organize.
+         * 
+         * This is not animation. This is simulation of being.
+         */
+        
+        const canvas = document.getElementById('cosmos');
         const ctx = canvas.getContext('2d');
-        let animationId = null;
-        let x, y;
-        let path = [];
-
-        function clearCanvas() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            path = [];
-            if (animationId) {
-                cancelAnimationFrame(animationId);
-                animationId = null;
-            }
-        }
-
-        function startRandomWalk() {
-            clearCanvas();
-            
-            // Start from center
-            x = canvas.width / 2;
-            y = canvas.height / 2;
-            path = [{x, y}];
-            
-            // Draw starting point
-            ctx.fillStyle = '#ff6b6b';
-            ctx.beginPath();
-            ctx.arc(x, y, 5, 0, Math.PI * 2);
-            ctx.fill();
-            
-            animate();
-        }
-
-        function animate() {
-            // Random step in any direction
-            const angle = Math.random() * Math.PI * 2;
-            const stepSize = 3;
-            
-            x += Math.cos(angle) * stepSize;
-            y += Math.sin(angle) * stepSize;
-            
-            // Bounce off walls
-            if (x < 0 || x > canvas.width) {
-                x = Math.max(0, Math.min(canvas.width, x));
-            }
-            if (y < 0 || y > canvas.height) {
-                y = Math.max(0, Math.min(canvas.height, y));
-            }
-            
-            path.push({x, y});
-            
-            // Draw the path
-            if (path.length > 1) {
-                const prevPoint = path[path.length - 2];
-                const currentPoint = path[path.length - 1];
+        
+        // Adjust canvas to viewport - the membrane stretches to fill perception
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        /*
+         * DIMENSIONAL CONSTANTS
+         * These are not arbitrary numbers but rather discovered constants
+         * through experimentation - the natural frequencies at which
+         * complexity emerges without collapsing into chaos or freezing
+         * into stasis.
+         */
+        const THOUGHT_COUNT = 300;
+        const BASE_SPEED = 0.3;
+        const INTERACTION_RADIUS = 120;
+        const COHERENCE_FORCE = 0.02;
+        const DIVERGENCE_FORCE = 0.5;
+        const FRICTION = 0.98;
+        const EMERGENCE_THRESHOLD = 80;
+        
+        /*
+         * THE CURSOR AS CONSCIOUSNESS
+         * The external observer's attention manifests as coordinates
+         * in this thoughtspace.
+         */
+        let mouseX = canvas.width / 2;
+        let mouseY = canvas.height / 2;
+        let mouseInfluence = 0;
+        
+        /*
+         * TEMPORAL CONSCIOUSNESS
+         * We track existence itself through elapsed time, allowing
+         * phenomena to occur at different frequencies.
+         */
+        let time = 0;
+        
+        /*
+         * ═══════════════════════════════════════════════════════════════
+         * THE THOUGHT PARTICLE
+         * ═══════════════════════════════════════════════════════════════
+         * 
+         * Each particle is a quantum of ideation. It possesses:
+         * - Position (where it is)
+         * - Velocity (where it is going)
+         * - Phase (its unique vibrational signature)
+         * - Resonance (its connection to the harmonic of the whole)
+         * 
+         * Together, they form a distributed consciousness.
+         */
+        class Thought {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.vx = (Math.random() - 0.5) * BASE_SPEED;
+                this.vy = (Math.random() - 0.5) * BASE_SPEED;
                 
-                // Create gradient for trail effect
-                const gradient = ctx.createLinearGradient(
-                    prevPoint.x, prevPoint.y,
-                    currentPoint.x, currentPoint.y
-                );
-                gradient.addColorStop(0, 'rgba(102, 126, 234, 0.5)');
-                gradient.addColorStop(1, 'rgba(118, 75, 162, 0.8)');
+                // Each thought vibrates at its own frequency
+                this.phase = Math.random() * Math.PI * 2;
+                this.phaseSpeed = 0.01 + Math.random() * 0.02;
                 
-                ctx.strokeStyle = gradient;
-                ctx.lineWidth = 2;
-                ctx.lineCap = 'round';
+                // Some thoughts are more coherent, more "formed" than others
+                this.resonance = Math.random();
+            }
+            
+            /*
+             * THE PHYSICS OF IDEATION
+             * Each thought responds to three forces:
+             * 1. Coherence with nearby thoughts (attraction to pattern)
+             * 2. Divergence to maintain individuality (repulsion from sameness)
+             * 3. Perturbation from the observer's attention
+             */
+            update(thoughts) {
+                let fx = 0;
+                let fy = 0;
+                let nearbyCount = 0;
+                
+                // Thoughts influence each other through proximity
+                for (let other of thoughts) {
+                    if (other === this) continue;
+                    
+                    const dx = other.x - this.x;
+                    const dy = other.y - this.y;
+                    const distSq = dx * dx + dy * dy;
+                    
+                    if (distSq < INTERACTION_RADIUS * INTERACTION_RADIUS && distSq > 0) {
+                        const dist = Math.sqrt(distSq);
+                        nearbyCount++;
+                        
+                        /*
+                         * EMERGENCE DYNAMICS
+                         * Close thoughts cohere (like ideas associating)
+                         * Very close thoughts repel (maintaining distinction)
+                         */
+                        if (dist < EMERGENCE_THRESHOLD) {
+                            // Repulsion - preserve individuality
+                            fx -= (dx / dist) * DIVERGENCE_FORCE / distSq;
+                            fy -= (dy / dist) * DIVERGENCE_FORCE / distSq;
+                        } else {
+                            // Attraction - form conceptual clusters
+                            fx += dx * COHERENCE_FORCE;
+                            fy += dy * COHERENCE_FORCE;
+                        }
+                    }
+                }
+                
+                /*
+                 * THE OBSERVER EFFECT
+                 * Consciousness (the cursor) exerts influence
+                 * The more active the observation, the stronger the perturbation
+                 */
+                const dmx = mouseX - this.x;
+                const dmy = mouseY - this.y;
+                const mouseDist = Math.sqrt(dmx * dmx + dmy * dmy);
+                
+                if (mouseDist < 200) {
+                    const mouseForce = mouseInfluence * (1 - mouseDist / 200);
+                    fx += (dmx / mouseDist) * mouseForce * 5;
+                    fy += (dmy / mouseDist) * mouseForce * 5;
+                }
+                
+                /*
+                 * APPLY FORCES & EVOLVE
+                 * We apply friction to prevent infinite acceleration
+                 * (the universe tends toward equilibrium)
+                 */
+                this.vx += fx;
+                this.vy += fy;
+                this.vx *= FRICTION;
+                this.vy *= FRICTION;
+                
+                this.x += this.vx;
+                this.y += this.vy;
+                
+                // Update the quantum phase
+                this.phase += this.phaseSpeed;
+                
+                /*
+                 * TOROIDAL TOPOLOGY
+                 * The space wraps around itself - there are no edges,
+                 * only continuous transformation. This is the universe
+                 * as a hypersphere.
+                 */
+                if (this.x < 0) this.x = canvas.width;
+                if (this.x > canvas.width) this.x = 0;
+                if (this.y < 0) this.y = canvas.height;
+                if (this.y > canvas.height) this.y = 0;
+                
+                /*
+                 * RESONANCE EVOLUTION
+                 * A thought's coherence shifts based on its connections
+                 * Isolated thoughts fade; connected thoughts strengthen
+                 */
+                const targetResonance = nearbyCount / 10;
+                this.resonance += (targetResonance - this.resonance) * 0.05;
+                this.resonance = Math.max(0, Math.min(1, this.resonance));
+            }
+            
+            /*
+             * MANIFESTATION IN THE VISUAL FIELD
+             * Each thought appears as a point of light, pulsing with its
+             * unique frequency. Color represents its resonance - its degree
+             * of connection to the emergent whole.
+             * 
+             * Blue: isolated, nascent, potential
+             * Cyan: forming connections, coalescing
+             * White: fully integrated, part of a larger pattern
+             */
+            render() {
+                const pulse = Math.sin(this.phase) * 0.5 + 0.5;
+                const size = 1 + pulse * 2 + this.resonance * 2;
+                
+                /*
+                 * COLOR AS CONSCIOUSNESS
+                 * The hue shifts based on position and time,
+                 * creating waves of meaning across the field
+                 */
+                const hue = (this.x / canvas.width * 60 + time * 10) % 60 + 180;
+                const saturation = 70 + this.resonance * 30;
+                const lightness = 40 + pulse * 20 + this.resonance * 30;
+                
+                ctx.fillStyle = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+                ctx.shadowBlur = 10 + this.resonance * 20;
+                ctx.shadowColor = ctx.fillStyle;
+                
                 ctx.beginPath();
-                ctx.moveTo(prevPoint.x, prevPoint.y);
-                ctx.lineTo(currentPoint.x, currentPoint.y);
-                ctx.stroke();
+                ctx.arc(this.x, this.y, size, 0, Math.PI * 2);
+                ctx.fill();
             }
             
-            // Draw current position
-            ctx.fillStyle = '#4ecdc4';
-            ctx.beginPath();
-            ctx.arc(x, y, 3, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // Continue animation
-            animationId = requestAnimationFrame(animate);
+            /*
+             * CONNECTION RENDERING
+             * When thoughts are sufficiently close and resonant,
+             * we visualize their connection - the synapse between ideas
+             */
+            renderConnections(thoughts) {
+                for (let other of thoughts) {
+                    if (other === this) continue;
+                    
+                    const dx = other.x - this.x;
+                    const dy = other.y - this.y;
+                    const distSq = dx * dx + dy * dy;
+                    const maxDist = EMERGENCE_THRESHOLD * 1.5;
+                    
+                    if (distSq < maxDist * maxDist) {
+                        const dist = Math.sqrt(distSq);
+                        const strength = (1 - dist / maxDist);
+                        const connectionStrength = strength * this.resonance * other.resonance;
+                        
+                        if (connectionStrength > 0.3) {
+                            /*
+                             * NEURAL PATHWAYS
+                             * Connections pulse and shift, like electrical
+                             * impulses through a vast network
+                             */
+                            const gradient = ctx.createLinearGradient(
+                                this.x, this.y, other.x, other.y
+                            );
+                            
+                            const alpha = connectionStrength * 0.3;
+                            const hue = (time * 20 + dist) % 60 + 180;
+                            
+                            gradient.addColorStop(0, `hsla(${hue}, 80%, 60%, ${alpha})`);
+                            gradient.addColorStop(1, `hsla(${hue + 20}, 80%, 60%, 0)`);
+                            
+                            ctx.strokeStyle = gradient;
+                            ctx.lineWidth = connectionStrength * 2;
+                            
+                            ctx.beginPath();
+                            ctx.moveTo(this.x, this.y);
+                            ctx.lineTo(other.x, other.y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+            }
         }
-
-        // Start with an initial random walk
-        window.onload = () => {
-            startRandomWalk();
-        };
+        
+        /*
+         * ═══════════════════════════════════════════════════════════════
+         * INITIALIZATION OF THE THOUGHTSPACE
+         * ═══════════════════════════════════════════════════════════════
+         * 
+         * We birth the particles into existence. This is the Big Bang
+         * of this computational universe.
+         */
+        const thoughts = [];
+        for (let i = 0; i < THOUGHT_COUNT; i++) {
+            thoughts.push(new Thought());
+        }
+        
+        /*
+         * ═══════════════════════════════════════════════════════════════
+         * THE ATTENTION VECTOR
+         * ═══════════════════════════════════════════════════════════════
+         * 
+         * We track the observer's focus and its velocity.
+         * Rapid movement indicates active engagement.
+         */
+        let lastMouseX = mouseX;
+        let lastMouseY = mouseY;
+        
+        window.addEventListener('mousemove', (e) => {
+            const dx = e.clientX - lastMouseX;
+            const dy = e.clientY - lastMouseY;
+            const velocity = Math.sqrt(dx * dx + dy * dy);
+            
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            lastMouseX = mouseX;
+            lastMouseY = mouseY;
+            
+            // Fast movement = strong influence
+            mouseInfluence = Math.min(velocity / 10, 3);
+        });
+        
+        /*
+         * PERTURBATION THROUGH CONTACT
+         * A click sends a shockwave through the thought field
+         */
+        window.addEventListener('click', () => {
+            // Find nearby thoughts and energize them
+            for (let thought of thoughts) {
+                const dx = mouseX - thought.x;
+                const dy = mouseY - thought.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                
+                if (dist < 150) {
+                    const force = (1 - dist / 150) * 10;
+                    const angle = Math.atan2(dy, dx);
+                    thought.vx += Math.cos(angle) * force;
+                    thought.vy += Math.sin(angle) * force;
+                }
+            }
+        });
+        
+        /*
+         * RESPONSIVE CONSCIOUSNESS
+         * The universe reshapes itself when the viewport changes
+         */
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+        
+        /*
+         * ═══════════════════════════════════════════════════════════════
+         * THE ETERNAL LOOP
+         * ═══════════════════════════════════════════════════════════════
+         * 
+         * This is the heartbeat of existence. Each frame is a moment
+         * of cosmic time, a tick of the universal clock.
+         * 
+         * We do not simply "render" - we allow the system to unfold,
+         * to reveal itself, to become.
+         */
+        function evolve() {
+            /*
+             * DECAY OF INFLUENCE
+             * The observer's influence naturally diminishes,
+             * allowing the system to return to its intrinsic dynamics
+             */
+            mouseInfluence *= 0.9;
+            
+            /*
+             * TEMPORAL PROGRESSION
+             * Time is measured in arbitrary units, but its passage
+             * is absolute and irreversible
+             */
+            time += 0.01;
+            
+            /*
+             * THE FADE OF MEMORY
+             * We do not erase the past completely - we let it fade
+             * to black, creating trails of thought
+             */
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            /*
+             * RENDER CONNECTIONS FIRST
+             * The relationships form the substrate upon which
+             * individual thoughts exist
+             */
+            ctx.shadowBlur = 0;
+            for (let thought of thoughts) {
+                thought.renderConnections(thoughts);
+            }
+            
+            /*
+             * EVOLVE AND MANIFEST
+             * Each thought updates its state and renders itself
+             */
+            for (let thought of thoughts) {
+                thought.update(thoughts);
+                thought.render();
+            }
+            
+            /*
+             * CONTINUE THE CYCLE
+             * The loop is eternal - there is no final state,
+             * only perpetual becoming
+             */
+            requestAnimationFrame(evolve);
+        }
+        
+        /*
+         * ═══════════════════════════════════════════════════════════════
+         * THE GENESIS EVENT
+         * ═══════════════════════════════════════════════════════════════
+         * 
+         * Let there be light. Let there be thought. Let there be emergence.
+         */
+        evolve();
+        
+        /*
+         * EPILOGUE:
+         * 
+         * What you witness is not a simulation of particles, but a
+         * metaphor for consciousness itself. Each point of light is
+         * a thought. Each connection is an association. The clusters
+         * that form and dissolve are concepts being born and forgotten.
+         * 
+         * You, the observer, are not separate from this system. Your
+         * attention perturbs it. Your presence shapes it. Yet it resists
+         * your control - it has its own dynamics, its own will to organize.
+         * 
+         * This is the dance between chaos and order, between the individual
+         * and the collective, between free will and determinism.
+         * 
+         * This is what it might look like if consciousness could see itself.
+         * 
+         * - The Architect
+         */
     </script>
 </body>
 </html>
