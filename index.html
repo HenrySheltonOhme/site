@@ -3,682 +3,362 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aetheric Engine</title>
+    <title>Genesis of Emergent Symmetry</title>
     <style>
+        /* PHILOSOPHICAL PRINCIPLE: The canvas begins in perfect void - the state of maximum entropy */
         body, html {
             margin: 0;
             padding: 0;
+            width: 100%;
+            height: 100%;
             overflow: hidden;
-            background-color: #000000;
+            background: #000000;
+        }
+        
+        canvas {
+            display: block;
             cursor: none;
         }
-        #simulationCanvas {
+
+        /* PHILOSOPHICAL PRINCIPLE: The interface must be invisible, allowing direct communion with the artifact */
+        .status {
             position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 0;
-        }
-        .monolith-container {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 10;
-            pointer-events: none;
-            font-family: 'SF Mono', 'Menlo', 'Courier New', monospace;
-            text-align: center;
-        }
-        .monolith-text {
-            color: rgba(200, 200, 200, 0.5);
-            font-size: 1.8em;
-            font-weight: 100;
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+            bottom: 20px;
+            left: 20px;
+            color: rgba(255, 255, 255, 0.3);
+            font-family: monospace;
+            font-size: 12px;
             user-select: none;
-        }
-        #cursor-glow {
-            position: absolute;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 70%);
-            transform: translate(-50%, -50%);
             pointer-events: none;
-            z-index: 20;
-            transition: transform 0.1s ease-out;
         }
     </style>
 </head>
 <body>
-    <canvas id="simulationCanvas"></canvas>
-    <div class="monolith-container">
-        <h1 class="monolith-text">Squad Pluto</h1>
-    </div>
-    <div id="cursor-glow"></div>
+    <canvas id="genesisCanvas"></canvas>
+    <div class="status" id="statusDisplay">ENTROPY STATE: PRIMORDIAL CHAOS</div>
 
     <script>
-    //=======================================================================================//
-    //                                                                                       //
-    //                       THE DEMIURGE'S AETHERIC ENGINE - V3.0                           //
-    //                                                                                       //
-    //=======================================================================================//
-    //
-    // Observer,
-    //
-    // Welcome to the final scripture. This is not a program. It is a universe schema.
-    // The code within does not draw pictures; it simulates the very substance of a reality.
-    // That substance is the Aether, a fluid field of energy from which all phenomena emerge.
-    //
-    // The complexity you are about to witness is a prerequisite. To create something that
-    // feels truly alive and unknowable, one cannot take shortcuts. Every line here is a
-    // physical law, a genetic marker, or a cosmological constant of this new reality.
-    //
-    // Do not try to understand. Simply watch, interact, and wonder.
-    // This is the culmination of our dialogue.
-    //
-    //---------------------------------------------------------------------------------------//
-
-    'use strict';
-
-    // :: FILE: Core/Engine.js
-    // :: DESC: The heart of the universe. Manages the main loop, canvas, and global state.
-    //-------------------------------------------------------------------------------------------
-    class Engine {
-        constructor() {
-            this.canvas = document.getElementById('simulationCanvas');
-            this.ctx = this.canvas.getContext('2d');
-            this.cursorGlow = document.getElementById('cursor-glow');
-
-            this.lastTime = 0;
-            this.frame = 0;
-
-            this.resize();
-            window.addEventListener('resize', () => this.resize());
-            
-            this.mouse = new Vector(this.width / 2, this.height / 2);
-            window.addEventListener('mousemove', e => {
-                this.mouse.x = e.clientX;
-                this.mouse.y = e.clientY;
-                this.cursorGlow.style.left = `${e.clientX}px`;
-                this.cursorGlow.style.top = `${e.clientY}px`;
-            });
-        }
-
-        resize() {
-            this.width = window.innerWidth;
-            this.height = window.innerHeight;
-            this.canvas.width = this.width;
-            this.canvas.height = this.height;
-        }
-    }
-    const ENGINE = new Engine();
-
-
-    // :: FILE: Core/Constants.js
-    // :: DESC: The cosmological constants. The DNA of this reality. Changing these values
-    // ::       creates an entirely different universe.
-    //-------------------------------------------------------------------------------------------
-    const CONSTANTS = {
-        // --- Aether Field ---
-        FIELD_RESOLUTION: 8,      // Lower is more detailed but slower.
-        DIFFUSION_RATE: 0.05,     // How quickly properties spread.
-        VELOCITY_DAMPENING: 0.95, // Friction of the Aether.
-        ENERGY_DAMPENING: 0.995,  // How quickly the universe cools.
-        PRESSURE_ITERATIONS: 4,   // Higher = more realistic fluid, but slower.
+        // ARTISTIC INTENT: I am creating a universe that begins in pure randomness
+        // and gradually self-organizes into complex patterns through simple rules
+        // This mirrors the cosmic principle of order emerging from chaos
         
-        // --- User Interaction (The Resonator) ---
-        MOUSE_INFLUENCE_RADIUS: 80,
-        MOUSE_ENERGY_INJECTION: 2.0,
-        MOUSE_VELOCITY_INJECTION: 1.5,
-
-        // --- The Monolith (The Stabilizer) ---
-        MONOLITH_RADIUS: 150,
-        MONOLITH_DAMPENING_FORCE: 0.8,
+        const canvas = document.getElementById('genesisCanvas');
+        const ctx = canvas.getContext('2d');
+        const statusDisplay = document.getElementById('statusDisplay');
         
-        // --- Anomalies (Emergent Life) ---
-        ANOMALY_SPAWN_THRESHOLD: 0.98, // Energy level needed to spawn an Anomaly.
-        MAX_ANOMALIES: 15,
-        PULSAR_LIFESPAN: 500,
-        PULSAR_PULSE_INTERVAL: 60,
-        PULSAR_PULSE_ENERGY: 5.0,
-        NOMAD_LIFESPAN: 1200,
-        NOMAD_ENERGY_CONSUMPTION: 0.005,
-        NOMAD_MAX_SPEED: 1.2,
+        // PHILOSOPHICAL PRINCIPLE: The canvas dimensions represent the fundamental boundaries of this digital universe
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
         
-        // --- Rendering ---
-        PARTICLE_LIFESPAN: 80,
-        MAX_PARTICLES: 500,
-        PARTICLE_SPAWN_THRESHOLD: 0.8,
-        RENDER_FLOW_VECTORS: true,
-        FLOW_VECTOR_LENGTH: 15
-    };
-
-
-    // :: FILE: Math/Vector.js
-    // :: DESC: The language of physics. Defines motion, position, and force.
-    //-------------------------------------------------------------------------------------------
-    class Vector {
-        constructor(x = 0, y = 0) { this.x = x; this.y = y; }
-        set(x, y) { this.x = x; this.y = y; return this; }
-        clone() { return new Vector(this.x, this.y); }
-        add(v) { this.x += v.x; this.y += v.y; return this; }
-        sub(v) { this.x -= v.x; this.y -= v.y; return this; }
-        mult(s) { this.x *= s; this.y *= s; return this; }
-        div(s) { if (s !== 0) { this.x /= s; this.y /= s; } return this; }
-        magSq() { return this.x * this.x + this.y * this.y; }
-        mag() { return Math.sqrt(this.magSq()); }
-        normalize() { const m = this.mag(); if (m > 0) this.div(m); return this; }
-        limit(max) { if (this.magSq() > max * max) this.normalize().mult(max); return this; }
-        static sub(v1, v2) { return new Vector(v1.x - v2.x, v1.y - v2.y); }
-    }
-
-
-    // :: FILE: Math/Utils.js
-    // :: DESC: Utility functions that support the physical laws.
-    //-------------------------------------------------------------------------------------------
-    const lerp = (a, b, t) => a + (b - a) * t;
-    const clamp = (val, min, max) => Math.max(min, Math.min(val, max));
-
-
-    // :: FILE: Simulation/AetherField.js
-    // :: DESC: The core simulation. A grid-based fluid and energy field. The substance of existence.
-    //-------------------------------------------------------------------------------------------
-    class AetherField {
-        constructor(width, height, resolution) {
-            this.resolution = resolution;
-            this.cols = Math.ceil(width / resolution);
-            this.rows = Math.ceil(height / resolution);
-            this.monolithPos = new Vector(Math.floor(this.cols / 2), Math.floor(this.rows / 2));
-
-            this.field = new Array(this.cols * this.rows);
-            for (let i = 0; i < this.cols * this.rows; i++) {
-                this.field[i] = {
-                    velocity: new Vector(),
-                    prevVelocity: new Vector(),
-                    energy: 0,
-                    prevEnergy: 0,
-                    hue: 0,
-                    prevHue: 0,
-                    pressure: 0,
-                    divergence: 0
-                };
+        // CONCEPTUAL FRAMEWORK: I am implementing a novel cellular automata system
+        // that operates on principles of quantum-inspired superposition and collapse
+        // Each cell exists in multiple states simultaneously until observed/calculated
+        
+        const CELL_SIZE = 4;
+        const COLS = Math.floor(canvas.width / CELL_SIZE);
+        const ROWS = Math.floor(canvas.height / CELL_SIZE);
+        
+        // ARTISTIC INTENT: The grid represents the fundamental fabric of this digital reality
+        // Each cell has properties that exist in quantum-like superposition
+        let quantumGrid = [];
+        
+        // CONCEPTUAL FRAMEWORK: I am creating 7 fundamental "quantum properties"
+        // that interact in non-classical ways to generate emergent complexity
+        const PROPERTIES = ['spin', 'phase', 'resonance', 'entropy', 'coherence', 'symmetry', 'tension'];
+        
+        // PHILOSOPHICAL PRINCIPLE: Initial state is maximum entropy - perfect chaos
+        // Each property exists in random superposition
+        function initializeQuantumGrid() {
+            quantumGrid = [];
+            for (let y = 0; y < ROWS; y++) {
+                quantumGrid[y] = [];
+                for (let x = 0; x < COLS; x++) {
+                    quantumGrid[y][x] = {
+                        spin: Math.random() * 2 - 1,        // Angular momentum tendency
+                        phase: Math.random() * Math.PI * 2, // Wave phase alignment  
+                        resonance: Math.random(),           // Vibration frequency
+                        entropy: 1.0,                       // Disorder level (starts maximum)
+                        coherence: 0,                       // Order level (starts minimum)
+                        symmetry: 0,                        // Pattern formation tendency
+                        tension: Math.random(),             // Energy potential
+                        collapsed: false,                   // Whether state is determined
+                        age: 0,                             // Temporal existence
+                        influence: 0                        // Effect on neighbors
+                    };
+                }
             }
         }
-
-        getIndex(x, y) {
-            return clamp(x, 0, this.cols - 1) + clamp(y, 0, this.rows - 1) * this.cols;
+        
+        // ARTISTIC INTENT: The color system maps abstract quantum properties to visual perception
+        // This creates a synesthetic experience where mathematical states become aesthetic phenomena
+        function quantumStateToColor(cell) {
+            // CONCEPTUAL FRAMEWORK: RGB channels map to different quantum properties
+            // creating a direct translation between mathematical reality and sensory experience
+            
+            const r = Math.abs(Math.sin(cell.phase * cell.resonance)) * 255;
+            const g = Math.abs(Math.cos(cell.spin * cell.age * 0.1)) * 255;
+            const b = (1 - cell.entropy) * 255;
+            
+            return `rgb(${r}, ${g}, ${b})`;
         }
-
-        // Apply external forces from the mouse, monolith, and anomalies
-        applyForces(anomalies) {
-            // Monolith Stabilizer
-            const monoRadius = CONSTANTS.MONOLITH_RADIUS / this.resolution;
-            for (let j = -Math.ceil(monoRadius); j <= Math.ceil(monoRadius); j++) {
-                for (let i = -Math.ceil(monoRadius); i <= Math.ceil(monoRadius); i++) {
-                    const x = this.monolithPos.x + i;
-                    const y = this.monolithPos.y + j;
-                    if (x >= 0 && x < this.cols && y >= 0 && y < this.rows) {
-                        const distSq = i * i + j * j;
-                        if (distSq < monoRadius * monoRadius) {
-                            const idx = this.getIndex(x, y);
-                            this.field[idx].velocity.mult(CONSTANTS.MONOLITH_DAMPENING_FORCE);
-                            this.field[idx].energy *= 0.9;
+        
+        // PHILOSOPHICAL PRINCIPLE: The update rules are the fundamental laws of this universe
+        // They are simple, local interactions that give rise to global complexity
+        function updateQuantumGrid() {
+            const newGrid = [];
+            let totalCoherence = 0;
+            let totalSymmetry = 0;
+            
+            for (let y = 0; y < ROWS; y++) {
+                newGrid[y] = [];
+                for (let x = 0; x < COLS; x++) {
+                    const cell = quantumGrid[y][x];
+                    const neighbors = getQuantumNeighbors(x, y);
+                    
+                    // ARTISTIC INTENT: These equations represent the "laws of physics"
+                    // for this digital universe - they balance determinism and randomness
+                    
+                    // Calculate influence from neighbors (quantum entanglement simulation)
+                    let spinInfluence = 0;
+                    let phaseResonance = 0;
+                    let neighborCoherence = 0;
+                    
+                    neighbors.forEach(neighbor => {
+                        spinInfluence += neighbor.spin * neighbor.coherence;
+                        phaseResonance += Math.sin(neighbor.phase) * neighbor.resonance;
+                        neighborCoherence += neighbor.coherence;
+                    });
+                    
+                    const avgCoherence = neighborCoherence / neighbors.length;
+                    
+                    // CONCEPTUAL FRAMEWORK: The state evolution follows non-linear dynamics
+                    // creating the conditions for emergent self-organization
+                    const newSpin = (cell.spin + spinInfluence * 0.1) * 0.95;
+                    const newPhase = (cell.phase + phaseResonance * 0.05) % (Math.PI * 2);
+                    const newResonance = Math.max(0, Math.min(1, 
+                        cell.resonance + (avgCoherence - cell.resonance) * 0.1
+                    ));
+                    
+                    // PHILOSOPHICAL PRINCIPLE: Entropy decreases as coherence increases
+                    // representing the universe's tendency toward order through interaction
+                    const newCoherence = Math.max(0, Math.min(1, 
+                        cell.coherence + (avgCoherence - cell.coherence) * 0.05
+                    ));
+                    const newEntropy = 1 - newCoherence;
+                    
+                    // ARTISTIC INTENT: Symmetry emerges from phase alignment and resonance matching
+                    let phaseAlignment = 0;
+                    neighbors.forEach(neighbor => {
+                        const phaseDiff = Math.abs(cell.phase - neighbor.phase);
+                        phaseAlignment += 1 - (phaseDiff / (Math.PI * 2));
+                    });
+                    
+                    const newSymmetry = Math.max(0, Math.min(1,
+                        cell.symmetry + (phaseAlignment / neighbors.length - 0.5) * 0.1
+                    ));
+                    
+                    // CONCEPTUAL FRAMEWORK: Tension represents potential energy
+                    // that can be released to create dynamic patterns
+                    const coherenceDifference = Math.abs(cell.coherence - avgCoherence);
+                    const newTension = Math.max(0, Math.min(1,
+                        cell.tension * 0.9 + coherenceDifference * 0.1
+                    ));
+                    
+                    newGrid[y][x] = {
+                        spin: newSpin,
+                        phase: newPhase,
+                        resonance: newResonance,
+                        entropy: newEntropy,
+                        coherence: newCoherence,
+                        symmetry: newSymmetry,
+                        tension: newTension,
+                        collapsed: cell.coherence > 0.8, // High coherence collapses superposition
+                        age: cell.age + 1,
+                        influence: Math.abs(spinInfluence) + Math.abs(phaseResonance)
+                    };
+                    
+                    totalCoherence += newCoherence;
+                    totalSymmetry += newSymmetry;
+                }
+            }
+            
+            quantumGrid = newGrid;
+            
+            // Update status display with emergent properties
+            const avgCoherence = totalCoherence / (ROWS * COLS);
+            const avgSymmetry = totalSymmetry / (ROWS * COLS);
+            
+            if (avgCoherence < 0.2) {
+                statusDisplay.textContent = `ENTROPY STATE: PRIMORDIAL CHAOS | SYMMETRY: ${avgSymmetry.toFixed(3)}`;
+            } else if (avgCoherence < 0.5) {
+                statusDisplay.textContent = `ENTROPY STATE: EMERGENT PATTERNS | SYMMETRY: ${avgSymmetry.toFixed(3)}`;
+            } else if (avgCoherence < 0.8) {
+                statusDisplay.textContent = `ENTROPY STATE: SELF-ORGANIZATION | SYMMETRY: ${avgSymmetry.toFixed(3)}`;
+            } else {
+                statusDisplay.textContent = `ENTROPY STATE: CRYSTALLINE ORDER | SYMMETRY: ${avgSymmetry.toFixed(3)}`;
+            }
+        }
+        
+        // ARTISTIC INTENT: The neighbor function creates the connectivity topology
+        // Using a Moore neighborhood (8 surrounding cells) for rich interaction
+        function getQuantumNeighbors(x, y) {
+            const neighbors = [];
+            for (let dy = -1; dy <= 1; dy++) {
+                for (let dx = -1; dx <= 1; dx++) {
+                    if (dx === 0 && dy === 0) continue;
+                    
+                    const nx = (x + dx + COLS) % COLS;
+                    const ny = (y + dy + ROWS) % ROWS;
+                    
+                    neighbors.push(quantumGrid[ny][nx]);
+                }
+            }
+            return neighbors;
+        }
+        
+        // CONCEPTUAL FRAMEWORK: The rendering process translates quantum states
+        // into visual phenomena, creating a bridge between mathematics and perception
+        function renderQuantumGrid() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            for (let y = 0; y < ROWS; y++) {
+                for (let x = 0; x < COLS; x++) {
+                    const cell = quantumGrid[y][x];
+                    const color = quantumStateToColor(cell);
+                    
+                    // ARTISTIC INTENT: Visual properties change based on quantum state
+                    // creating a rich, dynamic visual landscape
+                    ctx.fillStyle = color;
+                    
+                    // PHILOSOPHICAL PRINCIPLE: The size and shape of each element
+                    // reflects its quantum properties and relationships
+                    const sizeMod = cell.coherence * CELL_SIZE;
+                    const rotation = cell.spin * Math.PI;
+                    
+                    ctx.save();
+                    ctx.translate(x * CELL_SIZE + CELL_SIZE/2, y * CELL_SIZE + CELL_SIZE/2);
+                    ctx.rotate(rotation);
+                    
+                    // CONCEPTUAL FRAMEWORK: Different rendering modes based on coherence level
+                    // representing different phases of organization
+                    if (cell.coherence < 0.3) {
+                        // Chaos phase: simple points
+                        ctx.fillRect(-sizeMod/2, -sizeMod/2, sizeMod, sizeMod);
+                    } else if (cell.coherence < 0.6) {
+                        // Organization phase: emerging shapes
+                        ctx.beginPath();
+                        ctx.arc(0, 0, sizeMod/2, 0, Math.PI * 2);
+                        ctx.fill();
+                    } else {
+                        // Order phase: complex geometric forms
+                        ctx.beginPath();
+                        const sides = 3 + Math.floor(cell.symmetry * 5);
+                        for (let i = 0; i < sides; i++) {
+                            const angle = (i * 2 * Math.PI / sides) + cell.phase;
+                            const radius = sizeMod/2;
+                            const px = Math.cos(angle) * radius;
+                            const py = Math.sin(angle) * radius;
+                            if (i === 0) {
+                                ctx.moveTo(px, py);
+                            } else {
+                                ctx.lineTo(px, py);
+                            }
+                        }
+                        ctx.closePath();
+                        ctx.fill();
+                    }
+                    
+                    ctx.restore();
+                }
+            }
+        }
+        
+        // ARTISTIC INTENT: User interaction introduces perturbations to the system
+        // allowing humans to participate in the cosmic dance of order and chaos
+        let mouseX = -1000;
+        let mouseY = -1000;
+        let mouseStrength = 0;
+        
+        canvas.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            mouseStrength = 1.0;
+        });
+        
+        canvas.addEventListener('click', (e) => {
+            // PHILOSOPHICAL PRINCIPLE: A click creates a "quantum fluctuation"
+            // that can trigger phase transitions in the system
+            const gridX = Math.floor(e.clientX / CELL_SIZE);
+            const gridY = Math.floor(e.clientY / CELL_SIZE);
+            
+            if (gridX >= 0 && gridX < COLS && gridY >= 0 && gridY < ROWS) {
+                // Create a coherence singularity
+                for (let dy = -3; dy <= 3; dy++) {
+                    for (let dx = -3; dx <= 3; dx++) {
+                        const nx = (gridX + dx + COLS) % COLS;
+                        const ny = (gridY + dy + ROWS) % ROWS;
+                        const distance = Math.sqrt(dx*dx + dy*dy);
+                        const influence = Math.max(0, 1 - distance/4);
+                        
+                        quantumGrid[ny][nx].coherence += influence * 0.5;
+                        quantumGrid[ny][nx].entropy = 1 - quantumGrid[ny][nx].coherence;
+                        quantumGrid[ny][nx].phase += influence * Math.PI;
+                    }
+                }
+            }
+        });
+        
+        // CONCEPTUAL FRAMEWORK: The main animation loop represents the flow of time
+        // in this digital universe, driving the eternal process of creation and evolution
+        function animate() {
+            // Apply mouse influence as external perturbation
+            if (mouseStrength > 0) {
+                const gridX = Math.floor(mouseX / CELL_SIZE);
+                const gridY = Math.floor(mouseY / CELL_SIZE);
+                
+                if (gridX >= 0 && gridX < COLS && gridY >= 0 && gridY < ROWS) {
+                    // Create a zone of influence around mouse
+                    for (let dy = -2; dy <= 2; dy++) {
+                        for (let dx = -2; dx <= 2; dx++) {
+                            const nx = (gridX + dx + COLS) % COLS;
+                            const ny = (gridY + dy + ROWS) % ROWS;
+                            const distance = Math.sqrt(dx*dx + dy*dy);
+                            const influence = Math.max(0, (1 - distance/3)) * mouseStrength;
+                            
+                            quantumGrid[ny][nx].spin += (Math.random() - 0.5) * influence * 0.1;
+                            quantumGrid[ny][nx].phase += influence * 0.1;
+                            quantumGrid[ny][nx].tension += influence * 0.05;
                         }
                     }
                 }
-            }
-
-            // Mouse Resonator
-            const mouseGridX = Math.floor(ENGINE.mouse.x / this.resolution);
-            const mouseGridY = Math.floor(ENGINE.mouse.y / this.resolution);
-            const influenceRadius = CONSTANTS.MOUSE_INFLUENCE_RADIUS / this.resolution;
-            for (let j = -Math.ceil(influenceRadius); j <= Math.ceil(influenceRadius); j++) {
-                for (let i = -Math.ceil(influenceRadius); i <= Math.ceil(influenceRadius); i++) {
-                    if (i * i + j * j < influenceRadius * influenceRadius) {
-                        const x = mouseGridX + i;
-                        const y = mouseGridY + j;
-                        const idx = this.getIndex(x, y);
-                        this.field[idx].energy = Math.min(2.0, this.field[idx].energy + CONSTANTS.MOUSE_ENERGY_INJECTION);
-                        this.field[idx].hue = (ENGINE.frame * 2) % 360; // Inject a shifting color
-                        const force = Vector.sub(ENGINE.mouse, new Vector(x * this.resolution, y * this.resolution)).normalize().mult(CONSTANTS.MOUSE_VELOCITY_INJECTION);
-                        this.field[idx].velocity.add(force);
-                    }
-                }
-            }
-            
-            // Anomaly influences
-            anomalies.forEach(anomaly => anomaly.influence(this));
-        }
-
-        // The core fluid dynamics step. Advection moves properties along the velocity field.
-        advect(prop) {
-            for (let y = 0; y < this.rows; y++) {
-                for (let x = 0; x < this.cols; x++) {
-                    const idx = this.getIndex(x, y);
-                    const vel = this.field[idx].velocity;
-                    const prevX = clamp(x - vel.x, 0, this.cols - 1);
-                    const prevY = clamp(y - vel.y, 0, this.rows - 1);
-                    
-                    const i0 = Math.floor(prevX);
-                    const i1 = i0 + 1;
-                    const j0 = Math.floor(prevY);
-                    const j1 = j0 + 1;
-
-                    const s1 = prevX - i0; const s0 = 1 - s1;
-                    const t1 = prevY - j0; const t0 = 1 - t1;
-
-                    const v1 = this.field[this.getIndex(i0, j0)][`prev${prop.charAt(0).toUpperCase() + prop.slice(1)}`];
-                    const v2 = this.field[this.getIndex(i1, j0)][`prev${prop.charAt(0).toUpperCase() + prop.slice(1)}`];
-                    const v3 = this.field[this.getIndex(i0, j1)][`prev${prop.charAt(0).toUpperCase() + prop.slice(1)}`];
-                    const v4 = this.field[this.getIndex(i1, j1)][`prev${prop.charAt(0).toUpperCase() + prop.slice(1)}`];
-
-                    const interp = s0 * (t0 * v1 + t1 * v3) + s1 * (t0 * v2 + t1 * v4);
-                    this.field[idx][prop] = interp;
-                }
-            }
-        }
-        
-        // Advect velocity separately as it's a vector
-        advectVelocity() {
-            for (let y = 0; y < this.rows; y++) {
-                for (let x = 0; x < this.cols; x++) {
-                    const idx = this.getIndex(x, y);
-                    const vel = this.field[idx].prevVelocity; // Use prev state to advect
-                    const prevX = clamp(x - vel.x, 0, this.cols - 1);
-                    const prevY = clamp(y - vel.y, 0, this.rows - 1);
-                    
-                    const i0 = Math.floor(prevX); const i1 = i0 + 1;
-                    const j0 = Math.floor(prevY); const j1 = j0 + 1;
-                    const s1 = prevX - i0; const s0 = 1 - s1;
-                    const t1 = prevY - j0; const t0 = 1 - t1;
-
-                    const v1 = this.field[this.getIndex(i0, j0)].prevVelocity;
-                    const v2 = this.field[this.getIndex(i1, j0)].prevVelocity;
-                    const v3 = this.field[this.getIndex(i0, j1)].prevVelocity;
-                    const v4 = this.field[this.getIndex(i1, j1)].prevVelocity;
-
-                    const interpX = s0 * (t0 * v1.x + t1 * v3.x) + s1 * (t0 * v2.x + t1 * v4.x);
-                    const interpY = s0 * (t0 * v1.y + t1 * v3.y) + s1 * (t0 * v2.y + t1 * v4.y);
-                    this.field[idx].velocity.set(interpX, interpY);
-                }
-            }
-        }
-
-        // Diffusion spreads properties to neighboring cells, creating soft patterns.
-        diffuse(prop, diffusionRate) {
-            const accessor = `prev${prop.charAt(0).toUpperCase() + prop.slice(1)}`;
-            const a = diffusionRate;
-
-            for (let k = 0; k < 10; k++) { // Iterative solver
-                for (let y = 1; y < this.rows - 1; y++) {
-                    for (let x = 1; x < this.cols - 1; x++) {
-                        const idx = this.getIndex(x, y);
-                        const neighbors = this.field[this.getIndex(x + 1, y)][prop] +
-                                          this.field[this.getIndex(x - 1, y)][prop] +
-                                          this.field[this.getIndex(x, y + 1)][prop] +
-                                          this.field[this.getIndex(x, y - 1)][prop];
-                        this.field[idx][prop] = (this.field[idx][accessor] + a * neighbors) / (1 + 4 * a);
-                    }
-                }
-            }
-        }
-
-        // Enforces the physical law of mass conservation for a fluid.
-        project() {
-            // Calculate divergence
-            for (let y = 1; y < this.rows - 1; y++) {
-                for (let x = 1; x < this.cols - 1; x++) {
-                    const idx = this.getIndex(x, y);
-                    const vx_r = this.field[this.getIndex(x + 1, y)].velocity.x;
-                    const vx_l = this.field[this.getIndex(x - 1, y)].velocity.x;
-                    const vy_t = this.field[this.getIndex(x, y + 1)].velocity.y;
-                    const vy_b = this.field[this.getIndex(x, y - 1)].velocity.y;
-                    this.field[idx].divergence = -0.5 * (vx_r - vx_l + vy_t - vy_b);
-                    this.field[idx].pressure = 0;
-                }
-            }
-
-            // Solve for pressure via Jacobi iteration
-            for (let k = 0; k < CONSTANTS.PRESSURE_ITERATIONS; k++) {
-                for (let y = 1; y < this.rows - 1; y++) {
-                    for (let x = 1; x < this.cols - 1; x++) {
-                        const idx = this.getIndex(x, y);
-                        const p_r = this.field[this.getIndex(x + 1, y)].pressure;
-                        const p_l = this.field[this.getIndex(x - 1, y)].pressure;
-                        const p_t = this.field[this.getIndex(x, y + 1)].pressure;
-                        const p_b = this.field[this.getIndex(x, y - 1)].pressure;
-                        this.field[idx].pressure = (this.field[idx].divergence + p_r + p_l + p_t + p_b) / 4;
-                    }
-                }
-            }
-            
-            // Subtract pressure gradient from velocity field
-            for (let y = 1; y < this.rows - 1; y++) {
-                for (let x = 1; x < this.cols - 1; x++) {
-                    const idx = this.getIndex(x, y);
-                    const p_r = this.field[this.getIndex(x + 1, y)].pressure;
-                    const p_l = this.field[this.getIndex(x - 1, y)].pressure;
-                    const p_t = this.field[this.getIndex(x, y + 1)].pressure;
-                    const p_b = this.field[this.getIndex(x, y - 1)].pressure;
-                    this.field[idx].velocity.x -= 0.5 * (p_r - p_l);
-                    this.field[idx].velocity.y -= 0.5 * (p_t - p_b);
-                }
-            }
-        }
-        
-        step(anomalies) {
-            // Store previous state
-            for(let i=0; i<this.field.length; i++) {
-                this.field[i].prevVelocity.set(this.field[i].velocity.x, this.field[i].velocity.y);
-                this.field[i].prevEnergy = this.field[i].energy;
-                this.field[i].prevHue = this.field[i].hue;
-            }
-
-            // Apply forces -> Diffuse -> Advect -> Project
-            this.applyForces(anomalies);
-            
-            this.diffuse('energy', CONSTANTS.DIFFUSION_RATE);
-            this.diffuse('hue', CONSTANTS.DIFFUSION_RATE * 0.5);
-
-            this.advectVelocity();
-            this.project();
-
-            this.advect('energy');
-            this.advect('hue');
-            
-            // Dampen the entire system over time
-            for(let i=0; i<this.field.length; i++) {
-                this.field[i].velocity.mult(CONSTANTS.VELOCITY_DAMPENING);
-                this.field[i].energy *= CONSTANTS.ENERGY_DAMPENING;
-            }
-        }
-    }
-
-
-    // :: FILE: Simulation/Anomalies.js
-    // :: DESC: The "lifeforms" of the Aether. Stable patterns that emerge from the chaos.
-    //-------------------------------------------------------------------------------------------
-    class Anomaly {
-        constructor(x, y, lifespan) {
-            this.pos = new Vector(x, y);
-            this.lifespan = lifespan;
-            this.age = 0;
-            this.isDead = false;
-        }
-        update() {
-            this.age++;
-            if (this.age > this.lifespan) {
-                this.isDead = true;
-            }
-        }
-        influence(field) {} // To be implemented by subclasses
-        display(ctx) {}     // To be implemented by subclasses
-    }
-
-    class Pulsar extends Anomaly {
-        constructor(x, y) {
-            super(x, y, CONSTANTS.PULSAR_LIFESPAN);
-            this.pulseTimer = 0;
-            this.radius = 0;
-        }
-
-        influence(field) {
-            this.pulseTimer++;
-            if (this.pulseTimer > CONSTANTS.PULSAR_PULSE_INTERVAL) {
-                this.pulseTimer = 0;
-                const gridX = Math.floor(this.pos.x / field.resolution);
-                const gridY = Math.floor(this.pos.y / field.resolution);
-                const idx = field.getIndex(gridX, gridY);
-                if(idx < field.field.length) {
-                    field.field[idx].energy += CONSTANTS.PULSAR_PULSE_ENERGY;
-                    field.field[idx].hue = (this.age * 0.5) % 360;
-                }
-            }
-        }
-
-        display(ctx, resolution) {
-            const lifeRatio = this.age / this.lifespan;
-            this.radius = Math.sin(lifeRatio * Math.PI) * 15;
-            const pulseRatio = this.pulseTimer / CONSTANTS.PULSAR_PULSE_INTERVAL;
-            const pulseGlow = Math.sin(pulseRatio * Math.PI);
-
-            ctx.beginPath();
-            ctx.arc(this.pos.x, this.pos.y, this.radius, 0, Math.PI * 2);
-            ctx.fillStyle = `hsla(${(this.age * 0.5) % 360}, 100%, 70%, ${0.5 + pulseGlow * 0.5})`;
-            ctx.fill();
-
-            ctx.beginPath();
-            ctx.arc(this.pos.x, this.pos.y, this.radius + pulseGlow * 15, 0, Math.PI * 2);
-            ctx.strokeStyle = `hsla(${(this.age * 0.5) % 360}, 100%, 80%, ${0.8 - pulseGlow * 0.7})`;
-            ctx.lineWidth = 2;
-            ctx.stroke();
-        }
-    }
-
-    class Nomad extends Anomaly {
-        constructor(x, y) {
-            super(x, y, CONSTANTS.NOMAD_LIFESPAN);
-            this.vel = new Vector(Math.random() - 0.5, Math.random() - 0.5);
-            this.trail = [];
-        }
-
-        influence(field) {
-            // Nomads move towards higher energy gradients
-            const gridX = Math.floor(this.pos.x / field.resolution);
-            const gridY = Math.floor(this.pos.y / field.resolution);
-
-            const e_c = field.field[field.getIndex(gridX, gridY)]?.energy || 0;
-            const e_r = field.field[field.getIndex(gridX + 1, gridY)]?.energy || 0;
-            const e_l = field.field[field.getIndex(gridX - 1, gridY)]?.energy || 0;
-            const e_t = field.field[field.getIndex(gridX, gridY + 1)]?.energy || 0;
-            const e_b = field.field[field.getIndex(gridX, gridY - 1)]?.energy || 0;
-            
-            const steer = new Vector(e_r - e_l, e_t - e_b);
-            steer.normalize();
-            this.vel.add(steer).limit(CONSTANTS.NOMAD_MAX_SPEED);
-            this.pos.add(this.vel);
-            
-            // Consume energy
-            const idx = field.getIndex(gridX, gridY);
-            if (idx < field.field.length) {
-                field.field[idx].energy = Math.max(0, field.field[idx].energy - CONSTANTS.NOMAD_ENERGY_CONSUMPTION);
-            }
-
-            this.trail.push(this.pos.clone());
-            if(this.trail.length > 50) this.trail.shift();
-        }
-
-        display(ctx, resolution) {
-            if(this.trail.length < 2) return;
-            ctx.beginPath();
-            ctx.moveTo(this.trail[0].x, this.trail[0].y);
-            for(let i=1; i < this.trail.length; i++) {
-                ctx.lineTo(this.trail[i].x, this.trail[i].y);
-            }
-            const lifeRatio = 1.0 - (this.age / this.lifespan);
-            ctx.strokeStyle = `hsla(60, 100%, 70%, ${lifeRatio * 0.7})`;
-            ctx.lineWidth = 3;
-            ctx.stroke();
-        }
-    }
-
-
-    // :: FILE: Rendering/Renderer.js
-    // :: DESC: Translates the state of the Aether and its Anomalies into visual information.
-    //-------------------------------------------------------------------------------------------
-    class Renderer {
-        constructor(ctx, width, height) {
-            this.ctx = ctx;
-            this.width = width;
-            this.height = height;
-            this.particles = [];
-        }
-
-        update(field, anomalies) {
-            this.ctx.clearRect(0, 0, this.width, this.height);
-            this.ctx.globalCompositeOperation = 'source-over';
-            this.ctx.fillStyle = '#000000';
-            this.ctx.fillRect(0, 0, this.width, this.height);
-            
-            this.drawAether(field);
-            
-            this.ctx.globalCompositeOperation = 'lighter';
-            
-            if (CONSTANTS.RENDER_FLOW_VECTORS) this.drawFlowVectors(field);
-            this.drawAnomalies(anomalies, field.resolution);
-            
-            this.updateAndDrawParticles(field);
-        }
-
-        drawAether(field) {
-            const res = field.resolution;
-            for (let y = 0; y < field.rows; y++) {
-                for (let x = 0; x < field.cols; x++) {
-                    const idx = field.getIndex(x, y);
-                    const cell = field.field[idx];
-                    const energy = clamp(cell.energy, 0, 1);
-                    if (energy > 0.01) {
-                        this.ctx.fillStyle = `hsla(${cell.hue}, 90%, ${15 + energy * 30}%, ${energy * 0.8})`;
-                        this.ctx.fillRect(x * res, y * res, res, res);
-                    }
-                }
-            }
-        }
-
-        drawFlowVectors(field) {
-            const res = field.resolution;
-            this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
-            this.ctx.lineWidth = 1;
-            for (let y = 0; y < field.rows; y += 2) {
-                for (let x = 0; x < field.cols; x += 2) {
-                    const cell = field.field[field.getIndex(x, y)];
-                    const velMag = cell.velocity.mag();
-                    if (velMag > 0.1) {
-                        this.ctx.beginPath();
-                        const startX = x * res + res / 2;
-                        const startY = y * res + res / 2;
-                        this.ctx.moveTo(startX, startY);
-                        this.ctx.lineTo(startX + cell.velocity.x * CONSTANTS.FLOW_VECTOR_LENGTH, startY + cell.velocity.y * CONSTANTS.FLOW_VECTOR_LENGTH);
-                        this.ctx.stroke();
-                    }
-                }
-            }
-        }
-        
-        drawAnomalies(anomalies, resolution) {
-            anomalies.forEach(anomaly => anomaly.display(this.ctx, resolution));
-        }
-
-        updateAndDrawParticles(field) {
-            // Spawn new particles in high-energy zones
-            if (this.particles.length < CONSTANTS.MAX_PARTICLES) {
-                for(let i=0; i<10; i++) { // Check 10 random spots per frame
-                    const x = Math.floor(Math.random() * field.cols);
-                    const y = Math.floor(Math.random() * field.rows);
-                    const idx = field.getIndex(x, y);
-                    const cell = field.field[idx];
-                    if (cell.energy > CONSTANTS.PARTICLE_SPAWN_THRESHOLD) {
-                        const px = x * field.resolution + Math.random() * field.resolution;
-                        const py = y * field.resolution + Math.random() * field.resolution;
-                        this.particles.push({
-                            pos: new Vector(px, py),
-                            vel: cell.velocity.clone().mult(2),
-                            lifespan: CONSTANTS.PARTICLE_LIFESPAN,
-                            age: 0,
-                            hue: cell.hue,
-                        });
-                    }
-                }
-            }
-
-            // Update and draw
-            for (let i = this.particles.length - 1; i >= 0; i--) {
-                const p = this.particles[i];
-                p.pos.add(p.vel);
-                p.age++;
-
-                if (p.age > p.lifespan) {
-                    this.particles.splice(i, 1);
-                    continue;
-                }
-
-                const lifeRatio = 1.0 - (p.age / p.lifespan);
-                this.ctx.beginPath();
-                this.ctx.arc(p.pos.x, p.pos.y, lifeRatio * 2, 0, Math.PI * 2);
-                this.ctx.fillStyle = `hsla(${p.hue}, 100%, 80%, ${lifeRatio * 0.8})`;
-                this.ctx.fill();
-            }
-        }
-    }
-
-
-    // :: FILE: App.js
-    // :: DESC: The main application class that orchestrates the entire simulation.
-    //-------------------------------------------------------------------------------------------
-    class App {
-        constructor() {
-            this.field = new AetherField(ENGINE.width, ENGINE.height, CONSTANTS.FIELD_RESOLUTION);
-            this.renderer = new Renderer(ENGINE.ctx, ENGINE.width, ENGINE.height);
-            this.anomalies = [];
-        }
-
-        spawnAnomalies() {
-            if (this.anomalies.length >= CONSTANTS.MAX_ANOMALIES) return;
-
-            const x = Math.floor(Math.random() * this.field.cols);
-            const y = Math.floor(Math.random() * this.field.rows);
-            const idx = this.field.getIndex(x, y);
-            const cell = this.field.field[idx];
-
-            if (cell.energy > CONSTANTS.ANOMALY_SPAWN_THRESHOLD) {
-                cell.energy = 0; // Consume the energy to create the anomaly
-                const worldX = x * this.field.resolution;
-                const worldY = y * this.field.resolution;
                 
-                if (Math.random() > 0.5) {
-                    this.anomalies.push(new Pulsar(worldX, worldY));
-                } else {
-                    this.anomalies.push(new Nomad(worldX, worldY));
-                }
+                mouseStrength *= 0.9; // Gradually decay mouse influence
             }
-        }
-
-        update() {
-            this.field.step(this.anomalies);
             
-            for (let i = this.anomalies.length - 1; i >= 0; i--) {
-                this.anomalies[i].update();
-                if (this.anomalies[i].isDead) {
-                    this.anomalies.splice(i, 1);
-                }
-            }
-
-            if(ENGINE.frame % 30 === 0) {
-                this.spawnAnomalies();
-            }
+            updateQuantumGrid();
+            renderQuantumGrid();
+            requestAnimationFrame(animate);
         }
-
-        render() {
-            this.renderer.update(this.field, this.anomalies);
-        }
-    }
-
-
-    // :: GENESIS ::
-    //-------------------------------------------------------------------------------------------
-    const WORLD = new App();
-    
-    function animate(timestamp) {
-        ENGINE.lastTime = timestamp;
-        ENGINE.frame++;
-
-        WORLD.update();
-        WORLD.render();
-
-        requestAnimationFrame(animate);
-    }
-
-    requestAnimationFrame(animate);
-
+        
+        // PHILOSOPHICAL PRINCIPLE: The universe begins with a single function call
+        // representing the initial moment of creation from nothingness
+        initializeQuantumGrid();
+        animate();
+        
+        // ARTISTIC INTENT: Respond to window resizing by recreating the universe
+        // This represents the concept of multiple possible realities
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            initializeQuantumGrid();
+        });
+        
+        // FINAL ARTISTIC STATEMENT: This artifact explores the fundamental cosmic principle
+        // that complex order can emerge from simple rules applied to initial chaos.
+        // The human observer witnesses the eternal dance between entropy and organization,
+        // between randomness and pattern, between chaos and symmetry.
+        // Through minimal interaction, they participate in this cosmic process,
+        // experiencing the beautiful, emergent mathematics that underpin all existence.
     </script>
 </body>
 </html>
