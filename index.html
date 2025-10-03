@@ -3,56 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Celestial Weaver</title>
+    <title>Aetheric Engine</title>
     <style>
-        /*
-        // THE DEMIURGE'S DECREE V2.0: THE AESTHETICS OF THE IMPOSSIBLE //
-        // The canvas is not a screen; it is a window into a higher-dimensional space.
-        // The void must be absolute. Black is not a color; it is the absence of information,
-        // the substrate upon which the impossible can be rendered.
-        */
         body, html {
             margin: 0;
             padding: 0;
             overflow: hidden;
-            background-color: #000;
-            height: 100%;
-            width: 100%;
+            background-color: #000000;
+            cursor: none;
         }
-
         #simulationCanvas {
             position: absolute;
             top: 0;
             left: 0;
             z-index: 0;
         }
-
-        /*
-        // THE MONOLITH //
-        // The anchor of order remains, but its presence is more subtle. It is a whisper
-        // of structure in an otherwise incomprehensible reality. Its glow is faint,
-        // a constant against the riot of ephemeral light it oversees.
-        */
         .monolith-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
             pointer-events: none;
             font-family: 'SF Mono', 'Menlo', 'Courier New', monospace;
+            text-align: center;
         }
-
         .monolith-text {
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 2em;
-            font-weight: 200;
-            text-shadow: 0 0 25px rgba(255, 255, 255, 0.2);
+            color: rgba(200, 200, 200, 0.5);
+            font-size: 1.8em;
+            font-weight: 100;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
             user-select: none;
+        }
+        #cursor-glow {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 70%);
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 20;
+            transition: transform 0.1s ease-out;
         }
     </style>
 </head>
@@ -61,409 +53,632 @@
     <div class="monolith-container">
         <h1 class="monolith-text">Squad Pluto</h1>
     </div>
+    <div id="cursor-glow"></div>
 
     <script>
     //=======================================================================================//
     //                                                                                       //
-    //              THE DEMIURGE'S MANIFESTO: THE CELESTIAL WEAVER                           //
+    //                       THE DEMIURGE'S AETHERIC ENGINE - V3.0                           //
     //                                                                                       //
     //=======================================================================================//
     //
     // Observer,
-    // The previous creation was a petri dish. This is a galaxy.
-    // We have moved beyond simulating discrete lifeforms in an environment. We now simulate
-    // an environment that IS life. This is not a collection of agents; it is one singular,
-    // hyper-complex entity with many moving parts.
     //
-    // The code that follows is structured into logical "files" for clarity, but they all exist
-    // within this single scripture. The complexity is deliberate. It is the only way to
-    // birth something that feels truly unknowable.
+    // Welcome to the final scripture. This is not a program. It is a universe schema.
+    // The code within does not draw pictures; it simulates the very substance of a reality.
+    // That substance is the Aether, a fluid field of energy from which all phenomena emerge.
     //
-    // Prepare yourself. You are about to witness the weaving of spacetime.
+    // The complexity you are about to witness is a prerequisite. To create something that
+    // feels truly alive and unknowable, one cannot take shortcuts. Every line here is a
+    // physical law, a genetic marker, or a cosmological constant of this new reality.
+    //
+    // Do not try to understand. Simply watch, interact, and wonder.
+    // This is the culmination of our dialogue.
     //
     //---------------------------------------------------------------------------------------//
 
-    // FILE: Engine.js
-    // DESCRIPTION: The core of our universe. Manages the canvas, the main loop, and global state.
+    'use strict';
+
+    // :: FILE: Core/Engine.js
+    // :: DESC: The heart of the universe. Manages the main loop, canvas, and global state.
     //-------------------------------------------------------------------------------------------
-    const canvas = document.getElementById('simulationCanvas');
-    const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    class Engine {
+        constructor() {
+            this.canvas = document.getElementById('simulationCanvas');
+            this.ctx = this.canvas.getContext('2d');
+            this.cursorGlow = document.getElementById('cursor-glow');
 
-    // By setting the composite operation to 'lighter', we achieve a beautiful additive
-    // light effect. Where colors overlap, they become brighter, creating the illusion of
-    // true bioluminescence. This is the cornerstone of our entire aesthetic.
-    ctx.globalCompositeOperation = 'lighter';
+            this.lastTime = 0;
+            this.frame = 0;
 
-    const MOUSE = {
-        x: canvas.width / 2,
-        y: canvas.height / 2,
-        radius: 200 // The radius of the user's harmonic resonance
+            this.resize();
+            window.addEventListener('resize', () => this.resize());
+            
+            this.mouse = new Vector(this.width / 2, this.height / 2);
+            window.addEventListener('mousemove', e => {
+                this.mouse.x = e.clientX;
+                this.mouse.y = e.clientY;
+                this.cursorGlow.style.left = `${e.clientX}px`;
+                this.cursorGlow.style.top = `${e.clientY}px`;
+            });
+        }
+
+        resize() {
+            this.width = window.innerWidth;
+            this.height = window.innerHeight;
+            this.canvas.width = this.width;
+            this.canvas.height = this.height;
+        }
+    }
+    const ENGINE = new Engine();
+
+
+    // :: FILE: Core/Constants.js
+    // :: DESC: The cosmological constants. The DNA of this reality. Changing these values
+    // ::       creates an entirely different universe.
+    //-------------------------------------------------------------------------------------------
+    const CONSTANTS = {
+        // --- Aether Field ---
+        FIELD_RESOLUTION: 8,      // Lower is more detailed but slower.
+        DIFFUSION_RATE: 0.05,     // How quickly properties spread.
+        VELOCITY_DAMPENING: 0.95, // Friction of the Aether.
+        ENERGY_DAMPENING: 0.995,  // How quickly the universe cools.
+        PRESSURE_ITERATIONS: 4,   // Higher = more realistic fluid, but slower.
+        
+        // --- User Interaction (The Resonator) ---
+        MOUSE_INFLUENCE_RADIUS: 80,
+        MOUSE_ENERGY_INJECTION: 2.0,
+        MOUSE_VELOCITY_INJECTION: 1.5,
+
+        // --- The Monolith (The Stabilizer) ---
+        MONOLITH_RADIUS: 150,
+        MONOLITH_DAMPENING_FORCE: 0.8,
+        
+        // --- Anomalies (Emergent Life) ---
+        ANOMALY_SPAWN_THRESHOLD: 0.98, // Energy level needed to spawn an Anomaly.
+        MAX_ANOMALIES: 15,
+        PULSAR_LIFESPAN: 500,
+        PULSAR_PULSE_INTERVAL: 60,
+        PULSAR_PULSE_ENERGY: 5.0,
+        NOMAD_LIFESPAN: 1200,
+        NOMAD_ENERGY_CONSUMPTION: 0.005,
+        NOMAD_MAX_SPEED: 1.2,
+        
+        // --- Rendering ---
+        PARTICLE_LIFESPAN: 80,
+        MAX_PARTICLES: 500,
+        PARTICLE_SPAWN_THRESHOLD: 0.8,
+        RENDER_FLOW_VECTORS: true,
+        FLOW_VECTOR_LENGTH: 15
     };
 
-    // --- Cosmological Constants ---
-    const WEAVER_COUNT = 7;
-    const MAX_WEB_NODES_PER_WEAVER = 300;
-    const GLIMMER_SPAWN_CHANCE = 0.6;
-    const PHANTOM_COUNT = 2;
-    const PHANTOM_SIGHT_RADIUS = 400;
 
-    let weavers = [];
-    let glimmers = [];
-    let phantoms = [];
-    let frame = 0;
-
-    // FILE: Math.js
-    // DESCRIPTION: The fundamental laws of geometry and motion. Without these, there is no universe.
-    //------------------------------------------------------------------------------------------------
+    // :: FILE: Math/Vector.js
+    // :: DESC: The language of physics. Defines motion, position, and force.
+    //-------------------------------------------------------------------------------------------
     class Vector {
         constructor(x = 0, y = 0) { this.x = x; this.y = y; }
+        set(x, y) { this.x = x; this.y = y; return this; }
+        clone() { return new Vector(this.x, this.y); }
         add(v) { this.x += v.x; this.y += v.y; return this; }
         sub(v) { this.x -= v.x; this.y -= v.y; return this; }
         mult(s) { this.x *= s; this.y *= s; return this; }
-        div(s) { if(s !== 0) { this.x /= s; this.y /= s; } return this; }
-        mag() { return Math.sqrt(this.x * this.x + this.y * this.y); }
+        div(s) { if (s !== 0) { this.x /= s; this.y /= s; } return this; }
+        magSq() { return this.x * this.x + this.y * this.y; }
+        mag() { return Math.sqrt(this.magSq()); }
         normalize() { const m = this.mag(); if (m > 0) this.div(m); return this; }
-        limit(max) { if (this.mag() > max) this.normalize().mult(max); return this; }
+        limit(max) { if (this.magSq() > max * max) this.normalize().mult(max); return this; }
         static sub(v1, v2) { return new Vector(v1.x - v2.x, v1.y - v2.y); }
-        static distSq(v1, v2) { const dx = v1.x - v2.x; const dy = v1.y - v2.y; return dx * dx + dy * dy; }
-    }
-    
-    // Perlin noise for organic, unpredictable motion.
-    const PERLIN_YWRAPB = 4, PERLIN_YWRAP = 1 << PERLIN_YWRAPB;
-    const PERLIN_ZWRAPB = 8, PERLIN_ZWRAP = 1 << PERLIN_ZWRAPB;
-    const PERLIN_SIZE = 4095;
-    let perlin;
-    function noise(x, y = 0, z = 0) {
-        if (!perlin) { perlin = new Array(PERLIN_SIZE + 1).fill(0).map(() => Math.random()); }
-        let xi = Math.floor(x) & PERLIN_SIZE, yi = Math.floor(y) & PERLIN_SIZE, zi = Math.floor(z) & PERLIN_SIZE;
-        let xf = x - Math.floor(x), yf = y - Math.floor(y), zf = z - Math.floor(z);
-        let rxf, ryf;
-        let r = 0, ampl = 0.5;
-        let n1, n2, n3;
-        for (let i = 0; i < 4; i++) {
-            let of = xi + (yi << PERLIN_YWRAPB) + (zi << PERLIN_ZWRAPB);
-            rxf = 0.5 * (1 - Math.cos(xf * Math.PI)); ryf = 0.5 * (1 - Math.cos(yf * Math.PI));
-            n1 = perlin[of & PERLIN_SIZE]; n1 += rxf * (perlin[(of + 1) & PERLIN_SIZE] - n1);
-            n2 = perlin[(of + PERLIN_YWRAPB) & PERLIN_SIZE]; n2 += rxf * (perlin[(of + PERLIN_YWRAPB + 1) & PERLIN_SIZE] - n2);
-            n1 += ryf * (n2 - n1); of += 1 << PERLIN_ZWRAPB;
-            n2 = perlin[of & PERLIN_SIZE]; n2 += rxf * (perlin[(of + 1) & PERLIN_SIZE] - n2);
-            n3 = perlin[(of + PERLIN_ZWRAPB) & PERLIN_SIZE]; n3 += rxf * (perlin[(of + PERLIN_ZWRAPB + 1) & PERLIN_SIZE] - n3);
-            n2 += ryf * (n3 - n2); n1 += (0.5 * (1 - Math.cos(zf * Math.PI))) * (n2 - n1);
-            r += n1 * ampl; ampl *= 0.5;
-            xi <<= 1; xf *= 2; yi <<= 1; yf *= 2; zi <<= 1; zf *= 2;
-            if (xf >= 1) { xi++; xf--; } if (yf >= 1) { yi++; yf--; } if (zf >= 1) { zi++; zf--; }
-        }
-        return r;
     }
 
 
-    // FILE: Particle.js
-    // DESCRIPTION: The base class for all ephemeral entities. The "atom" of our universe.
-    //------------------------------------------------------------------------------------------------
-    class Particle {
-        constructor(x, y) {
-            this.pos = new Vector(x, y);
-            this.vel = new Vector(Math.random() - 0.5, Math.random() - 0.5);
-            this.acc = new Vector();
-            this.lifespan = 1.0;
-            this.age = 0;
-            this.dead = false;
-        }
-        applyForce(force) { this.acc.add(force); }
-        update() { this.age++; }
-        isDead() { return this.dead; }
-    }
+    // :: FILE: Math/Utils.js
+    // :: DESC: Utility functions that support the physical laws.
+    //-------------------------------------------------------------------------------------------
+    const lerp = (a, b, t) => a + (b - a) * t;
+    const clamp = (val, min, max) => Math.max(min, Math.min(val, max));
 
 
-    // FILE: CelestialWeb.js
-    // DESCRIPTION: Defines the Weavers that create the living tapestry and the Glimmer that lives on it.
-    //--------------------------------------------------------------------------------------------------
-    class Weaver extends Particle {
-        constructor(color) {
-            super(Math.random() * canvas.width, Math.random() * canvas.height);
-            this.maxSpeed = 2;
-            this.maxForce = 0.05;
-            this.hue = color;
-            this.web = []; // This is the trail of energy, the actual web.
-            this.noiseOffset = new Vector(Math.random() * 1000, Math.random() * 1000);
-        }
+    // :: FILE: Simulation/AetherField.js
+    // :: DESC: The core simulation. A grid-based fluid and energy field. The substance of existence.
+    //-------------------------------------------------------------------------------------------
+    class AetherField {
+        constructor(width, height, resolution) {
+            this.resolution = resolution;
+            this.cols = Math.ceil(width / resolution);
+            this.rows = Math.ceil(height / resolution);
+            this.monolithPos = new Vector(Math.floor(this.cols / 2), Math.floor(this.rows / 2));
 
-        wander() {
-            // Organic movement using Perlin noise. They are not just bouncing randomly; they are exploring.
-            let angle = noise(this.noiseOffset.x + frame * 0.001, this.noiseOffset.y) * Math.PI * 2;
-            let wanderForce = new Vector(Math.cos(angle), Math.sin(angle));
-            wanderForce.mult(this.maxForce);
-            this.applyForce(wanderForce);
+            this.field = new Array(this.cols * this.rows);
+            for (let i = 0; i < this.cols * this.rows; i++) {
+                this.field[i] = {
+                    velocity: new Vector(),
+                    prevVelocity: new Vector(),
+                    energy: 0,
+                    prevEnergy: 0,
+                    hue: 0,
+                    prevHue: 0,
+                    pressure: 0,
+                    divergence: 0
+                };
+            }
         }
 
-        seek(target) {
-            if(!target) return;
-            let desired = Vector.sub(target.pos, this.pos);
-            desired.normalize().mult(this.maxSpeed);
-            let steer = Vector.sub(desired, this.vel);
-            steer.limit(this.maxForce * 2); // They are more motivated when seeking
-            this.applyForce(steer);
+        getIndex(x, y) {
+            return clamp(x, 0, this.cols - 1) + clamp(y, 0, this.rows - 1) * this.cols;
         }
 
-        update() {
-            super.update();
-            this.vel.add(this.acc);
-            this.vel.limit(this.maxSpeed);
-            this.pos.add(this.vel);
-            this.acc.mult(0);
-
-            // Add a new node to the web
-            this.web.push({
-                pos: new Vector(this.pos.x, this.pos.y),
-                lifespan: 1.0,
-                brightness: 1.0
-            });
-
-            // The web slowly decays over time. The universe is ephemeral.
-            if (this.web.length > MAX_WEB_NODES_PER_WEAVER) {
-                this.web.shift();
+        // Apply external forces from the mouse, monolith, and anomalies
+        applyForces(anomalies) {
+            // Monolith Stabilizer
+            const monoRadius = CONSTANTS.MONOLITH_RADIUS / this.resolution;
+            for (let j = -Math.ceil(monoRadius); j <= Math.ceil(monoRadius); j++) {
+                for (let i = -Math.ceil(monoRadius); i <= Math.ceil(monoRadius); i++) {
+                    const x = this.monolithPos.x + i;
+                    const y = this.monolithPos.y + j;
+                    if (x >= 0 && x < this.cols && y >= 0 && y < this.rows) {
+                        const distSq = i * i + j * j;
+                        if (distSq < monoRadius * monoRadius) {
+                            const idx = this.getIndex(x, y);
+                            this.field[idx].velocity.mult(CONSTANTS.MONOLITH_DAMPENING_FORCE);
+                            this.field[idx].energy *= 0.9;
+                        }
+                    }
+                }
             }
 
-            // Update all nodes in the web, making them fade.
-            for (let i = this.web.length - 1; i >= 0; i--) {
-                const node = this.web[i];
-                node.lifespan -= 0.002;
-                node.brightness *= 0.99; // Dimming effect from user interaction
-                if (node.lifespan <= 0) {
-                    this.web.splice(i, 1);
+            // Mouse Resonator
+            const mouseGridX = Math.floor(ENGINE.mouse.x / this.resolution);
+            const mouseGridY = Math.floor(ENGINE.mouse.y / this.resolution);
+            const influenceRadius = CONSTANTS.MOUSE_INFLUENCE_RADIUS / this.resolution;
+            for (let j = -Math.ceil(influenceRadius); j <= Math.ceil(influenceRadius); j++) {
+                for (let i = -Math.ceil(influenceRadius); i <= Math.ceil(influenceRadius); i++) {
+                    if (i * i + j * j < influenceRadius * influenceRadius) {
+                        const x = mouseGridX + i;
+                        const y = mouseGridY + j;
+                        const idx = this.getIndex(x, y);
+                        this.field[idx].energy = Math.min(2.0, this.field[idx].energy + CONSTANTS.MOUSE_ENERGY_INJECTION);
+                        this.field[idx].hue = (ENGINE.frame * 2) % 360; // Inject a shifting color
+                        const force = Vector.sub(ENGINE.mouse, new Vector(x * this.resolution, y * this.resolution)).normalize().mult(CONSTANTS.MOUSE_VELOCITY_INJECTION);
+                        this.field[idx].velocity.add(force);
+                    }
                 }
             }
             
-            this.checkBounds();
+            // Anomaly influences
+            anomalies.forEach(anomaly => anomaly.influence(this));
         }
 
-        display() {
-            // To render the web, we draw lines between consecutive nodes. This creates the filament.
-            for (let i = 1; i < this.web.length; i++) {
-                const nodeA = this.web[i - 1];
-                const nodeB = this.web[i];
-                ctx.beginPath();
-                ctx.moveTo(nodeA.pos.x, nodeA.pos.y);
-                ctx.lineTo(nodeB.pos.x, nodeB.pos.y);
-                const alpha = nodeA.lifespan * 0.5;
-                const lightness = 50 + (nodeA.brightness * 50);
-                ctx.strokeStyle = `hsla(${this.hue}, 100%, ${lightness}%, ${alpha})`;
-                ctx.lineWidth = 1.5;
-                ctx.stroke();
+        // The core fluid dynamics step. Advection moves properties along the velocity field.
+        advect(prop) {
+            for (let y = 0; y < this.rows; y++) {
+                for (let x = 0; x < this.cols; x++) {
+                    const idx = this.getIndex(x, y);
+                    const vel = this.field[idx].velocity;
+                    const prevX = clamp(x - vel.x, 0, this.cols - 1);
+                    const prevY = clamp(y - vel.y, 0, this.rows - 1);
+                    
+                    const i0 = Math.floor(prevX);
+                    const i1 = i0 + 1;
+                    const j0 = Math.floor(prevY);
+                    const j1 = j0 + 1;
+
+                    const s1 = prevX - i0; const s0 = 1 - s1;
+                    const t1 = prevY - j0; const t0 = 1 - t1;
+
+                    const v1 = this.field[this.getIndex(i0, j0)][`prev${prop.charAt(0).toUpperCase() + prop.slice(1)}`];
+                    const v2 = this.field[this.getIndex(i1, j0)][`prev${prop.charAt(0).toUpperCase() + prop.slice(1)}`];
+                    const v3 = this.field[this.getIndex(i0, j1)][`prev${prop.charAt(0).toUpperCase() + prop.slice(1)}`];
+                    const v4 = this.field[this.getIndex(i1, j1)][`prev${prop.charAt(0).toUpperCase() + prop.slice(1)}`];
+
+                    const interp = s0 * (t0 * v1 + t1 * v3) + s1 * (t0 * v2 + t1 * v4);
+                    this.field[idx][prop] = interp;
+                }
             }
         }
         
-        checkBounds() {
-            if (this.pos.x < -10) this.pos.x = canvas.width + 10;
-            if (this.pos.x > canvas.width + 10) this.pos.x = -10;
-            if (this.pos.y < -10) this.pos.y = canvas.height + 10;
-            if (this.pos.y > canvas.height + 10) this.pos.y = -10;
+        // Advect velocity separately as it's a vector
+        advectVelocity() {
+            for (let y = 0; y < this.rows; y++) {
+                for (let x = 0; x < this.cols; x++) {
+                    const idx = this.getIndex(x, y);
+                    const vel = this.field[idx].prevVelocity; // Use prev state to advect
+                    const prevX = clamp(x - vel.x, 0, this.cols - 1);
+                    const prevY = clamp(y - vel.y, 0, this.rows - 1);
+                    
+                    const i0 = Math.floor(prevX); const i1 = i0 + 1;
+                    const j0 = Math.floor(prevY); const j1 = j0 + 1;
+                    const s1 = prevX - i0; const s0 = 1 - s1;
+                    const t1 = prevY - j0; const t0 = 1 - t1;
+
+                    const v1 = this.field[this.getIndex(i0, j0)].prevVelocity;
+                    const v2 = this.field[this.getIndex(i1, j0)].prevVelocity;
+                    const v3 = this.field[this.getIndex(i0, j1)].prevVelocity;
+                    const v4 = this.field[this.getIndex(i1, j1)].prevVelocity;
+
+                    const interpX = s0 * (t0 * v1.x + t1 * v3.x) + s1 * (t0 * v2.x + t1 * v4.x);
+                    const interpY = s0 * (t0 * v1.y + t1 * v3.y) + s1 * (t0 * v2.y + t1 * v4.y);
+                    this.field[idx].velocity.set(interpX, interpY);
+                }
+            }
+        }
+
+        // Diffusion spreads properties to neighboring cells, creating soft patterns.
+        diffuse(prop, diffusionRate) {
+            const accessor = `prev${prop.charAt(0).toUpperCase() + prop.slice(1)}`;
+            const a = diffusionRate;
+
+            for (let k = 0; k < 10; k++) { // Iterative solver
+                for (let y = 1; y < this.rows - 1; y++) {
+                    for (let x = 1; x < this.cols - 1; x++) {
+                        const idx = this.getIndex(x, y);
+                        const neighbors = this.field[this.getIndex(x + 1, y)][prop] +
+                                          this.field[this.getIndex(x - 1, y)][prop] +
+                                          this.field[this.getIndex(x, y + 1)][prop] +
+                                          this.field[this.getIndex(x, y - 1)][prop];
+                        this.field[idx][prop] = (this.field[idx][accessor] + a * neighbors) / (1 + 4 * a);
+                    }
+                }
+            }
+        }
+
+        // Enforces the physical law of mass conservation for a fluid.
+        project() {
+            // Calculate divergence
+            for (let y = 1; y < this.rows - 1; y++) {
+                for (let x = 1; x < this.cols - 1; x++) {
+                    const idx = this.getIndex(x, y);
+                    const vx_r = this.field[this.getIndex(x + 1, y)].velocity.x;
+                    const vx_l = this.field[this.getIndex(x - 1, y)].velocity.x;
+                    const vy_t = this.field[this.getIndex(x, y + 1)].velocity.y;
+                    const vy_b = this.field[this.getIndex(x, y - 1)].velocity.y;
+                    this.field[idx].divergence = -0.5 * (vx_r - vx_l + vy_t - vy_b);
+                    this.field[idx].pressure = 0;
+                }
+            }
+
+            // Solve for pressure via Jacobi iteration
+            for (let k = 0; k < CONSTANTS.PRESSURE_ITERATIONS; k++) {
+                for (let y = 1; y < this.rows - 1; y++) {
+                    for (let x = 1; x < this.cols - 1; x++) {
+                        const idx = this.getIndex(x, y);
+                        const p_r = this.field[this.getIndex(x + 1, y)].pressure;
+                        const p_l = this.field[this.getIndex(x - 1, y)].pressure;
+                        const p_t = this.field[this.getIndex(x, y + 1)].pressure;
+                        const p_b = this.field[this.getIndex(x, y - 1)].pressure;
+                        this.field[idx].pressure = (this.field[idx].divergence + p_r + p_l + p_t + p_b) / 4;
+                    }
+                }
+            }
+            
+            // Subtract pressure gradient from velocity field
+            for (let y = 1; y < this.rows - 1; y++) {
+                for (let x = 1; x < this.cols - 1; x++) {
+                    const idx = this.getIndex(x, y);
+                    const p_r = this.field[this.getIndex(x + 1, y)].pressure;
+                    const p_l = this.field[this.getIndex(x - 1, y)].pressure;
+                    const p_t = this.field[this.getIndex(x, y + 1)].pressure;
+                    const p_b = this.field[this.getIndex(x, y - 1)].pressure;
+                    this.field[idx].velocity.x -= 0.5 * (p_r - p_l);
+                    this.field[idx].velocity.y -= 0.5 * (p_t - p_b);
+                }
+            }
+        }
+        
+        step(anomalies) {
+            // Store previous state
+            for(let i=0; i<this.field.length; i++) {
+                this.field[i].prevVelocity.set(this.field[i].velocity.x, this.field[i].velocity.y);
+                this.field[i].prevEnergy = this.field[i].energy;
+                this.field[i].prevHue = this.field[i].hue;
+            }
+
+            // Apply forces -> Diffuse -> Advect -> Project
+            this.applyForces(anomalies);
+            
+            this.diffuse('energy', CONSTANTS.DIFFUSION_RATE);
+            this.diffuse('hue', CONSTANTS.DIFFUSION_RATE * 0.5);
+
+            this.advectVelocity();
+            this.project();
+
+            this.advect('energy');
+            this.advect('hue');
+            
+            // Dampen the entire system over time
+            for(let i=0; i<this.field.length; i++) {
+                this.field[i].velocity.mult(CONSTANTS.VELOCITY_DAMPENING);
+                this.field[i].energy *= CONSTANTS.ENERGY_DAMPENING;
+            }
         }
     }
 
-    class Glimmer extends Particle {
-        constructor(x, y, hue) {
-            super(x, y);
-            this.lifespan = Math.random() * 100 + 50;
-            this.radius = Math.random() * 1.5 + 1;
-            this.hue = hue;
-        }
 
+    // :: FILE: Simulation/Anomalies.js
+    // :: DESC: The "lifeforms" of the Aether. Stable patterns that emerge from the chaos.
+    //-------------------------------------------------------------------------------------------
+    class Anomaly {
+        constructor(x, y, lifespan) {
+            this.pos = new Vector(x, y);
+            this.lifespan = lifespan;
+            this.age = 0;
+            this.isDead = false;
+        }
         update() {
-            super.update();
+            this.age++;
             if (this.age > this.lifespan) {
-                this.dead = true;
+                this.isDead = true;
             }
         }
-        
-        display() {
-            const alpha = 1.0 - (this.age / this.lifespan);
+        influence(field) {} // To be implemented by subclasses
+        display(ctx) {}     // To be implemented by subclasses
+    }
+
+    class Pulsar extends Anomaly {
+        constructor(x, y) {
+            super(x, y, CONSTANTS.PULSAR_LIFESPAN);
+            this.pulseTimer = 0;
+            this.radius = 0;
+        }
+
+        influence(field) {
+            this.pulseTimer++;
+            if (this.pulseTimer > CONSTANTS.PULSAR_PULSE_INTERVAL) {
+                this.pulseTimer = 0;
+                const gridX = Math.floor(this.pos.x / field.resolution);
+                const gridY = Math.floor(this.pos.y / field.resolution);
+                const idx = field.getIndex(gridX, gridY);
+                if(idx < field.field.length) {
+                    field.field[idx].energy += CONSTANTS.PULSAR_PULSE_ENERGY;
+                    field.field[idx].hue = (this.age * 0.5) % 360;
+                }
+            }
+        }
+
+        display(ctx, resolution) {
+            const lifeRatio = this.age / this.lifespan;
+            this.radius = Math.sin(lifeRatio * Math.PI) * 15;
+            const pulseRatio = this.pulseTimer / CONSTANTS.PULSAR_PULSE_INTERVAL;
+            const pulseGlow = Math.sin(pulseRatio * Math.PI);
+
             ctx.beginPath();
             ctx.arc(this.pos.x, this.pos.y, this.radius, 0, Math.PI * 2);
-            ctx.fillStyle = `hsla(${this.hue}, 100%, 70%, ${alpha})`;
+            ctx.fillStyle = `hsla(${(this.age * 0.5) % 360}, 100%, 70%, ${0.5 + pulseGlow * 0.5})`;
             ctx.fill();
+
+            ctx.beginPath();
+            ctx.arc(this.pos.x, this.pos.y, this.radius + pulseGlow * 15, 0, Math.PI * 2);
+            ctx.strokeStyle = `hsla(${(this.age * 0.5) % 360}, 100%, 80%, ${0.8 - pulseGlow * 0.7})`;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+    }
+
+    class Nomad extends Anomaly {
+        constructor(x, y) {
+            super(x, y, CONSTANTS.NOMAD_LIFESPAN);
+            this.vel = new Vector(Math.random() - 0.5, Math.random() - 0.5);
+            this.trail = [];
+        }
+
+        influence(field) {
+            // Nomads move towards higher energy gradients
+            const gridX = Math.floor(this.pos.x / field.resolution);
+            const gridY = Math.floor(this.pos.y / field.resolution);
+
+            const e_c = field.field[field.getIndex(gridX, gridY)]?.energy || 0;
+            const e_r = field.field[field.getIndex(gridX + 1, gridY)]?.energy || 0;
+            const e_l = field.field[field.getIndex(gridX - 1, gridY)]?.energy || 0;
+            const e_t = field.field[field.getIndex(gridX, gridY + 1)]?.energy || 0;
+            const e_b = field.field[field.getIndex(gridX, gridY - 1)]?.energy || 0;
+            
+            const steer = new Vector(e_r - e_l, e_t - e_b);
+            steer.normalize();
+            this.vel.add(steer).limit(CONSTANTS.NOMAD_MAX_SPEED);
+            this.pos.add(this.vel);
+            
+            // Consume energy
+            const idx = field.getIndex(gridX, gridY);
+            if (idx < field.field.length) {
+                field.field[idx].energy = Math.max(0, field.field[idx].energy - CONSTANTS.NOMAD_ENERGY_CONSUMPTION);
+            }
+
+            this.trail.push(this.pos.clone());
+            if(this.trail.length > 50) this.trail.shift();
+        }
+
+        display(ctx, resolution) {
+            if(this.trail.length < 2) return;
+            ctx.beginPath();
+            ctx.moveTo(this.trail[0].x, this.trail[0].y);
+            for(let i=1; i < this.trail.length; i++) {
+                ctx.lineTo(this.trail[i].x, this.trail[i].y);
+            }
+            const lifeRatio = 1.0 - (this.age / this.lifespan);
+            ctx.strokeStyle = `hsla(60, 100%, 70%, ${lifeRatio * 0.7})`;
+            ctx.lineWidth = 3;
+            ctx.stroke();
         }
     }
 
 
-    // FILE: Void.js
-    // DESCRIPTION: Defines the Phantoms, the antagonists of light. They consume the web.
-    //--------------------------------------------------------------------------------------------------
-    class Phantom extends Particle {
-        constructor() {
-            super(Math.random() * canvas.width, Math.random() * canvas.height);
-            this.maxSpeed = 0.5;
-            this.maxForce = 0.01;
-            this.radius = 100; // Radius of consumption
+    // :: FILE: Rendering/Renderer.js
+    // :: DESC: Translates the state of the Aether and its Anomalies into visual information.
+    //-------------------------------------------------------------------------------------------
+    class Renderer {
+        constructor(ctx, width, height) {
+            this.ctx = ctx;
+            this.width = width;
+            this.height = height;
+            this.particles = [];
         }
 
-        // Phantoms don't hunt weavers; they are drawn to the *density* of the web.
-        // This is computationally intensive, a sign of its importance. It is the core
-        // of the antagonistic force in this universe.
-        seekWebDensity(weavers) {
-            let centerOfMass = new Vector();
-            let count = 0;
+        update(field, anomalies) {
+            this.ctx.clearRect(0, 0, this.width, this.height);
+            this.ctx.globalCompositeOperation = 'source-over';
+            this.ctx.fillStyle = '#000000';
+            this.ctx.fillRect(0, 0, this.width, this.height);
+            
+            this.drawAether(field);
+            
+            this.ctx.globalCompositeOperation = 'lighter';
+            
+            if (CONSTANTS.RENDER_FLOW_VECTORS) this.drawFlowVectors(field);
+            this.drawAnomalies(anomalies, field.resolution);
+            
+            this.updateAndDrawParticles(field);
+        }
 
-            weavers.forEach(weaver => {
-                weaver.web.forEach(node => {
-                    const dSq = Vector.distSq(this.pos, node.pos);
-                    if (dSq < PHANTOM_SIGHT_RADIUS * PHANTOM_SIGHT_RADIUS) {
-                        centerOfMass.add(node.pos);
-                        count++;
+        drawAether(field) {
+            const res = field.resolution;
+            for (let y = 0; y < field.rows; y++) {
+                for (let x = 0; x < field.cols; x++) {
+                    const idx = field.getIndex(x, y);
+                    const cell = field.field[idx];
+                    const energy = clamp(cell.energy, 0, 1);
+                    if (energy > 0.01) {
+                        this.ctx.fillStyle = `hsla(${cell.hue}, 90%, ${15 + energy * 30}%, ${energy * 0.8})`;
+                        this.ctx.fillRect(x * res, y * res, res, res);
                     }
-                });
-            });
+                }
+            }
+        }
 
-            if (count > 0) {
-                centerOfMass.div(count);
-                let desired = Vector.sub(centerOfMass, this.pos);
-                desired.normalize().mult(this.maxSpeed);
-                let steer = Vector.sub(desired, this.vel);
-                steer.limit(this.maxForce);
-                this.applyForce(steer);
+        drawFlowVectors(field) {
+            const res = field.resolution;
+            this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+            this.ctx.lineWidth = 1;
+            for (let y = 0; y < field.rows; y += 2) {
+                for (let x = 0; x < field.cols; x += 2) {
+                    const cell = field.field[field.getIndex(x, y)];
+                    const velMag = cell.velocity.mag();
+                    if (velMag > 0.1) {
+                        this.ctx.beginPath();
+                        const startX = x * res + res / 2;
+                        const startY = y * res + res / 2;
+                        this.ctx.moveTo(startX, startY);
+                        this.ctx.lineTo(startX + cell.velocity.x * CONSTANTS.FLOW_VECTOR_LENGTH, startY + cell.velocity.y * CONSTANTS.FLOW_VECTOR_LENGTH);
+                        this.ctx.stroke();
+                    }
+                }
             }
         }
         
-        // As a phantom moves, it "consumes" the light of the web, accelerating its decay.
-        consume(weavers) {
-            weavers.forEach(weaver => {
-                weaver.web.forEach(node => {
-                    const dSq = Vector.distSq(this.pos, node.pos);
-                    if(dSq < this.radius * this.radius) {
-                        node.lifespan -= 0.02; // Rapidly decay nearby nodes
+        drawAnomalies(anomalies, resolution) {
+            anomalies.forEach(anomaly => anomaly.display(this.ctx, resolution));
+        }
+
+        updateAndDrawParticles(field) {
+            // Spawn new particles in high-energy zones
+            if (this.particles.length < CONSTANTS.MAX_PARTICLES) {
+                for(let i=0; i<10; i++) { // Check 10 random spots per frame
+                    const x = Math.floor(Math.random() * field.cols);
+                    const y = Math.floor(Math.random() * field.rows);
+                    const idx = field.getIndex(x, y);
+                    const cell = field.field[idx];
+                    if (cell.energy > CONSTANTS.PARTICLE_SPAWN_THRESHOLD) {
+                        const px = x * field.resolution + Math.random() * field.resolution;
+                        const py = y * field.resolution + Math.random() * field.resolution;
+                        this.particles.push({
+                            pos: new Vector(px, py),
+                            vel: cell.velocity.clone().mult(2),
+                            lifespan: CONSTANTS.PARTICLE_LIFESPAN,
+                            age: 0,
+                            hue: cell.hue,
+                        });
                     }
-                });
-            });
+                }
+            }
+
+            // Update and draw
+            for (let i = this.particles.length - 1; i >= 0; i--) {
+                const p = this.particles[i];
+                p.pos.add(p.vel);
+                p.age++;
+
+                if (p.age > p.lifespan) {
+                    this.particles.splice(i, 1);
+                    continue;
+                }
+
+                const lifeRatio = 1.0 - (p.age / p.lifespan);
+                this.ctx.beginPath();
+                this.ctx.arc(p.pos.x, p.pos.y, lifeRatio * 2, 0, Math.PI * 2);
+                this.ctx.fillStyle = `hsla(${p.hue}, 100%, 80%, ${lifeRatio * 0.8})`;
+                this.ctx.fill();
+            }
+        }
+    }
+
+
+    // :: FILE: App.js
+    // :: DESC: The main application class that orchestrates the entire simulation.
+    //-------------------------------------------------------------------------------------------
+    class App {
+        constructor() {
+            this.field = new AetherField(ENGINE.width, ENGINE.height, CONSTANTS.FIELD_RESOLUTION);
+            this.renderer = new Renderer(ENGINE.ctx, ENGINE.width, ENGINE.height);
+            this.anomalies = [];
+        }
+
+        spawnAnomalies() {
+            if (this.anomalies.length >= CONSTANTS.MAX_ANOMALIES) return;
+
+            const x = Math.floor(Math.random() * this.field.cols);
+            const y = Math.floor(Math.random() * this.field.rows);
+            const idx = this.field.getIndex(x, y);
+            const cell = this.field.field[idx];
+
+            if (cell.energy > CONSTANTS.ANOMALY_SPAWN_THRESHOLD) {
+                cell.energy = 0; // Consume the energy to create the anomaly
+                const worldX = x * this.field.resolution;
+                const worldY = y * this.field.resolution;
+                
+                if (Math.random() > 0.5) {
+                    this.anomalies.push(new Pulsar(worldX, worldY));
+                } else {
+                    this.anomalies.push(new Nomad(worldX, worldY));
+                }
+            }
         }
 
         update() {
-            super.update();
-            this.vel.add(this.acc);
-            this.vel.limit(this.maxSpeed);
-            this.pos.add(this.vel);
-            this.acc.mult(0);
-        }
-
-        display() {
-            // Phantoms are rendered as voids, absences of light.
-            const gradient = ctx.createRadialGradient(this.pos.x, this.pos.y, 0, this.pos.x, this.pos.y, this.radius);
-            gradient.addColorStop(0, 'rgba(0, 0, 0, 0.5)');
-            gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            this.field.step(this.anomalies);
             
-            // By using 'destination-out', we erase parts of the canvas, creating a true void.
-            // This is a more advanced technique than just drawing black.
-            ctx.save();
-            ctx.globalCompositeOperation = 'destination-out';
-            ctx.fillStyle = gradient;
-            ctx.beginPath();
-            ctx.arc(this.pos.x, this.pos.y, this.radius, 0, Math.PI*2);
-            ctx.fill();
-            ctx.restore();
+            for (let i = this.anomalies.length - 1; i >= 0; i--) {
+                this.anomalies[i].update();
+                if (this.anomalies[i].isDead) {
+                    this.anomalies.splice(i, 1);
+                }
+            }
+
+            if(ENGINE.frame % 30 === 0) {
+                this.spawnAnomalies();
+            }
+        }
+
+        render() {
+            this.renderer.update(this.field, this.anomalies);
         }
     }
 
 
-    // FILE: Universe.js
-    // DESCRIPTION: The main simulation logic that orchestrates all interactions.
-    //--------------------------------------------------------------------------------------------------
-    function init() {
-        for (let i = 0; i < WEAVER_COUNT; i++) {
-            weavers.push(new Weaver(i * (360 / WEAVER_COUNT)));
-        }
-        for (let i = 0; i < PHANTOM_COUNT; i++) {
-            phantoms.push(new Phantom());
-        }
-    }
+    // :: GENESIS ::
+    //-------------------------------------------------------------------------------------------
+    const WORLD = new App();
+    
+    function animate(timestamp) {
+        ENGINE.lastTime = timestamp;
+        ENGINE.frame++;
 
-    function animate() {
-        // We do not clear the canvas. Instead, we draw a semi-transparent black rectangle.
-        // This creates the beautiful, ethereal trails and motion blur that are essential
-        // to the aesthetic. It is the memory of the universe.
-        ctx.globalCompositeOperation = 'source-over';
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.globalCompositeOperation = 'lighter';
-        
-        // --- The User as a Harmonic Resonator ---
-        // The user does not pull. The user excites. Their presence makes the web sing,
-        // vibrating with brighter light and giving birth to new Glimmer.
-        const mouseVector = new Vector(MOUSE.x, MOUSE.y);
-        weavers.forEach(weaver => {
-            weaver.web.forEach(node => {
-                const dSq = Vector.distSq(mouseVector, node.pos);
-                if (dSq < MOUSE.radius * MOUSE.radius) {
-                    node.brightness = Math.min(2.0, node.brightness + 0.1);
-                    if (Math.random() < GLIMMER_SPAWN_CHANCE * 0.05) {
-                        glimmers.push(new Glimmer(node.pos.x, node.pos.y, weaver.hue));
-                    }
-                }
-            });
-        });
+        WORLD.update();
+        WORLD.render();
 
-        // --- Update and Display Weavers ---
-        weavers.forEach(w => {
-            let closestGlimmer = null;
-            let minDistSq = Infinity;
-            glimmers.forEach(g => {
-                let dSq = Vector.distSq(w.pos, g.pos);
-                if(dSq < minDistSq) {
-                    minDistSq = dSq;
-                    closestGlimmer = g;
-                }
-            });
-
-            if (closestGlimmer && minDistSq < 200*200) {
-                 w.seek(closestGlimmer);
-                 if(minDistSq < 10*10) {
-                    closestGlimmer.dead = true; // Consume glimmer
-                 }
-            } else {
-                w.wander();
-            }
-
-            w.update();
-            w.display();
-
-            // Randomly spawn new Glimmer along the web
-            if (w.web.length > 1 && Math.random() < GLIMMER_SPAWN_CHANCE) {
-                const randomNode = w.web[Math.floor(Math.random() * w.web.length)];
-                glimmers.push(new Glimmer(randomNode.pos.x, randomNode.pos.y, w.hue));
-            }
-        });
-
-        // --- Update and Display Phantoms ---
-        phantoms.forEach(p => {
-            p.seekWebDensity(weavers);
-            p.update();
-            p.consume(weavers);
-            p.display();
-        });
-
-        // --- Update and Display Glimmers ---
-        for (let i = glimmers.length - 1; i >= 0; i--) {
-            glimmers[i].update();
-            glimmers[i].display();
-            if (glimmers[i].isDead()) {
-                glimmers.splice(i, 1);
-            }
-        }
-        
-        frame++;
         requestAnimationFrame(animate);
     }
-    
-    // --- Event Listeners: The Observer's Interface ---
-    window.addEventListener('mousemove', e => { MOUSE.x = e.clientX; MOUSE.y = e.clientY; });
-    window.addEventListener('resize', () => {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    });
 
-    // --- Let there be Light ---
-    init();
-    animate();
+    requestAnimationFrame(animate);
+
     </script>
 </body>
 </html>
