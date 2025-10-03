@@ -103,8 +103,8 @@
     //
     // This is the definitive script, incorporating all refinements from our dialogue.
     // The background is now a fully dynamic, wandering neural network that interacts with
-    // the user. All project "thoughts" are present from the start. The custom cursor has
-    // been removed for a clean, responsive experience.
+    // the user. All project "thoughts" are present from the start and now link to their
+    // respective URLs.
     //
     //---------------------------------------------------------------------------------------//
 
@@ -124,19 +124,20 @@
         radius: 150 // Radius of influence
     };
 
-    // --- The Conscious Thoughts (Project Data) ---
-    const projectNames = [
-        "Customer Success Agents",
-        "ML/AIOps",
-        "Ohme Enterprise Knowledge Center",
-        "Journey Computer Vision",
-        "Energy Consumption Forecasting",
-        "Session Params Prediction",
-        "CX Agents Evaluation",
-        "Sentinel",
-        "CX Engine",
-        "Crowdflex",
-        "POCs"
+    // --- The Conscious Thoughts (Project Data with URLs) ---
+    // This new structure holds both the name and the corresponding URL for each project.
+    const projectData = [
+        { name: "Customer Success Agents", url: "https://ohmenergy.atlassian.net/wiki/spaces/DS/folder/2726133815?atlOrigin=eyJpIjoiOWU5ZmFiZjE0NjQwNDliZGI5YzIyMDYwNDRiYmE5MWMiLCJwIjoiYyJ9" },
+        { name: "ML/AIOps", url: "https://ohmenergy.atlassian.net/wiki/spaces/DS/folder/2726592564?atlOrigin=eyJpIjoiMDllMjUyYTIxOThlNDQ5NGJlMjk3OGU3NmVlMDJkYTciLCJwIjoiYyJ9" },
+        { name: "Ohme Enterprise Knowledge Center", url: "https://ohmenergy.atlassian.net/wiki/spaces/DS/folder/2726723585?atlOrigin=eyJpIjoiMzA3ZDVjYWUwZGE0NGUxNTgxNWQyNzAzYzAzNDEzZTQiLCJwIjoiYyJ9" },
+        { name: "Journey Computer Vision", url: "https://ohmenergy.atlassian.net/wiki/spaces/DS/folder/2726264863?atlOrigin=eyJpIjoiMWU1OWMyNTgxNzcyNGIwZjg5NWQ0NTRlYzEzNTc5YTQiLCJwIjoiYyJ9" },
+        { name: "Energy Consumption Forecasting", url: "https://ohmenergy.atlassian.net/wiki/spaces/DS/folder/2807824463?atlOrigin=eyJpIjoiMTliYWY3MWM5OWUzNDg3Nzg5ZDkzODdlZTJmOGI2NTgiLCJwIjoiYyJ9" },
+        { name: "Session Params Prediction", url: "https://ohmenergy.atlassian.net/wiki/spaces/DS/folder/2808086598?atlOrigin=eyJpIjoiNGU0YThhMGVjZjZmNDg4ZTk3NGI0ZjE1YTczYmVhOTIiLCJwIjoiYyJ9" },
+        { name: "CX Agents Evaluation", url: "https://ohmenergy.atlassian.net/wiki/spaces/DS/folder/2808086598?atlOrigin=eyJpIjoiOTVkN2U3OTYwNzU3NGM3NDhhZjQ0MzkyNTYzZjMzYzMiLCJwIjoiYyJ9" },
+        { name: "Sentinel", url: "https://ohmenergy.atlassian.net/wiki/spaces/DS/pages/3153723452/Sentinel?atlOrigin=eyJpIjoiYTk4MzA3ZWFlOGNkNDQwYjk2NTZhN2E5MjVkMjlkOWEiLCJwIjoiYyJ9" },
+        { name: "CX Engine", url: "https://ohmenergy.atlassian.net/wiki/spaces/DS/folder/2739109892?atlOrigin=eyJpIjoiNzBhOWQwMjgwN2RiNDg3ZGIyNmJiMTE3M2IxYTkyYzMiLCJwIjoiYyJ9" },
+        { name: "Crowdflex", url: "https://ohmenergy.atlassian.net/wiki/spaces/DS/folder/2736357397?atlOrigin=eyJpIjoiOWU2OGQ4MDM4NjBjNDc4OTlkNjk0MDdiNzQyODU3OTYiLCJwIjoiYyJ9" },
+        { name: "POCs", url: "#" } // Placeholder link as one was not provided
     ];
     let thoughts = [];
 
@@ -361,11 +362,13 @@
         thoughts.length = 0;
 
         // Instantly create all conscious thoughts
-        for (const thoughtText of projectNames) {
+        for (const project of projectData) {
             const el = document.createElement('a');
-            el.href = "#"; // Fake link
+            el.href = project.url;
+            el.target = "_blank"; // Open link in a new tab
+            el.rel = "noopener noreferrer"; // Security measure for opening in new tab
             el.classList.add('thought-node');
-            el.textContent = thoughtText;
+            el.textContent = project.name;
             thoughtsContainer.appendChild(el);
             thoughts.push(new ThoughtNode(el));
         }
