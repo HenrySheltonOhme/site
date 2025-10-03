@@ -6,8 +6,9 @@
     <title>Crowdflex • Squad Pluto</title>
     <style>
         :root { --accent: #ffe38f; --glow: rgba(255, 227, 143, 0.30); --radial-x: 58%; --radial-y: 58%; }
-        html, body { margin: 0; padding: 0; height: 100%; background: radial-gradient(900px 600px at var(--radial-x) var(--radial-y), rgba(120, 90, 40, 0.18), rgba(0,0,0,0)), #020205; color: rgba(230, 235, 255, 0.9); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
-        .container { display: grid; place-items: center; min-height: 100%; text-align: center; padding: 24px; }
+        #bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; display: block; }
+        html, body { margin: 0; padding: 0; height: 100dvh; overflow: hidden; overflow: clip; overscroll-behavior: none; background: radial-gradient(900px 600px at var(--radial-x) var(--radial-y), rgba(120, 90, 40, 0.18), rgba(0,0,0,0)), #020205; color: rgba(230, 235, 255, 0.9); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        .container { display: grid; place-items: center; min-height: 100dvh; text-align: center; padding: 24px; position: relative; z-index: 1; }
         .title { font-weight: 200; font-size: 42px; letter-spacing: 2px; margin: 0 0 12px; background-image: linear-gradient(180deg, rgba(255, 245, 230, 0.95), rgba(255, 225, 160, 0.65)); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: 0 0 24px rgba(170,180,240,0.18); }
         .subtitle { margin: 0 0 28px; color: rgba(190, 200, 240, 0.75); font-weight: 300; }
         .cta-row { display: inline-flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
@@ -17,11 +18,12 @@
         .btn.secondary { background: transparent; color: rgba(220, 230, 255, 0.9); border: 1px solid rgba(170, 200, 255, 0.28); box-shadow: none; }
         .btn.secondary:hover { border-color: rgba(200, 220, 255, 0.5); }
         .accent-dot { position: fixed; bottom: 22%; right: 24%; width: 14px; height: 14px; border-radius: 50%; background: var(--accent); filter: blur(11px); opacity: 0.24; }
-        .footer { position: fixed; left: 50%; transform: translateX(-50%); bottom: 12px; background: transparent; text-align: center; color: rgba(150, 170, 220, 0.5); font-size: 12px; }
+        .footer { position: absolute; left: 50%; transform: translateX(-50%); bottom: 12px; background: transparent; text-align: center; color: rgba(150, 170, 220, 0.5); font-size: 12px; margin: 0; }
         @media (prefers-reduced-motion: reduce) { .btn { transition: none; } }
     </style>
 </head>
 <body>
+    <canvas id="bg"></canvas>
     <div class="container">
         <div>
             <h1 class="title">Crowdflex</h1>
@@ -34,5 +36,67 @@
     </div>
     <div class="accent-dot"></div>
     <div class="footer">Squad Pluto</div>
+    <script>
+    'use strict';
+    const canvas = document.getElementById('bg');
+    const ctx = canvas.getContext('2d');
+    const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+    function resize() {
+        const w = Math.floor(window.innerWidth);
+        const h = Math.floor(window.innerHeight);
+        canvas.style.width = w + 'px';
+        canvas.style.height = h + 'px';
+        canvas.width = Math.floor(w * dpr);
+        canvas.height = Math.floor(h * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    window.addEventListener('resize', resize, { passive: true });
+    resize();
+    const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#ffe38f';
+    function hexToRgb(hex) {
+        const m = hex.replace('#', '');
+        const int = parseInt(m, 16);
+        if (m.length === 6 && !Number.isNaN(int)) {
+            return { r: (int >> 16) & 255, g: (int >> 8) & 255, b: int & 255 };
+        }
+        return { r: 255, g: 227, b: 143 };
+    }
+    const { r, g, b } = hexToRgb(accent);
+    let t = 0;
+    function wave(yBase, amp, speed, wavelength, alpha) {
+        ctx.beginPath();
+        for (let x = 0; x <= canvas.width / dpr; x += 4) {
+            const y = yBase + Math.sin((x / wavelength) + t * speed) * amp;
+            if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+    }
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const h = canvas.height / dpr;
+        // layered wavefronts that suggest coordinated response
+        wave(h * 0.35, 6, 0.4, 90, 0.08);
+        wave(h * 0.48, 8, 0.6, 120, 0.06);
+        wave(h * 0.61, 10, 0.8, 150, 0.05);
+        // occasional pulse
+        const cx = canvas.width / dpr / 2;
+        const cy = h * 0.5;
+        for (let i = 0; i < 5; i++) {
+            const progress = ((t * 0.3) + i / 5) % 1;
+            const radius = progress * Math.min(cx, cy) * 0.9;
+            const alpha = (1 - progress) * 0.06;
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+            ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+        }
+        t += 0.008;
+        if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) requestAnimationFrame(animate);
+    }
+    animate();
+    </script>
 </body>
 </html>
