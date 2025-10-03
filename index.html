@@ -218,21 +218,21 @@
             this.acc = new Vector();
             this.radius = Math.random() * 2 + 1;
             this.damping = 0.98; // Slightly more friction for a smoother flow
-            this.maxSpeed = 0.3; // A gentle, constant speed
+            this.maxSpeed = 0.9; // <-- INCREASED THIS VALUE
             this.color = `rgba(100, 120, 200, ${Math.random() * 0.3 + 0.1})`;
             this.noiseOffset = Math.random() * 1000; // Unique offset for Perlin noise
         }
-
+    
         applyForce(force) {
             this.acc.add(force);
         }
-
+    
         // This method now orchestrates all movement behaviors
         behaviors() {
             this.wander(); // The new primary driving force
             this.repelMouse(); // The interactive force
         }
-
+    
         // Organic wandering behavior using Perlin Noise
         wander() {
             // We use Perlin noise to generate a smoothly changing angle, creating a "flow field" effect.
@@ -240,10 +240,10 @@
             const time = Date.now() * 0.0001;
             const angle = (noise(this.pos.x * 0.01, this.pos.y * 0.01, time + this.noiseOffset)) * Math.PI * 4;
             const wanderForce = new Vector(Math.cos(angle), Math.sin(angle));
-            wanderForce.mult(0.005);
+            wanderForce.mult(0.01); // <-- INCREASED THIS VALUE
             this.applyForce(wanderForce);
         }
-
+    
         repelMouse() {
             const mouseDistSq = Vector.distSq(this.pos, mouse);
             if (mouseDistSq < mouse.radius * mouse.radius) {
@@ -255,7 +255,7 @@
                 this.applyForce(mouseForce);
             }
         }
-
+    
         update() {
             this.vel.add(this.acc);
             this.vel.mult(this.damping);
@@ -264,7 +264,7 @@
             if (this.vel.magSq() > this.maxSpeed * this.maxSpeed) {
                 this.vel.normalize().mult(this.maxSpeed);
             }
-
+    
             this.pos.add(this.vel);
             this.acc.mult(0); // Reset acceleration each frame
             this.checkBounds(); // Keep neurons on the screen
@@ -277,7 +277,7 @@
             if (this.pos.y < -10) this.pos.y = height + 10;
             if (this.pos.y > height + 10) this.pos.y = -10;
         }
-
+    
         draw(ctx) {
             ctx.beginPath();
             ctx.arc(this.pos.x, this.pos.y, this.radius, 0, Math.PI * 2);
