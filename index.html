@@ -1,374 +1,457 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Squad Pluto</title>
-<style>
-/*
-// DECREE V6.0: THE LIVING ECOSYSTEM //
-// This is the final aesthetic, designed to support the gravity simulation.
-// The deep void, the clean title, and the interactive thoughts remain.
-*/
-body, html {
-margin: 0;
-padding: 0;
-overflow: hidden;
-background-color: #020205;
-height: 100%;
-width: 100%;
-cursor: default;
-}
-#mind-canvas {
-position: absolute;
-top: 0;
-left: 0;
-z-index: 0;
-}
-.title-container {
-position: absolute;
-top: 50%;
-left: 50%;
-transform: translate(-50%, -50%);
-z-index: 10;
-pointer-events: none;
-text-align: center;
-}
-.title-text {
-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-font-size: 2.8em;
-font-weight: 200;
-color: rgba(230, 230, 255, 0.7);
-text-shadow: 0 0 25px rgba(180, 180, 255, 0.15);
-letter-spacing: 2px;
-user-select: none;
-}
-#thoughts-container {
-position: absolute;
-top: 0;
-left: 0;
-width: 100%;
-height: 100%;
-z-index: 5;
-pointer-events: none;
-}
-.thought-node {
-position: absolute;
-color: rgba(200, 225, 255, 0.8);
-background-color: rgba(10, 10, 20, 0.3);
-font-family: 'SF Mono', 'Menlo', 'Courier New', monospace;
-padding: 8px 15px;
-border-radius: 5px;
-border: 1px solid rgba(150, 180, 255, 0.1);
-font-size: 14px;
-text-decoration: none;
-backdrop-filter: blur(5px);
--webkit-backdrop-filter: blur(5px);
-pointer-events: all;
-transition: transform 0.2s ease-out, background-color 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s;
-will-change: transform;
-}
-.thought-node:hover {
-color: rgba(255, 255, 255, 1);
-background-color: rgba(50, 50, 80, 0.5);
-border-color: rgba(200, 220, 255, 0.5);
-box-shadow: 0 0 20px rgba(150, 180, 255, 0.2);
-transform: scale(1.1);
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Squad Pluto</title>
+    <style>
+        /*
+        // DECREE V5.0: THE FINAL AESTHETIC //
+        // The space is a living mind. The background is a deep void.
+        // The standard cursor is restored for a responsive, lag-free experience.
+        */
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #020205; /* A deep, dark navy-blue, not pure black */
+            height: 100%;
+            width: 100%;
+            cursor: default; /* Restored the default cursor */
+        }
+
+        /* The canvas holds the subconscious and the hidden order. It is the foundation. */
+        #mind-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
+
+        /* The central identity. A modern, clean, and unmoving point of focus. */
+        .title-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            pointer-events: none; /* It does not interfere with interaction */
+            text-align: center;
+        }
+
+        .title-text {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-size: 2.8em;
+            font-weight: 200; /* Thin and elegant */
+            color: rgba(230, 230, 255, 0.7);
+            text-shadow: 0 0 25px rgba(180, 180, 255, 0.15);
+            letter-spacing: 2px;
+            user-select: none;
+        }
+
+        /* This container will hold the conscious thoughts (the projects). */
+        #thoughts-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 5;
+            pointer-events: none; /* Container itself is not interactive */
+        }
+
+        /* Styling for each individual thought. They are ethereal but tangible. */
+        .thought-node {
+            position: absolute;
+            color: rgba(200, 225, 255, 0.8);
+            background-color: rgba(10, 10, 20, 0.3);
+            font-family: 'SF Mono', 'Menlo', 'Courier New', monospace;
+            padding: 8px 15px;
+            border-radius: 5px;
+            border: 1px solid rgba(150, 180, 255, 0.1);
+            font-size: 14px;
+            text-decoration: none;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            pointer-events: all; /* The thoughts themselves ARE interactive */
+            transition: transform 0.2s ease-out, background-color 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s;
+            will-change: transform; /* Performance hint for the browser */
+        }
+
+        .thought-node:hover {
+            color: rgba(255, 255, 255, 1);
+            background-color: rgba(50, 50, 80, 0.5);
+            border-color: rgba(200, 220, 255, 0.5);
+            box-shadow: 0 0 20px rgba(150, 180, 255, 0.2);
+            transform: scale(1.1); /* Grow on hover for a satisfying effect */
+        }
+    </style>
 </head>
 <body>
-<canvas id="mind-canvas"></canvas>
-<div class="title-container">
-<h1 class="title-text">Squad Pluto</h1>
-</div>
-<div id="thoughts-container"></div>
+    <canvas id="mind-canvas"></canvas>
+    <div class="title-container">
+        <h1 class="title-text">Squad Pluto</h1>
+    </div>
+    <div id="thoughts-container"></div>
+    
+    <script>
+    //=======================================================================================//
+    //                                                                                       //
+    //                  THE LIVING MIND - FINAL VERSION (FULLY DYNAMIC)                      //
+    //                                                                                       //
+    //=======================================================================================//
+    //
+    // This is the definitive script, incorporating all refinements from our dialogue.
+    // The background is now a fully dynamic, wandering neural network that interacts with
+    // the user. All project "thoughts" are present from the start and now link to their
+    // respective URLs.
+    //
+    //---------------------------------------------------------------------------------------//
 
-<script>
-//=======================================================================================//
-// //
-// THE LIVING MIND - FINAL VERSION with GRAVITY SYSTEM //
-// //
-//=======================================================================================//
-//
-// This is the definitive script, incorporating all refinements from our dialogue.
-// The background is a self-organizing ecosystem where larger nodes exert a
-// gravitational pull on smaller ones, creating emergent clustering and flow.
-//
-//---------------------------------------------------------------------------------------//
+    'use strict';
 
-'use strict';
+    // --- Core Setup ---
+    const canvas = document.getElementById('mind-canvas');
+    const ctx = canvas.getContext('2d');
+    const thoughtsContainer = document.getElementById('thoughts-container');
 
-// --- Core Setup ---
-const canvas = document.getElementById('mind-canvas');
-const ctx = canvas.getContext('2d');
-const thoughtsContainer = document.getElementById('thoughts-container');
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
 
-let width = canvas.width = window.innerWidth;
-let height = canvas.height = window.innerHeight;
+    const mouse = {
+        x: width / 2,
+        y: height / 2,
+        radius: 150 // Radius of influence
+    };
 
-const mouse = {
-x: width / 2,
-y: height / 2,
-radius: 150
-};
+    // --- The Conscious Thoughts (Project Data with URLs) ---
+    // This new structure holds both the name and the corresponding URL for each project.
+    const projectData = [
+        { name: "Customer Success Agents", url: "https://ohmenergy.atlassian.net/wiki/spaces/DS/folder/2726133815?atlOrigin=eyJpIjoiOWU5ZmFiZjE0NjQwNDliZGI5YzIyMDYwNDRiYmE5MWMiLCJwIjoiYyJ9" },
+        { name: "ML/AIOps", url: "https://ohmenergy.atlassian.net/wiki/spaces/DS/folder/2726592564?atlOrigin=eyJpIjoiMDllMjUyYTIxOThlNDQ5NGJlMjk3OGU3NmVlMDJkYTciLCJwIjoiYyJ9" },
+        { name: "Ohme Enterprise Knowledge Center", url: "https://ohmenergy.atlassian.net/wiki/spaces/DS/folder/2726723585?atlOrigin=eyJpIjoiMzA3ZDVjYWUwZGE0NGUxNTgxNWQyNzAzYzAzNDEzZTQiLCJwIjoiYyJ9" },
+        { name: "Journey Computer Vision", url: "https://ohmenergy.atlassian.net/wiki/spaces/DS/folder/2726264863?atlOrigin=eyJpIjoiMWU1OWMyNTgxNzcyNGIwZjg5NWQ0NTRlYzEzNTc5YTQiLCJwIjoiYyJ9" },
+        { name: "Energy Consumption Forecasting", url: "https://ohmenergy.atlassian.net/wiki/spaces/DS/folder/2807824463?atlOrigin=eyJpIjoiMTliYWY3MWM5OWUzNDg3Nzg5ZDkzODdlZTJmOGI2NTgiLCJwIjoiYyJ9" },
+        { name: "Session Params Prediction", url: "https://ohmenergy.atlassian.net/wiki/spaces/DS/folder/2808086598?atlOrigin=eyJpIjoiNGU0YThhMGVjZjZmNDg4ZTk3NGI0ZjE1YTczYmVhOTIiLCJwIjoiYyJ9" },
+        { name: "CX Agents Evaluation", url: "https://ohmenergy.atlassian.net/wiki/spaces/DS/folder/2808086598?atlOrigin=eyJpIjoiOTVkN2U3OTYwNzU3NGM3NDhhZjQ0MzkyNTYzZjMzYzMiLCJwIjoiYyJ9" },
+        { name: "Sentinel", url: "https://ohmenergy.atlassian.net/wiki/spaces/DS/pages/3153723452/Sentinel?atlOrigin=eyJpIjoiYTk4MzA3ZWFlOGNkNDQwYjk2NTZhN2E5MjVkMjlkOWEiLCJwIjoiYyJ9" },
+        { name: "CX Engine", url: "https://ohmenergy.atlassian.net/wiki/spaces/DS/folder/2739109892?atlOrigin=eyJpIjoiNzBhOWQwMjgwN2RiNDg3ZGIyNmJiMTE3M2IxYTkyYzMiLCJwIjoiYyJ9" },
+        { name: "Crowdflex", url: "https://ohmenergy.atlassian.net/wiki/spaces/DS/folder/2736357397?atlOrigin=eyJpIjoiOWU2OGQ4MDM4NjBjNDc4OTlkNjk0MDdiNzQyODU3OTYiLCJwIjoiYyJ9" },
+        { name: "POCs", url: "#" } // Placeholder link as one was not provided
+    ];
+    let thoughts = [];
 
-// --- The Conscious Thoughts (Project Data with URLs) ---
-const projectData = [
-{ name: "Customer Success Agents", url: "https://ohmenergy.atlassian.net/wiki/spaces/DS/folder/2726133815?atlOrigin=eyJpIjoiOWU5ZmFiZjE0NjQwNDliZGI5YzIyMDYwNDRiYmE5MWMiLCJwIjoiYyJ9" },
-{ name: "ML/AIOps", url: "https://ohmenergy.atlassian.net/wiki/spaces/DS/folder/2726592564?atlOrigin=eyJpIjoiMDllMjUyYTIxOThlNDQ5NGJlMjk3OGU3NmVlMDJkYTciLCJwIjoiYyJ9" },
-{ name: "Ohme Enterprise Knowledge Center", url: "https://ohmenergy.atlassian.net/wiki/spaces/DS/folder/2726723585?atlOrigin=eyJpIjoiMzA3ZDVjYWUwZGE0NGUxNTgxNWQyNzAzYzAzNDEzZTQiLCJwIjoiYyJ9" },
-{ name: "Journey Computer Vision", url: "https://ohmenergy.atlassian.net/wiki/spaces/DS/folder/2726264863?atlOrigin=eyJpIjoiMWU1OWMyNTgxNzcyNGIwZjg5NWQ0NTRlYzEzNTc5YTQiLCJwIjoiYyJ9" },
-{ name: "Energy Consumption Forecasting", url: "https://ohmenergy.atlassian.net/wiki/spaces/DS/folder/2807824463?atlOrigin=eyJpIjoiMTliYWY3MWM5OWUzNDg3Nzg5ZDkzODdlZTJmOGI2NTgiLCJwIjoiYyJ9" },
-{ name: "Session Params Prediction", url: "https://ohmenergy.atlassian.net/wiki/spaces/DS/folder/2808086598?atlOrigin=eyJpIjoiNGU0YThhMGVjZjZmNDg4ZTk3NGI0ZjE1YTczYmVhOTIiLCJwIjoiYyJ9" },
-{ name: "CX Agents Evaluation", url: "https://ohmenergy.atlassian.net/wiki/spaces/DS/folder/2808086598?atlOrigin=eyJpIjoiOTVkN2U3OTYwNzU3NGM3NDhhZjQ0MzkyNTYzZjMzYzMiLCJwIjoiYyJ9" },
-{ name: "Sentinel", url: "https://ohmenergy.atlassian.net/wiki/spaces/DS/pages/3153723452/Sentinel?atlOrigin=eyJpIjoiYTk4MzA3ZWFlOGNkNDQwYjk2NTZhN2E5MjVkMjlkOWEiLCJwIjoiYyJ9" },
-{ name: "CX Engine", url: "https://ohmenergy.atlassian.net/wiki/spaces/DS/folder/2739109892?atlOrigin=eyJpIjoiNzBhOWQwMjgwN2RiNDg3ZGIyNmJiMTE3M2IxYTkyYzMiLCJwIjoiYyJ9" },
-{ name: "Crowdflex", url: "https://ohmenergy.atlassian.net/wiki/spaces/DS/folder/2736357397?atlOrigin=eyJpIjoiOWU2OGQ4MDM4NjBjNDc4OTlkNjk0MDdiNzQyODU3OTYiLCJwIjoiYyJ9" },
-{ name: "POCs", url: "#" }
-];
-let thoughts = [];
+    // --- The Subconscious (Neuron Simulation) ---
+    const NEURON_COUNT = 200;
+    const NEIGHBOR_RADIUS = 100;
+    const neurons = [];
 
-// --- The Subconscious (Neuron Simulation) ---
-const NEURON_COUNT = 200;
-const NEIGHBOR_RADIUS = 100;
-const GRAVITY_RADIUS = 150; // The area of gravitational influence
-const neurons = [];
-
-// --- The Hidden Order (Deterministic Grid) ---
-const GRID_SPACING = 50;
-const GRID_REVEAL_RADIUS = 250;
-
-
-// --- Math Libraries ---
-class Vector {
-constructor(x = 0, y = 0) { this.x = x; this.y = y; }
-add(v) { this.x += v.x; this.y += v.y; return this; }
-sub(v) { this.x -= v.x; this.y -= v.y; return this; }
-mult(s) { this.x *= s; this.y *= s; return this; }
-magSq() { return this.x * this.x + this.y * this.y; }
-mag() { return Math.sqrt(this.magSq()); }
-normalize() { const m = this.mag(); if (m > 0) { this.x /= m; this.y /= m; } return this; }
-static sub(v1, v2) { return new Vector(v1.x - v2.x, v1.y - v2.y); }
-static distSq(v1, v2) { const dx = v1.x - v2.x; const dy = v1.y - v2.y; return dx * dx + dy * dy; }
-}
-function noise(x, y = 0, z = 0) { const p = new Array(512); const permutation = [151,160,137,91,90,15,131,13,201,95,96,53,194,233,7,225,140,36,103,30,69,142,8,99,37,240,21,10,23,190,6,148,247,120,234,75,0,26,197,62,94,252,219,203,117,35,11,32,57,177,33,88,237,149,56,87,174,20,125,136,171,168,68,175,74,165,71,134,139,48,27,166,77,146,158,231,83,111,229,122,60,211,133,230,220,105,92,41,55,46,245,40,244,102,143,54,65,25,63,161,1,216,80,73,209,76,132,187,208,89,18,169,200,196,135,130,116,188,159,86,164,100,109,198,173,186,3,64,52,217,226,250,124,123,5,202,38,147,118,126,255,82,85,212,207,206,59,227,47,16,58,17,182,189,28,42,223,183,170,213,119,248,152,2,44,154,163,70,221,153,101,155,167,43,172,9,129,22,39,253,19,98,108,110,79,113,224,232,178,185,112,104,218,246,97,228,251,34,242,193,238,210,144,12,191,179,162,241,81,51,145,235,249,14,239,107,49,192,214,31,181,199,106,157,184,84,204,176,115,121,50,45,127,4,150,254,138,236,205,93,222,114,67,29,24,72,243,141,128,195,78,66,215,61,156,180]; for (let i=0; i < 256 ; i++) p[256+i] = p[i] = permutation[i]; const fade = t => t * t * t * (t * (t * 6 - 15) + 10); const lerp = (t, a, b) => a + t * (b - a); const grad = (hash, x, y, z) => { const h = hash & 15; const u = h < 8 ? x : y; const v = h < 4 ? y : h === 12 || h === 14 ? x : z; return ((h & 1) === 0 ? u : -u) + ((h & 2) === 0 ? v : -v); }; const X = Math.floor(x) & 255, Y = Math.floor(y) & 255, Z = Math.floor(z) & 255; x -= Math.floor(x); y -= Math.floor(y); z -= Math.floor(z); const u = fade(x), v = fade(y), w = fade(z); const A = p[X] + Y, AA = p[A] + Z, AB = p[A + 1] + Z; const B = p[X + 1] + Y, BA = p[B] + Z, BB = p[B + 1] + Z; return lerp(w, lerp(v, lerp(u, grad(p[AA], x, y, z), grad(p[BA], x-1, y, z)), lerp(u, grad(p[AB], x, y-1, z), grad(p[BB], x-1, y-1, z))), lerp(v, lerp(u, grad(p[AA+1], x, y, z-1), grad(p[BA+1], x-1, y, z-1)), lerp(u, grad(p[AB+1], x, y-1, z-1), grad(p[BB+1], x-1, y-1, z-1)))); }
+    // --- The Hidden Order (Deterministic Grid) ---
+    const GRID_SPACING = 50;
+    const GRID_REVEAL_RADIUS = 250;
 
 
-// --- Layer 1: The Subconscious Neuron ---
-class Neuron {
-constructor(x, y) {
-this.pos = new Vector(x, y);
-this.vel = new Vector(Math.random() - 0.5, Math.random() - 0.5);
-this.acc = new Vector();
-this.radius = Math.random() * 2.5 + 1; 
-this.damping = 0.98;
-this.maxSpeed = 0.9;
-this.color = `rgba(180, 200, 255, ${Math.random() * 0.4 + 0.3})`;
-this.noiseOffset = Math.random() * 1000;
-}
+    // --- Math Libraries ---
+    class Vector {
+        constructor(x = 0, y = 0) { this.x = x; this.y = y; }
+        add(v) { this.x += v.x; this.y += v.y; return this; }
+        sub(v) { this.x -= v.x; this.y -= v.y; return this; }
+        mult(s) { this.x *= s; this.y *= s; return this; }
+        magSq() { return this.x * this.x + this.y * this.y; }
+        mag() { return Math.sqrt(this.magSq()); }
+        normalize() { const m = this.mag(); if (m > 0) { this.x /= m; this.y /= m; } return this; }
+        static distSq(v1, v2) { const dx = v1.x - v2.x; const dy = v1.y - v2.y; return dx * dx + dy * dy; }
+    }
 
-applyForce(force) {
-this.acc.add(force);
-}
+    // Perlin noise function for organic movement
+    function noise(x, y = 0, z = 0) {
+        const p = new Array(512);
+        const permutation = [ 151,160,137,91,90,15,
+        131,13,201,95,96,53,194,233,7,225,140,36,103,30,69,142,8,99,37,240,21,10,23,
+        190, 6,148,247,120,234,75,0,26,197,62,94,252,219,203,117,35,11,32,57,177,33,
+        88,237,149,56,87,174,20,125,136,171,168, 68,175,74,165,71,134,139,48,27,166,
+        77,146,158,231,83,111,229,122,60,211,133,230,220,105,92,41,55,46,245,40,244,
+        102,143,54, 65,25,63,161, 1,216,80,73,209,76,132,187,208, 89,18,169,200,196,
+        135,130,116,188,159,86,164,100,109,198,173,186, 3,64,52,217,226,250,124,123,
+        5,202,38,147,118,126,255,82,85,212,207,206,59,227,47,16,58,17,182,189,28,42,
+        223,183,170,213,119,248,152, 2,44,154,163, 70,221,153,101,155,167, 43,172,9,
+        129,22,39,253, 19,98,108,110,79,113,224,232,178,185, 112,104,218,246,97,228,
+        251,34,242,193,238,210,144,12,191,179,162,241, 81,51,145,235,249,14,239,107,
+        49,192,214, 31,181,199,106,157,184, 84,204,176,115,121,50,45,127, 4,150,254,
+        138,236,205,93,222,114,67,29,24,72,243,141,128,195,78,66,215,61,156,180 ];
+        for (let i=0; i < 256 ; i++) p[256+i] = p[i] = permutation[i];
+        
+        const fade = t => t * t * t * (t * (t * 6 - 15) + 10);
+        const lerp = (t, a, b) => a + t * (b - a);
+        const grad = (hash, x, y, z) => {
+            const h = hash & 15;
+            const u = h < 8 ? x : y;
+            const v = h < 4 ? y : h === 12 || h === 14 ? x : z;
+            return ((h & 1) === 0 ? u : -u) + ((h & 2) === 0 ? v : -v);
+        };
 
-behaviors(allNeurons) {
-this.gravitate(allNeurons); // The new gravity behavior
-this.wander();
-this.repelMouse();
-}
+        const X = Math.floor(x) & 255;
+        const Y = Math.floor(y) & 255;
+        const Z = Math.floor(z) & 255;
+        x -= Math.floor(x);
+        y -= Math.floor(y);
+        z -= Math.floor(z);
+        const u = fade(x);
+        const v = fade(y);
+        const w = fade(z);
+        const A = p[X] + Y, AA = p[A] + Z, AB = p[A + 1] + Z;
+        const B = p[X + 1] + Y, BA = p[B] + Z, BB = p[B + 1] + Z;
 
-gravitate(allNeurons) {
-for (const other of allNeurons) {
-if (other === this) continue;
-if (other.radius <= this.radius) continue;
-
-const distSq = Vector.distSq(this.pos, other.pos);
-
-if (distSq < GRAVITY_RADIUS * GRAVITY_RADIUS) {
-let force = Vector.sub(other.pos, this.pos);
-const forceMagnitude = (other.radius * 0.01) / (distSq + 100);
-force.normalize().mult(forceMagnitude);
-this.applyForce(force);
-}
-}
-}
-
-wander() {
-const time = Date.now() * 0.0001;
-const angle = (noise(this.pos.x * 0.01, this.pos.y * 0.01, time + this.noiseOffset)) * Math.PI * 4;
-const wanderForce = new Vector(Math.cos(angle), Math.sin(angle));
-wanderForce.mult(0.01);
-this.applyForce(wanderForce);
-}
-
-repelMouse() {
-const mouseDistSq = Vector.distSq(this.pos, mouse);
-if (mouseDistSq < mouse.radius * mouse.radius) {
-let mouseForce = new Vector(this.pos.x - mouse.x, this.pos.y - mouse.y);
-const distance = Math.sqrt(mouseDistSq);
-const forceMagnitude = (mouse.radius - distance) * 0.01;
-mouseForce.normalize().mult(forceMagnitude);
-this.applyForce(mouseForce);
-}
-}
-
-update() {
-this.vel.add(this.acc);
-this.vel.mult(this.damping);
-
-if (this.vel.magSq() > this.maxSpeed * this.maxSpeed) {
-this.vel.normalize().mult(this.maxSpeed);
-}
-
-this.pos.add(this.vel);
-this.acc.mult(0);
-this.checkBounds();
-}
-
-checkBounds() {
-if (this.pos.x < -10) this.pos.x = width + 10;
-if (this.pos.x > width + 10) this.pos.x = -10;
-if (this.pos.y < -10) this.pos.y = height + 10;
-if (this.pos.y > height + 10) this.pos.y = -10;
-}
-
-draw(ctx) {
-ctx.beginPath();
-ctx.arc(this.pos.x, this.pos.y, this.radius, 0, Math.PI * 2);
-ctx.fillStyle = this.color;
-ctx.fill();
-}
-}
+        return lerp(w, lerp(v, lerp(u, grad(p[AA], x, y, z), grad(p[BA], x-1, y, z)),
+                               lerp(u, grad(p[AB], x, y-1, z), grad(p[BB], x-1, y-1, z))),
+                       lerp(v, lerp(u, grad(p[AA+1], x, y, z-1), grad(p[BA+1], x-1, y, z-1)),
+                               lerp(u, grad(p[AB+1], x, y-1, z-1), grad(p[BB+1], x-1, y-1, z-1))));
+    }
 
 
-// --- Layer 2: The Conscious Thought Node ---
-class ThoughtNode {
-constructor(element) {
-this.el = element;
-this.pos = new Vector(Math.random() * width, Math.random() * height);
-this.vel = new Vector(Math.random() - 0.5, Math.random() - 0.5);
-this.acc = new Vector();
-this.maxSpeed = 0.5;
-this.maxForce = 0.02;
-this.damping = 0.98;
-}
-applyForce(force) { this.acc.add(force); }
-behaviors(allThoughts) {
-for (const other of allThoughts) {
-if (other === this) continue;
-const distSq = Vector.distSq(this.pos, other.pos);
-if (distSq < 200 * 200) {
-let force = new Vector(this.pos.x - other.pos.x, this.pos.y - other.pos.y);
-force.normalize().mult(0.1 / (distSq * 0.0001 + 1));
-this.applyForce(force);
-}
-}
-let centerForce = new Vector(width / 2 - this.pos.x, height / 2 - this.pos.y);
-centerForce.normalize().mult(0.01);
-this.applyForce(centerForce);
-const mouseDistSq = Vector.distSq(this.pos, mouse);
-if (mouseDistSq < mouse.radius * mouse.radius) {
-let mouseForce = new Vector(this.pos.x - mouse.x, this.pos.y - mouse.y);
-mouseForce.normalize().mult(0.5);
-this.applyForce(mouseForce);
-}
-}
-update() {
-this.vel.add(this.acc);
-this.vel.mult(this.damping);
-if (this.vel.magSq() > this.maxSpeed * this.maxSpeed) {
-this.vel.normalize().mult(this.maxSpeed);
-}
-this.pos.add(this.vel);
-this.acc.mult(0);
-}
-render() {
-this.el.style.transform = `translate(${this.pos.x - this.el.offsetWidth / 2}px, ${this.pos.y - this.el.offsetHeight / 2}px)`;
-}
-}
+    // --- Layer 1: The Subconscious Neuron ---
+    // Represents the biological foundation. They now wander freely, creating a dynamic, living web.
+    class Neuron {
+        constructor(x, y) {
+            this.pos = new Vector(x, y);
+            this.vel = new Vector(Math.random() - 0.5, Math.random() - 0.5);
+            this.acc = new Vector();
+            this.radius = Math.random() * 2 + 1;
+            this.damping = 0.98; // Slightly more friction for a smoother flow
+            this.maxSpeed = 2; // <-- INCREASED THIS VALUE
+            this.color = `rgba(180, 200, 255, ${Math.random() * 0.3 + 0.2})`; 
+            this.noiseOffset = Math.random() * 1000; // Unique offset for Perlin noise
+        }
+    
+        applyForce(force) {
+            this.acc.add(force);
+        }
+    
+        // This method now orchestrates all movement behaviors
+        behaviors() {
+            this.wander(); // The new primary driving force
+            this.repelMouse(); // The interactive force
+        }
+    
+        // Organic wandering behavior using Perlin Noise
+        wander() {
+            // We use Perlin noise to generate a smoothly changing angle, creating a "flow field" effect.
+            // This is what makes the neurons "twirl" and "move around" organically.
+            const time = Date.now() * 0.0001;
+            const angle = (noise(this.pos.x * 0.01, this.pos.y * 0.01, time + this.noiseOffset)) * Math.PI * 4;
+            const wanderForce = new Vector(Math.cos(angle), Math.sin(angle));
+            wanderForce.mult(0.1); // <-- INCREASED THIS VALUE
+            this.applyForce(wanderForce);
+        }
+    
+        repelMouse() {
+            const mouseDistSq = Vector.distSq(this.pos, mouse);
+            if (mouseDistSq < mouse.radius * mouse.radius) {
+                let mouseForce = new Vector(this.pos.x - mouse.x, this.pos.y - mouse.y);
+                const distance = Math.sqrt(mouseDistSq);
+                // The force is stronger the closer the mouse is
+                const forceMagnitude = (mouse.radius - distance) * 0.01;
+                mouseForce.normalize().mult(forceMagnitude);
+                this.applyForce(mouseForce);
+            }
+        }
+    
+        update() {
+            this.vel.add(this.acc);
+            this.vel.mult(this.damping);
+            
+            // Limit speed to prevent them from flying too fast
+            if (this.vel.magSq() > this.maxSpeed * this.maxSpeed) {
+                this.vel.normalize().mult(this.maxSpeed);
+            }
+    
+            this.pos.add(this.vel);
+            this.acc.mult(0); // Reset acceleration each frame
+            this.checkBounds(); // Keep neurons on the screen
+        }
+        
+        // Screen wrapping behavior
+        checkBounds() {
+            if (this.pos.x < -10) this.pos.x = width + 10;
+            if (this.pos.x > width + 10) this.pos.x = -10;
+            if (this.pos.y < -10) this.pos.y = height + 10;
+            if (this.pos.y > height + 10) this.pos.y = -10;
+        }
+    
+        draw(ctx) {
+            ctx.beginPath();
+            ctx.arc(this.pos.x, this.pos.y, this.radius, 0, Math.PI * 2);
+            ctx.fillStyle = this.color;
+            ctx.fill();
+        }
+    }
 
 
-// --- Initialization Function ---
-function init() {
-neurons.length = 0;
-for (let i = 0; i < NEURON_COUNT; i++) {
-neurons.push(new Neuron(Math.random() * width, Math.random() * height));
-}
-thoughtsContainer.innerHTML = '';
-thoughts.length = 0;
-for (const project of projectData) {
-const el = document.createElement('a');
-el.href = project.url;
-el.target = "_blank";
-el.rel = "noopener noreferrer";
-el.classList.add('thought-node');
-el.textContent = project.name;
-thoughtsContainer.appendChild(el);
-thoughts.push(new ThoughtNode(el));
-}
-}
+    // --- Layer 2: The Conscious Thought Node ---
+    // Represents the interactive, high-level ideas. They are HTML elements driven by a physics simulation.
+    class ThoughtNode {
+        constructor(element) {
+            this.el = element;
+            this.pos = new Vector(Math.random() * width, Math.random() * height);
+            this.vel = new Vector(Math.random() - 0.5, Math.random() - 0.5);
+            this.acc = new Vector();
+            this.maxSpeed = 0.5;
+            this.maxForce = 0.02;
+            this.damping = 0.98;
+        }
+
+        applyForce(force) {
+            this.acc.add(force);
+        }
+
+        // The physics that governs the movement of thoughts
+        behaviors(allThoughts) {
+            // 1. Repulsion from other thoughts
+            for (const other of allThoughts) {
+                if (other === this) continue;
+                const distSq = Vector.distSq(this.pos, other.pos);
+                if (distSq < 200 * 200) {
+                    let force = new Vector(this.pos.x - other.pos.x, this.pos.y - other.pos.y);
+                    force.normalize().mult(0.1 / (distSq * 0.0001 + 1)); // Stronger when closer
+                    this.applyForce(force);
+                }
+            }
+
+            // 2. Attraction to the center of the screen (keeps them from flying away)
+            let centerForce = new Vector(width / 2 - this.pos.x, height / 2 - this.pos.y);
+            centerForce.normalize().mult(0.01);
+            this.applyForce(centerForce);
+
+            // 3. Repulsion from the mouse cursor (user interaction)
+            const mouseDistSq = Vector.distSq(this.pos, mouse);
+            if (mouseDistSq < mouse.radius * mouse.radius) {
+                let mouseForce = new Vector(this.pos.x - mouse.x, this.pos.y - mouse.y);
+                mouseForce.normalize().mult(0.5);
+                this.applyForce(mouseForce);
+            }
+        }
+
+        update() {
+            this.vel.add(this.acc);
+            this.vel.mult(this.damping);
+            if (this.vel.magSq() > this.maxSpeed * this.maxSpeed) {
+                this.vel.normalize().mult(this.maxSpeed);
+            }
+            this.pos.add(this.vel);
+            this.acc.mult(0); // Reset acceleration
+        }
+
+        render() {
+            // Update the CSS position of the HTML element
+            this.el.style.transform = `translate(${this.pos.x - this.el.offsetWidth / 2}px, ${this.pos.y - this.el.offsetHeight / 2}px)`;
+        }
+    }
 
 
-// --- The Main Animation Loop ---
-function animate() {
-ctx.clearRect(0, 0, width, height);
-for (let x = 0; x < width; x += GRID_SPACING) {
-for (let y = 0; y < height; y += GRID_SPACING) {
-const distSq = (x - mouse.x) * (x - mouse.x) + (y - mouse.y) * (y - mouse.y);
-if (distSq < GRID_REVEAL_RADIUS * GRID_REVEAL_RADIUS) {
-const opacity = 1 - (distSq / (GRID_REVEAL_RADIUS * GRID_REVEAL_RADIUS));
-ctx.fillStyle = `rgba(100, 120, 200, ${opacity * 0.2})`;
-ctx.fillRect(x - 0.5, y - 0.5, 1, 1);
-}
-}
-}
+    // --- Initialization Function ---
+    // Sets up the entire scene.
+    function init() {
+        // Re-populate the subconscious neuron web
+        neurons.length = 0; // Clear existing neurons on resize
+        for (let i = 0; i < NEURON_COUNT; i++) {
+            neurons.push(new Neuron(Math.random() * width, Math.random() * height));
+        }
 
-for (let i = 0; i < neurons.length; i++) {
-const ni = neurons[i];
-ni.behaviors(neurons); 
-ni.update();
-ni.draw(ctx);
+        // Remove existing HTML elements and thoughts array
+        thoughtsContainer.innerHTML = '';
+        thoughts.length = 0;
 
-for (let j = i + 1; j < neurons.length; j++) {
-const nj = neurons[j];
-const distSq = Vector.distSq(ni.pos, nj.pos);
-if (distSq < NEIGHBOR_RADIUS * NEIGHBOR_RADIUS) {
-const opacity = 1 - (distSq / (NEIGHBOR_RADIUS * NEIGHBOR_RADIUS));
-ctx.strokeStyle = `rgba(120, 150, 255, ${opacity * 0.25})`;
-ctx.lineWidth = 0.5;
-ctx.beginPath();
-ctx.moveTo(ni.pos.x, ni.pos.y);
-ctx.lineTo(nj.pos.x, nj.pos.y);
-ctx.stroke();
-}
-}
-}
-
-for (const thought of thoughts) {
-thought.behaviors(thoughts);
-thought.update();
-thought.render();
-}
-
-requestAnimationFrame(animate);
-}
+        // Instantly create all conscious thoughts
+        for (const project of projectData) {
+            const el = document.createElement('a');
+            el.href = project.url;
+            el.target = "_blank"; // Open link in a new tab
+            el.rel = "noopener noreferrer"; // Security measure for opening in new tab
+            el.classList.add('thought-node');
+            el.textContent = project.name;
+            thoughtsContainer.appendChild(el);
+            thoughts.push(new ThoughtNode(el));
+        }
+    }
 
 
-// --- Event Listeners ---
-window.addEventListener('resize', () => {
-width = canvas.width = window.innerWidth;
-height = canvas.height = window.innerHeight;
-init();
-});
-window.addEventListener('mousemove', e => {
-mouse.x = e.clientX;
-mouse.y = e.clientY;
-});
+    // --- The Main Animation Loop ---
+    // This function is the heartbeat of the visualization.
+    function animate() {
+        // Clear the canvas for redrawing
+        ctx.clearRect(0, 0, width, height);
 
-init();
-animate();
+        // --- Layer 2: The Hidden Order (The Twang) ---
+        // This is drawn first, so it's in the deep background.
+        // It's a grid that becomes more visible near the mouse, revealing the deterministic structure.
+        for (let x = 0; x < width; x += GRID_SPACING) {
+            for (let y = 0; y < height; y += GRID_SPACING) {
+                const distSq = (x - mouse.x) * (x - mouse.x) + (y - mouse.y) * (y - mouse.y);
+                if (distSq < GRID_REVEAL_RADIUS * GRID_REVEAL_RADIUS) {
+                    const opacity = 1 - (distSq / (GRID_REVEAL_RADIUS * GRID_REVEAL_RADIUS));
+                    ctx.fillStyle = `rgba(100, 120, 200, ${opacity * 0.2})`;
+                    ctx.fillRect(x - 0.5, y - 0.5, 1, 1);
+                }
+            }
+        }
+        
+        // --- Layer 1: The Subconscious (The Brain) ---
+        // Update neurons and draw dynamic connections
+        for (let i = 0; i < neurons.length; i++) {
+            const ni = neurons[i];
+            ni.behaviors(); // Apply forces first
+            ni.update();
+            ni.draw(ctx);
 
-</script>
+            // Check for connections to other neurons and draw them
+            for (let j = i + 1; j < neurons.length; j++) {
+                const nj = neurons[j];
+                const distSq = Vector.distSq(ni.pos, nj.pos);
+
+                // If they are close enough, draw a connection
+                if (distSq < NEIGHBOR_RADIUS * NEIGHBOR_RADIUS) {
+                    // The closer they are, the more opaque the connection
+                    const opacity = 1 - (distSq / (NEIGHBOR_RADIUS * NEIGHBOR_RADIUS));
+                    ctx.strokeStyle = `rgba(120, 150, 255, ${opacity * 0.15})`;
+                    ctx.lineWidth = 0.5;
+                    ctx.beginPath();
+                    ctx.moveTo(ni.pos.x, ni.pos.y);
+                    ctx.lineTo(nj.pos.x, nj.pos.y);
+                    ctx.stroke();
+                }
+            }
+        }
+
+        // --- Layer 3: The Conscious Thoughts ---
+        // Update the physics and render the position of the HTML elements.
+        for (const thought of thoughts) {
+            thought.behaviors(thoughts);
+            thought.update();
+            thought.render();
+        }
+
+        // Keep the loop going
+        requestAnimationFrame(animate);
+    }
+
+
+    // --- Event Listeners ---
+    window.addEventListener('resize', () => {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+        // Re-initialize on resize to recreate all elements for the new size
+        init();
+    });
+
+    window.addEventListener('mousemove', e => {
+        mouse.x = e.clientX;
+        mouse.y = e.clientY;
+    });
+
+    // --- Let there be thought ---
+    init();
+    animate();
+
+    </script>
 </body>
 </html>
