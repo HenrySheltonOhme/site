@@ -14,7 +14,7 @@
             margin: 0;
             padding: 0;
             overflow: hidden;
-            background-color: #020205; /* A deep, dark navy-blue, not pure black */
+            background: radial-gradient(900px 600px at 50% 45%, rgba(60, 70, 120, 0.18), rgba(0, 0, 0, 0)), #020205; /* Subtle vignette over deep navy */
             height: 100%;
             width: 100%;
             cursor: default; /* Restored the default cursor */
@@ -43,8 +43,11 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             font-size: 2.8em;
             font-weight: 200; /* Thin and elegant */
-            color: rgba(230, 230, 255, 0.7);
-            text-shadow: 0 0 25px rgba(180, 180, 255, 0.15);
+            background-image: linear-gradient(180deg, rgba(235, 235, 255, 0.92), rgba(170, 185, 255, 0.65));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 25px rgba(170, 180, 240, 0.18);
             letter-spacing: 2px;
             user-select: none;
         }
@@ -68,7 +71,7 @@
             font-family: 'SF Mono', 'Menlo', 'Courier New', monospace;
             padding: 8px 15px;
             border-radius: 5px;
-            border: 1px solid rgba(150, 180, 255, 0.1);
+            border: 1px solid rgba(170, 200, 255, 0.16);
             font-size: 14px;
             text-decoration: none;
             backdrop-filter: blur(5px);
@@ -76,6 +79,7 @@
             pointer-events: all; /* The thoughts themselves ARE interactive */
             transition: transform 0.2s ease-out, background-color 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s;
             will-change: transform; /* Performance hint for the browser */
+            -webkit-tap-highlight-color: transparent;
         }
 
         .thought-node:hover {
@@ -84,6 +88,14 @@
             border-color: rgba(200, 220, 255, 0.5);
             box-shadow: 0 0 20px rgba(150, 180, 255, 0.2);
             transform: scale(1.1); /* Grow on hover for a satisfying effect */
+        }
+        .thought-node:focus-visible {
+            outline: 2px solid rgba(200, 220, 255, 0.75);
+            outline-offset: 2px;
+            box-shadow: 0 0 24px rgba(150, 180, 255, 0.3);
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .thought-node { transition: none; }
         }
     </style>
 </head>
@@ -115,8 +127,20 @@
     const ctx = canvas.getContext('2d');
     const thoughtsContainer = document.getElementById('thoughts-container');
 
-    let width = canvas.width = window.innerWidth;
-    let height = canvas.height = window.innerHeight;
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+    const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+    function resizeCanvas() {
+        const cssW = Math.floor(window.innerWidth);
+        const cssH = Math.floor(window.innerHeight);
+        width = cssW;
+        height = cssH;
+        canvas.style.width = cssW + 'px';
+        canvas.style.height = cssH + 'px';
+        canvas.width = Math.floor(cssW * dpr);
+        canvas.height = Math.floor(cssH * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
 
     const mouse = {
         x: width / 2,
@@ -389,7 +413,7 @@
                 const distSq = (x - mouse.x) * (x - mouse.x) + (y - mouse.y) * (y - mouse.y);
                 if (distSq < GRID_REVEAL_RADIUS * GRID_REVEAL_RADIUS) {
                     const opacity = 1 - (distSq / (GRID_REVEAL_RADIUS * GRID_REVEAL_RADIUS));
-                    ctx.fillStyle = `rgba(100, 120, 200, ${opacity * 0.2})`;
+                    ctx.fillStyle = `rgba(120, 140, 210, ${opacity * 0.18})`;
                     ctx.fillRect(x - 0.5, y - 0.5, 1, 1);
                 }
             }
@@ -412,8 +436,10 @@
                 if (distSq < NEIGHBOR_RADIUS * NEIGHBOR_RADIUS) {
                     // The closer they are, the more opaque the connection
                     const opacity = 1 - (distSq / (NEIGHBOR_RADIUS * NEIGHBOR_RADIUS));
-                    ctx.strokeStyle = `rgba(120, 150, 255, ${opacity * 0.15})`;
-                    ctx.lineWidth = 0.5;
+                    ctx.lineCap = 'round';
+                    ctx.lineJoin = 'round';
+                    ctx.strokeStyle = `rgba(135, 165, 255, ${opacity * 0.2})`;
+                    ctx.lineWidth = 0.7;
                     ctx.beginPath();
                     ctx.moveTo(ni.pos.x, ni.pos.y);
                     ctx.lineTo(nj.pos.x, nj.pos.y);
@@ -437,18 +463,18 @@
 
     // --- Event Listeners ---
     window.addEventListener('resize', () => {
-        width = canvas.width = window.innerWidth;
-        height = canvas.height = window.innerHeight;
+        resizeCanvas();
         // Re-initialize on resize to recreate all elements for the new size
         init();
-    });
+    }, { passive: true });
 
-    window.addEventListener('mousemove', e => {
+    window.addEventListener('pointermove', e => {
         mouse.x = e.clientX;
         mouse.y = e.clientY;
-    });
+    }, { passive: true });
 
     // --- Let there be thought ---
+    resizeCanvas();
     init();
     animate();
 
