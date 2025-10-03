@@ -6,8 +6,8 @@
     <title>Sentinel • Squad Pluto</title>
     <style>
         :root { --accent: #8fffe3; --glow: rgba(143, 255, 227, 0.28); --radial-x: 50%; --radial-y: 60%; }
-        html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; background: radial-gradient(900px 600px at var(--radial-x) var(--radial-y), rgba(40, 110, 95, 0.18), rgba(0,0,0,0)), #020205; color: rgba(230, 235, 255, 0.9); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
-        .container { display: grid; place-items: center; min-height: 100vh; text-align: center; padding: 24px; position: relative; }
+        html, body { margin: 0; padding: 0; height: 100dvh; overflow: hidden; overflow: clip; overscroll-behavior: none; background: radial-gradient(900px 600px at var(--radial-x) var(--radial-y), rgba(40, 110, 95, 0.18), rgba(0,0,0,0)), #020205; color: rgba(230, 235, 255, 0.9); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        .container { display: grid; place-items: center; min-height: 100dvh; text-align: center; padding: 24px; position: relative; }
         .title { font-weight: 200; font-size: 42px; letter-spacing: 2px; margin: 0 0 12px; background-image: linear-gradient(180deg, rgba(235, 255, 250, 0.95), rgba(170, 255, 230, 0.65)); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: 0 0 24px rgba(170,180,240,0.18); }
         .subtitle { margin: 0 0 28px; color: rgba(190, 200, 240, 0.75); font-weight: 300; }
         .cta-row { display: inline-flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
