@@ -19,6 +19,18 @@
         .btn.secondary:hover { border-color: rgba(200, 220, 255, 0.5); }
         .footer { position: absolute; left: 50%; transform: translateX(-50%); bottom: 12px; background: transparent; text-align: center; color: rgba(150, 170, 220, 0.5); font-size: 12px; margin: 0; }
         @media (prefers-reduced-motion: reduce) { .btn { transition: none; } }
+
+        /* Roadmap */
+        .section { max-width: 1100px; margin: 36px auto 0; padding: 0 18px; }
+        .section-title { font-weight: 300; color: rgba(210, 220, 255, 0.85); margin: 0 0 14px; letter-spacing: 1px; }
+        .grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+        .card { border: 1px solid rgba(170, 200, 255, 0.18); background: rgba(12, 14, 24, 0.35); border-radius: 10px; padding: 14px; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+        .card h3 { margin: 2px 0 6px; font-weight: 500; color: rgba(235, 240, 255, 0.92); letter-spacing: 0.3px; }
+        .meta { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+        .tag { font-size: 11px; padding: 3px 8px; border-radius: 999px; border: 1px solid rgba(170, 200, 255, 0.18); color: rgba(210, 220, 255, 0.8); background: rgba(14, 18, 30, 0.35); }
+        .status { border-color: rgba(120, 255, 190, 0.35); color: rgba(170, 255, 225, 0.85); }
+        .card p { margin: 6px 0; color: rgba(195, 205, 245, 0.78); line-height: 1.45; }
+        .card .actions { margin-top: 10px; display: flex; gap: 8px; }
     </style>
 </head>
 <body>
@@ -26,10 +38,93 @@
     <div class="container">
         <div>
             <h1 class="title">Squad Pluto</h1>
-            <p class="subtitle">Explore our work, the people and the ideas that power it.</p>
+            <p class="subtitle">Explore our work and the ideas that power it.</p>
             <div class="cta-row">
                 <a class="btn" href="./index.html">Explore More</a>
                 <a class="btn secondary" href="./index.html">Back to Home</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Roadmap (sanitized)</h2>
+        <div class="grid">
+            <div class="card">
+                <h3>Customer Success Agents</h3>
+                <div class="meta">
+                    <span class="tag status">Active</span>
+                    <span class="tag">Milestone 3</span>
+                    <span class="tag">Agentic system</span>
+                </div>
+                <p><strong>Focus:</strong> Suggested and automated replies; documentation + evaluation automation.</p>
+                <p><strong>Impact:</strong> Higher first‑contact resolution; fewer manual tickets; faster triage.</p>
+                <p><strong>Near‑term:</strong> Expand actions, integrate with platform APIs, stabilize evals/knowledge flows.</p>
+                <div class="actions">
+                    <a class="btn secondary" href="./customer-success-agents.html">Open page</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Sentinel</h3>
+                <div class="meta">
+                    <span class="tag status">Rapid</span>
+                    <span class="tag">Real‑time alerting</span>
+                    <span class="tag">Proactive actions</span>
+                </div>
+                <p><strong>Focus:</strong> High‑signal anomaly detection and automated responses across fleets.</p>
+                <p><strong>Notes:</strong> Fast‑growing initiative; quarterly plan evolving as we scale.</p>
+                <div class="actions">
+                    <a class="btn secondary" href="./sentinel.html">Open page</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>CX Engine</h3>
+                <div class="meta">
+                    <span class="tag status">Active</span>
+                    <span class="tag">Automation</span>
+                    <span class="tag">Scheduling</span>
+                </div>
+                <p><strong>Focus:</strong> Proactive actions (e.g., voltage limit updates), diagnostics, and insights.</p>
+                <p><strong>Impact:</strong> Fewer inbound contacts; faster time‑to‑fix; smoother CX.</p>
+                <div class="actions">
+                    <a class="btn secondary" href="./cx-engine.html">Open page</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Journey Computer Vision</h3>
+                <div class="meta">
+                    <span class="tag">Recognition</span>
+                    <span class="tag">Pipelines</span>
+                </div>
+                <p><strong>Focus:</strong> Deploy models and streaming inference to extract structured data from imagery.</p>
+                <p><strong>Impact:</strong> Shorter journeys; fewer callbacks; higher data quality.</p>
+                <div class="actions">
+                    <a class="btn secondary" href="./journey-computer-vision.html">Open page</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>AI Ops (Eval + Knowledge)</h3>
+                <div class="meta">
+                    <span class="tag">Evaluation</span>
+                    <span class="tag">Knowledge</span>
+                </div>
+                <p><strong>Focus:</strong> Golden datasets, rubrics, and coverage metrics; framework integrations.</p>
+                <p><strong>Goal:</strong> Self‑serve, measurable quality for agents and retrieval.</p>
+            </div>
+
+            <div class="card">
+                <h3>POCs / Explorations</h3>
+                <div class="meta">
+                    <span class="tag">R&D</span>
+                    <span class="tag">MVPs</span>
+                </div>
+                <p><strong>Focus:</strong> Rapid prototypes (OCR, forecasting, clustering, QA), handoff to teams if validated.</p>
+                <div class="actions">
+                    <a class="btn secondary" href="./pocs.html">Open page</a>
+                </div>
             </div>
         </div>
     </div>
