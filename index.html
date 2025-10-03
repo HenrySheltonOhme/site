@@ -52,6 +52,17 @@
             user-select: none;
         }
 
+        .subtitle-text {
+            margin-top: 6px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-size: 0.95em;
+            font-weight: 300;
+            color: rgba(210, 220, 255, 0.65);
+            text-shadow: 0 0 18px rgba(160, 175, 235, 0.18);
+            letter-spacing: 3px;
+            user-select: none;
+        }
+
         /* This container will hold the conscious thoughts (the projects). */
         #thoughts-container {
             position: absolute;
@@ -112,6 +123,7 @@
     <canvas id="mind-canvas"></canvas>
     <div class="title-container">
         <h1 class="title-text">Squad Pluto</h1>
+        <div class="subtitle-text">AM | DS | HS | GB | DX</div>
     </div>
     <div id="thoughts-container"></div>
     
@@ -143,8 +155,8 @@
         titleBounds = {
             cx: rect.left + rect.width / 2,
             cy: rect.top + rect.height / 2,
-            halfW: rect.width / 2 + 20,
-            halfH: rect.height / 2 + 20
+            halfW: rect.width / 2 + 80, // expand exclusion zone to include subtitle
+            halfH: rect.height / 2 + 80
         };
     }
 
