@@ -6,8 +6,9 @@
     <title>Energy Consumption Forecasting • Squad Pluto</title>
     <style>
         :root { --accent: #7fffc2; --glow: rgba(127, 255, 194, 0.28); --radial-x: 52%; --radial-y: 48%; }
-        html, body { margin: 0; padding: 0; height: 100%; background: radial-gradient(900px 600px at var(--radial-x) var(--radial-y), rgba(60, 110, 100, 0.18), rgba(0,0,0,0)), #020205; color: rgba(230, 235, 255, 0.9); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
-        .container { display: grid; place-items: center; min-height: 100%; text-align: center; padding: 24px; }
+        #bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; display: block; }
+        html, body { margin: 0; padding: 0; height: 100dvh; overflow: hidden; overflow: clip; overscroll-behavior: none; background: radial-gradient(900px 600px at var(--radial-x) var(--radial-y), rgba(60, 110, 100, 0.18), rgba(0,0,0,0)), #020205; color: rgba(230, 235, 255, 0.9); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        .container { display: grid; place-items: center; min-height: 100dvh; text-align: center; padding: 24px; position: relative; z-index: 1; }
         .title { font-weight: 200; font-size: 42px; letter-spacing: 2px; margin: 0 0 12px; background-image: linear-gradient(180deg, rgba(235, 255, 248, 0.95), rgba(160, 255, 210, 0.65)); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: 0 0 24px rgba(170,180,240,0.18); }
         .subtitle { margin: 0 0 28px; color: rgba(190, 200, 240, 0.75); font-weight: 300; }
         .cta-row { display: inline-flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
@@ -17,11 +18,12 @@
         .btn.secondary { background: transparent; color: rgba(220, 230, 255, 0.9); border: 1px solid rgba(170, 200, 255, 0.28); box-shadow: none; }
         .btn.secondary:hover { border-color: rgba(200, 220, 255, 0.5); }
         .accent-dot { position: fixed; top: 18%; right: 16%; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); filter: blur(10px); opacity: 0.22; }
-        .footer { position: fixed; left: 0; right: 0; bottom: 12px; text-align: center; color: rgba(150, 170, 220, 0.5); font-size: 12px; }
+        .footer { position: absolute; left: 50%; transform: translateX(-50%); bottom: 12px; background: transparent; text-align: center; color: rgba(150, 170, 220, 0.5); font-size: 12px; margin: 0; }
         @media (prefers-reduced-motion: reduce) { .btn { transition: none; } }
     </style>
 </head>
 <body>
+    <canvas id="bg"></canvas>
     <div class="container">
         <div>
             <h1 class="title">Energy Consumption Forecasting</h1>
@@ -34,5 +36,68 @@
     </div>
     <div class="accent-dot"></div>
     <div class="footer">Squad Pluto</div>
+    <script>
+    'use strict';
+    const canvas = document.getElementById('bg');
+    const ctx = canvas.getContext('2d');
+    const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+    function resize() {
+        const w = Math.floor(window.innerWidth);
+        const h = Math.floor(window.innerHeight);
+        canvas.style.width = w + 'px';
+        canvas.style.height = h + 'px';
+        canvas.width = Math.floor(w * dpr);
+        canvas.height = Math.floor(h * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    window.addEventListener('resize', resize, { passive: true });
+    resize();
+    const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#7fffc2';
+    function hexToRgb(hex) {
+        const m = hex.replace('#', '');
+        const int = parseInt(m, 16);
+        if (m.length === 6 && !Number.isNaN(int)) {
+            return { r: (int >> 16) & 255, g: (int >> 8) & 255, b: int & 255 };
+        }
+        return { r: 127, g: 255, b: 194 };
+    }
+    const { r, g, b } = hexToRgb(accent);
+    const traces = 5;
+    let t = 0;
+    function series(x, idx) {
+        // blend of slow trend and faster seasonality
+        const trend = Math.sin((x * 0.002) + idx * 0.4 + t * 0.15) * 6;
+        const season = Math.sin((x * 0.03) + idx + t * 0.6) * 2;
+        const noise = Math.sin((x * 0.12) + idx * 1.7 + t * 1.1) * 0.6;
+        return trend + season + noise;
+    }
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const w = canvas.width / dpr;
+        const h = canvas.height / dpr;
+        for (let i = 0; i < traces; i++) {
+            const base = h * (0.35 + i * 0.1);
+            ctx.beginPath();
+            for (let x = 0; x <= w; x += 3) {
+                const y = base - series(x, i);
+                if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+            }
+            ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${0.08 - i * 0.012})`;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+            // confidence cone (subtle)
+            ctx.beginPath();
+            for (let x = 0; x <= w; x += 3) {
+                const y = base - series(x, i) + 3;
+                if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+            }
+            ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${0.04 - i * 0.008})`;
+            ctx.stroke();
+        }
+        t += 0.01;
+        if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) requestAnimationFrame(draw);
+    }
+    draw();
+    </script>
 </body>
 </html>
