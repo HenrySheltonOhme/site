@@ -89,6 +89,15 @@
             box-shadow: 0 0 20px rgba(150, 180, 255, 0.2);
             transform: scale(1.1); /* Grow on hover for a satisfying effect */
         }
+        /* Active project subtle green glow */
+        .thought-node.active {
+            border-color: rgba(100, 255, 190, 0.45);
+            box-shadow: 0 0 18px rgba(100, 255, 190, 0.18), inset 0 0 8px rgba(100, 255, 190, 0.08);
+        }
+        .thought-node.active:hover {
+            border-color: rgba(120, 255, 200, 0.7);
+            box-shadow: 0 0 22px rgba(100, 255, 190, 0.28), inset 0 0 10px rgba(100, 255, 190, 0.12);
+        }
         .thought-node:focus-visible {
             outline: 2px solid rgba(200, 220, 255, 0.75);
             outline-offset: 2px;
@@ -427,6 +436,17 @@
                 el.target = "_self";
             }
             el.classList.add('thought-node');
+            // Mark active projects with subtle green glow
+            const active = [
+                'Sentinel',
+                'Session Params Prediction',
+                'POCs',
+                'Crowdflex',
+                'Journey Computer Vision'
+            ];
+            if (active.includes(project.name)) {
+                el.classList.add('active');
+            }
             el.textContent = project.name;
             thoughtsContainer.appendChild(el);
             thoughts.push(new ThoughtNode(el));
