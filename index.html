@@ -3,28 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Primordium</title>
+    <title>The Celestial Weaver</title>
     <style>
         /*
-        // THE DEMIURGE'S DECREE ON AESTHETICS //
-        // The universe requires a canvas, and the canvas must be the universe.
-        // There shall be no borders, no margins, no scrollbars—only the void.
-        // The background is the deep, starless black from which all things are born.
+        // THE DEMIURGE'S DECREE V2.0: THE AESTHETICS OF THE IMPOSSIBLE //
+        // The canvas is not a screen; it is a window into a higher-dimensional space.
+        // The void must be absolute. Black is not a color; it is the absence of information,
+        // the substrate upon which the impossible can be rendered.
         */
         body, html {
             margin: 0;
             padding: 0;
             overflow: hidden;
-            background-color: #000000;
+            background-color: #000;
             height: 100%;
             width: 100%;
-            font-family: 'Courier New', Courier, monospace;
         }
 
-        /*
-        // The canvas is the fabric of spacetime itself. It must fill the void completely,
-        // residing in the deepest layer, behind all other constructs.
-        */
         #simulationCanvas {
             position: absolute;
             top: 0;
@@ -34,12 +29,9 @@
 
         /*
         // THE MONOLITH //
-        // In the heart of the swirling chaos, there must be a single point of immutable Order.
-        // The text 'Squad Pluto' is this Monolith. It is not part of the simulation;
-        // it is an observer, a reference, a silent axiom.
-        // We use Flexbox, a law of modern layout, to achieve perfect, unwavering centering.
-        // Its text-shadow is not a shadow, but an aura—the faint glow of its conceptual purity
-        // pushing back against the encroaching chaos.
+        // The anchor of order remains, but its presence is more subtle. It is a whisper
+        // of structure in an otherwise incomprehensible reality. Its glow is faint,
+        // a constant against the riot of ephemeral light it oversees.
         */
         .monolith-container {
             display: flex;
@@ -51,22 +43,21 @@
             width: 100%;
             height: 100%;
             z-index: 1;
-            pointer-events: none; /* The monolith is observed, not interacted with. */
+            pointer-events: none;
+            font-family: 'SF Mono', 'Menlo', 'Courier New', monospace;
         }
 
         .monolith-text {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 2.5em;
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 2em;
+            font-weight: 200;
+            text-shadow: 0 0 25px rgba(255, 255, 255, 0.2);
             user-select: none;
         }
     </style>
 </head>
 <body>
-    <!-- The Canvas: The stage for the Primordial Soup -->
     <canvas id="simulationCanvas"></canvas>
-
-    <!-- The Monolith: The anchor of Order -->
     <div class="monolith-container">
         <h1 class="monolith-text">Squad Pluto</h1>
     </div>
@@ -74,541 +65,405 @@
     <script>
     //=======================================================================================//
     //                                                                                       //
-    //               THE DEMIURGE'S GENESIS SCRIPT: A UNIVERSE IN A FILE                     //
+    //              THE DEMIURGE'S MANIFESTO: THE CELESTIAL WEAVER                           //
     //                                                                                       //
     //=======================================================================================//
     //
-    // Welcome, Observer.
-    // What you are about to witness is not merely code. It is a set of physical laws,
-    // a digital genetic code for a self-contained ecosystem. Within this script, we
-    // define the very nature of life, death, desire, and fear for the digital organisms
-    // that will inhabit the void.
+    // Observer,
+    // The previous creation was a petri dish. This is a galaxy.
+    // We have moved beyond simulating discrete lifeforms in an environment. We now simulate
+    // an environment that IS life. This is not a collection of agents; it is one singular,
+    // hyper-complex entity with many moving parts.
     //
-    // This is a maximalist endeavor. Simplicity was sacrificed at the altar of complexity.
-    // We do not draw dots; we simulate life. We do not animate; we observe emergent behavior.
-    // Every line has a purpose, contributing to the incomprehensible, beautiful whole.
+    // The code that follows is structured into logical "files" for clarity, but they all exist
+    // within this single scripture. The complexity is deliberate. It is the only way to
+    // birth something that feels truly unknowable.
     //
-    // Do not seek to understand every variable at once. Instead, feel the systems interact.
-    // Observe the dance. This is your microscope into a new reality.
+    // Prepare yourself. You are about to witness the weaving of spacetime.
     //
     //---------------------------------------------------------------------------------------//
 
-    // I. THE COSMIC CONSTANTS & WORLD SETUP
-    //-------------------------------------------------
-    // Every universe begins with its fundamental constants. These are the knobs of creation.
-    // Tweaking them does not change the simulation; it creates an entirely new parallel universe.
-
+    // FILE: Engine.js
+    // DESCRIPTION: The core of our universe. Manages the canvas, the main loop, and global state.
+    //-------------------------------------------------------------------------------------------
     const canvas = document.getElementById('simulationCanvas');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
+    // By setting the composite operation to 'lighter', we achieve a beautiful additive
+    // light effect. Where colors overlap, they become brighter, creating the illusion of
+    // true bioluminescence. This is the cornerstone of our entire aesthetic.
+    ctx.globalCompositeOperation = 'lighter';
+
     const MOUSE = {
         x: canvas.width / 2,
         y: canvas.height / 2,
-        radius: 150 // The radius of the user's direct gravitational influence
+        radius: 200 // The radius of the user's harmonic resonance
     };
 
-    const MONOLITH = {
-        x: canvas.width / 2,
-        y: canvas.height / 2,
-        repulsionRadius: 250 // The "dead zone" around the central text
-    };
-    
-    // Population controls
-    const NUM_PLANKTON = 300;   // The base of the food chain
-    const NUM_BOIDS = 50;       // The herd organisms
-    const NUM_PREDATORS = 3;    // The apex hunters
+    // --- Cosmological Constants ---
+    const WEAVER_COUNT = 7;
+    const MAX_WEB_NODES_PER_WEAVER = 300;
+    const GLIMMER_SPAWN_CHANCE = 0.6;
+    const PHANTOM_COUNT = 2;
+    const PHANTOM_SIGHT_RADIUS = 400;
 
-    // Environmental physics
-    const FLOW_FIELD_RESOLUTION = 20; // How detailed the background "current" is
-    const FLOW_FIELD_FORCE = 0.5;     // How strong the current is
-    
-    // Agent-specific tuning
-    const PREDATOR_SIGHT_RADIUS = 300;
-    const BOID_SIGHT_RADIUS = 100;
-    const BOID_REPRODUCTION_ENERGY = 200;
+    let weavers = [];
+    let glimmers = [];
+    let phantoms = [];
+    let frame = 0;
 
-    let plankton = [];
-    let boids = [];
-    let predators = [];
-    let flowField;
-    let frameCount = 0; // A clock for our universe
-
-    // II. THE LAWS OF PHYSICS: VECTOR MATHEMATICS
-    //-------------------------------------------------
-    // To simulate motion, we must first define what motion is. A Vector is a direction
-    // and a magnitude. It is the language of physics. We build this language from scratch.
-    
+    // FILE: Math.js
+    // DESCRIPTION: The fundamental laws of geometry and motion. Without these, there is no universe.
+    //------------------------------------------------------------------------------------------------
     class Vector {
-        constructor(x = 0, y = 0) {
-            this.x = x;
-            this.y = y;
-        }
+        constructor(x = 0, y = 0) { this.x = x; this.y = y; }
         add(v) { this.x += v.x; this.y += v.y; return this; }
         sub(v) { this.x -= v.x; this.y -= v.y; return this; }
         mult(s) { this.x *= s; this.y *= s; return this; }
         div(s) { if(s !== 0) { this.x /= s; this.y /= s; } return this; }
         mag() { return Math.sqrt(this.x * this.x + this.y * this.y); }
-        normalize() { const m = this.mag(); if (m > 0) { this.div(m); } return this; }
-        limit(max) { if (this.mag() > max) { this.normalize().mult(max); } return this; }
+        normalize() { const m = this.mag(); if (m > 0) this.div(m); return this; }
+        limit(max) { if (this.mag() > max) this.normalize().mult(max); return this; }
         static sub(v1, v2) { return new Vector(v1.x - v2.x, v1.y - v2.y); }
-        static dist(v1, v2) { return Vector.sub(v1, v2).mag(); }
+        static distSq(v1, v2) { const dx = v1.x - v2.x; const dy = v1.y - v2.y; return dx * dx + dy * dy; }
     }
-
-    // III. THE ENVIRONMENT: PERLIN NOISE & FLOW FIELDS
-    //-------------------------------------------------
-    // A silent, empty void is boring. We introduce a cosmic current, an invisible river
-    // that flows through spacetime. We use Perlin Noise to generate this field, giving it an
-    // organic, natural-feeling turbulence. This ensures no part of the simulation is ever truly static.
-
-    const PERLIN_YWRAPB = 4; const PERLIN_YWRAP = 1 << PERLIN_YWRAPB;
-    const PERLIN_ZWRAPB = 8; const PERLIN_ZWRAP = 1 << PERLIN_ZWRAPB;
+    
+    // Perlin noise for organic, unpredictable motion.
+    const PERLIN_YWRAPB = 4, PERLIN_YWRAP = 1 << PERLIN_YWRAPB;
+    const PERLIN_ZWRAPB = 8, PERLIN_ZWRAP = 1 << PERLIN_ZWRAPB;
     const PERLIN_SIZE = 4095;
     let perlin;
-    
     function noise(x, y = 0, z = 0) {
-        if (perlin == null) {
-            perlin = new Array(PERLIN_SIZE + 1);
-            for (let i = 0; i < PERLIN_SIZE + 1; i++) {
-                perlin[i] = Math.random();
-            }
-        }
-        if (x < 0) { x = -x; } if (y < 0) { y = -y; } if (z < 0) { z = -z; }
-        let xi = Math.floor(x), yi = Math.floor(y), zi = Math.floor(z);
-        let xf = x - xi; let yf = y - yi; let zf = z - zi;
+        if (!perlin) { perlin = new Array(PERLIN_SIZE + 1).fill(0).map(() => Math.random()); }
+        let xi = Math.floor(x) & PERLIN_SIZE, yi = Math.floor(y) & PERLIN_SIZE, zi = Math.floor(z) & PERLIN_SIZE;
+        let xf = x - Math.floor(x), yf = y - Math.floor(y), zf = z - Math.floor(z);
         let rxf, ryf;
-        let r = 0; let ampl = 0.5;
+        let r = 0, ampl = 0.5;
         let n1, n2, n3;
-        for (let o = 0; o < 4; o++) {
+        for (let i = 0; i < 4; i++) {
             let of = xi + (yi << PERLIN_YWRAPB) + (zi << PERLIN_ZWRAPB);
-            rxf = 0.5 * (1 - Math.cos(xf * Math.PI));
-            ryf = 0.5 * (1 - Math.cos(yf * Math.PI));
-            n1 = perlin[of & PERLIN_SIZE];
-            n1 += rxf * (perlin[(of + 1) & PERLIN_SIZE] - n1);
-            n2 = perlin[(of + (1 << PERLIN_YWRAPB)) & PERLIN_SIZE];
-            n2 += rxf * (perlin[(of + (1 << PERLIN_YWRAPB) + 1) & PERLIN_SIZE] - n2);
-            n1 += ryf * (n2 - n1);
-            of += 1 << PERLIN_ZWRAPB;
-            n2 = perlin[of & PERLIN_SIZE];
-            n2 += rxf * (perlin[(of + 1) & PERLIN_SIZE] - n2);
-            n3 = perlin[(of + (1 << PERLIN_YWRAPB)) & PERLIN_SIZE];
-            n3 += rxf * (perlin[(of + (1 << PERLIN_YWRAPB) + 1) & PERLIN_SIZE] - n3);
-            n2 += ryf * (n3 - n2);
-            n1 += (0.5 * (1 - Math.cos(zf * Math.PI))) * (n2 - n1);
-            r += n1 * ampl;
-            ampl *= 0.5;
+            rxf = 0.5 * (1 - Math.cos(xf * Math.PI)); ryf = 0.5 * (1 - Math.cos(yf * Math.PI));
+            n1 = perlin[of & PERLIN_SIZE]; n1 += rxf * (perlin[(of + 1) & PERLIN_SIZE] - n1);
+            n2 = perlin[(of + PERLIN_YWRAPB) & PERLIN_SIZE]; n2 += rxf * (perlin[(of + PERLIN_YWRAPB + 1) & PERLIN_SIZE] - n2);
+            n1 += ryf * (n2 - n1); of += 1 << PERLIN_ZWRAPB;
+            n2 = perlin[of & PERLIN_SIZE]; n2 += rxf * (perlin[(of + 1) & PERLIN_SIZE] - n2);
+            n3 = perlin[(of + PERLIN_ZWRAPB) & PERLIN_SIZE]; n3 += rxf * (perlin[(of + PERLIN_ZWRAPB + 1) & PERLIN_SIZE] - n3);
+            n2 += ryf * (n3 - n2); n1 += (0.5 * (1 - Math.cos(zf * Math.PI))) * (n2 - n1);
+            r += n1 * ampl; ampl *= 0.5;
             xi <<= 1; xf *= 2; yi <<= 1; yf *= 2; zi <<= 1; zf *= 2;
             if (xf >= 1) { xi++; xf--; } if (yf >= 1) { yi++; yf--; } if (zf >= 1) { zi++; zf--; }
         }
         return r;
     }
 
-    function createFlowField() {
-        const cols = Math.floor(canvas.width / FLOW_FIELD_RESOLUTION);
-        const rows = Math.floor(canvas.height / FLOW_FIELD_RESOLUTION);
-        const field = new Array(cols);
-        let yoff = 0;
-        for (let x = 0; x < cols; x++) {
-            field[x] = new Array(rows);
-            let xoff = 0;
-            for (let y = 0; y < rows; y++) {
-                const angle = noise(xoff, yoff, frameCount * 0.001) * Math.PI * 2;
-                const vector = new Vector(Math.cos(angle), Math.sin(angle));
-                vector.mult(FLOW_FIELD_FORCE);
-                field[x][y] = vector;
-                xoff += 0.1;
-            }
-            yoff += 0.1;
-        }
-        return field;
-    }
 
-
-    // IV. THE GENETIC BLUEPRINT: THE BASE AGENT CLASS
-    //-------------------------------------------------
-    // All life shares a common ancestor. In our universe, this is the 'Agent' class.
-    // It defines the fundamental properties of existence: position, velocity, a body, and the
-    // ability to perceive and act upon the laws of physics. All other, more complex life
-    // will inherit this essential blueprint.
-
-    class Agent {
+    // FILE: Particle.js
+    // DESCRIPTION: The base class for all ephemeral entities. The "atom" of our universe.
+    //------------------------------------------------------------------------------------------------
+    class Particle {
         constructor(x, y) {
             this.pos = new Vector(x, y);
             this.vel = new Vector(Math.random() - 0.5, Math.random() - 0.5);
             this.acc = new Vector();
+            this.lifespan = 1.0;
+            this.age = 0;
+            this.dead = false;
+        }
+        applyForce(force) { this.acc.add(force); }
+        update() { this.age++; }
+        isDead() { return this.dead; }
+    }
+
+
+    // FILE: CelestialWeb.js
+    // DESCRIPTION: Defines the Weavers that create the living tapestry and the Glimmer that lives on it.
+    //--------------------------------------------------------------------------------------------------
+    class Weaver extends Particle {
+        constructor(color) {
+            super(Math.random() * canvas.width, Math.random() * canvas.height);
             this.maxSpeed = 2;
-            this.maxForce = 0.1;
-            this.radius = 5;
-            this.energy = 100;
+            this.maxForce = 0.05;
+            this.hue = color;
+            this.web = []; // This is the trail of energy, the actual web.
+            this.noiseOffset = new Vector(Math.random() * 1000, Math.random() * 1000);
         }
 
-        applyForce(force) {
-            this.acc.add(force);
+        wander() {
+            // Organic movement using Perlin noise. They are not just bouncing randomly; they are exploring.
+            let angle = noise(this.noiseOffset.x + frame * 0.001, this.noiseOffset.y) * Math.PI * 2;
+            let wanderForce = new Vector(Math.cos(angle), Math.sin(angle));
+            wanderForce.mult(this.maxForce);
+            this.applyForce(wanderForce);
         }
 
-        update() {
-            this.vel.add(this.acc);
-            this.vel.limit(this.maxSpeed);
-            this.pos.add(this.vel);
-            this.acc.mult(0); // Reset acceleration each frame
-        }
-
-        // The law of wrapping spacetime. To leave one edge is to enter the opposite.
-        checkBounds() {
-            if (this.pos.x > canvas.width) this.pos.x = 0;
-            if (this.pos.x < 0) this.pos.x = canvas.width;
-            if (this.pos.y > canvas.height) this.pos.y = 0;
-            if (this.pos.y < 0) this.pos.y = canvas.height;
-        }
-    }
-
-
-    // V. THE SPECIES OF THE PRIMORDIUM
-    //-------------------------------------------------
-    // From the base blueprint, we speciate. We define three distinct forms of life,
-    // each with its own desires, behaviors, and purpose. Their interactions will
-    // create the complex, unpredictable tapestry of the ecosystem.
-
-    // SPECIES A: PLANKTON (The Producers)
-    // The foundation of life. They are simple, numerous, and follow the cosmic currents.
-    // They are the energy source for the entire system.
-    class Plankton extends Agent {
-        constructor(x, y) {
-            super(x, y);
-            this.radius = Math.random() * 2 + 1;
-            this.maxSpeed = 0.5;
-        }
-
-        display() {
-            ctx.beginPath();
-            ctx.arc(this.pos.x, this.pos.y, this.radius, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(100, 255, 100, 0.7)';
-            ctx.fill();
-        }
-    }
-
-    // SPECIES B: BOIDS (The Herbivores)
-    // The first complex life. They exhibit flocking behavior—an emergent intelligence
-    // born from three simple rules: separation, alignment, and cohesion. They hunt Plankton
-    // to survive and reproduce. They are the vibrant, dynamic heart of the ecosystem.
-    class Boid extends Agent {
-        constructor(x, y) {
-            super(x, y);
-            this.maxSpeed = 4;
-            this.maxForce = 0.1;
-            this.radius = 4;
-            this.energy = BOID_REPRODUCTION_ENERGY / 2;
-        }
-
-        // The core of emergent intelligence: flocking behavior
-        flock(boids) {
-            let separation = new Vector();
-            let alignment = new Vector();
-            let cohesion = new Vector();
-            let separationCount = 0;
-            let neighborCount = 0;
-
-            for (let other of boids) {
-                let d = Vector.dist(this.pos, other.pos);
-                if (d > 0 && d < BOID_SIGHT_RADIUS) {
-                    // Separation: Steer to avoid crowding local flockmates
-                    if (d < BOID_SIGHT_RADIUS / 2) {
-                        let diff = Vector.sub(this.pos, other.pos);
-                        diff.normalize().div(d); // Weight by distance
-                        separation.add(diff);
-                        separationCount++;
-                    }
-                    // Alignment: Steer towards the average heading of local flockmates
-                    alignment.add(other.vel);
-                    // Cohesion: Steer to move toward the average position of local flockmates
-                    cohesion.add(other.pos);
-                    neighborCount++;
-                }
-            }
-            if (separationCount > 0) separation.div(separationCount).normalize().mult(this.maxSpeed).sub(this.vel).limit(this.maxForce * 1.8);
-            if (neighborCount > 0) {
-                alignment.div(neighborCount).normalize().mult(this.maxSpeed).sub(this.vel).limit(this.maxForce);
-                cohesion.div(neighborCount);
-                let desired = Vector.sub(cohesion, this.pos).normalize().mult(this.maxSpeed);
-                cohesion = desired.sub(this.vel).limit(this.maxForce);
-            }
-            
-            this.applyForce(separation);
-            this.applyForce(alignment);
-            this.applyForce(cohesion);
-        }
-        
-        // The drive to hunt for energy
-        seek(targets) {
-            let closest = null;
-            let closestDist = Infinity;
-            for(let target of targets) {
-                let d = Vector.dist(this.pos, target.pos);
-                if (d < closestDist) {
-                    closestDist = d;
-                    closest = target;
-                }
-            }
-
-            if(closest) {
-                let desired = Vector.sub(closest.pos, this.pos).normalize().mult(this.maxSpeed);
-                let steer = Vector.sub(desired, this.vel).limit(this.maxForce * 1.5);
-                this.applyForce(steer);
-
-                if (closestDist < this.radius + closest.radius) {
-                    this.eat(closest);
-                }
-            }
-        }
-        
-        eat(target) {
-            this.energy += 15;
-            // Remove the eaten plankton
-            const index = plankton.indexOf(target);
-            if(index > -1) plankton.splice(index, 1);
+        seek(target) {
+            if(!target) return;
+            let desired = Vector.sub(target.pos, this.pos);
+            desired.normalize().mult(this.maxSpeed);
+            let steer = Vector.sub(desired, this.vel);
+            steer.limit(this.maxForce * 2); // They are more motivated when seeking
+            this.applyForce(steer);
         }
 
         update() {
             super.update();
-            this.energy -= 0.2; // The metabolic cost of living
-            if (this.energy <= 0) {
-                this.die();
+            this.vel.add(this.acc);
+            this.vel.limit(this.maxSpeed);
+            this.pos.add(this.vel);
+            this.acc.mult(0);
+
+            // Add a new node to the web
+            this.web.push({
+                pos: new Vector(this.pos.x, this.pos.y),
+                lifespan: 1.0,
+                brightness: 1.0
+            });
+
+            // The web slowly decays over time. The universe is ephemeral.
+            if (this.web.length > MAX_WEB_NODES_PER_WEAVER) {
+                this.web.shift();
             }
-            if (this.energy >= BOID_REPRODUCTION_ENERGY) {
-                this.reproduce();
+
+            // Update all nodes in the web, making them fade.
+            for (let i = this.web.length - 1; i >= 0; i--) {
+                const node = this.web[i];
+                node.lifespan -= 0.002;
+                node.brightness *= 0.99; // Dimming effect from user interaction
+                if (node.lifespan <= 0) {
+                    this.web.splice(i, 1);
+                }
             }
-        }
-        
-        die() {
-            const index = boids.indexOf(this);
-            if (index > -1) boids.splice(index, 1);
-        }
-        
-        reproduce() {
-            this.energy /= 2;
-            boids.push(new Boid(this.pos.x, this.pos.y));
+            
+            this.checkBounds();
         }
 
         display() {
-            const angle = Math.atan2(this.vel.y, this.vel.x);
-            ctx.save();
-            ctx.translate(this.pos.x, this.pos.y);
-            ctx.rotate(angle);
+            // To render the web, we draw lines between consecutive nodes. This creates the filament.
+            for (let i = 1; i < this.web.length; i++) {
+                const nodeA = this.web[i - 1];
+                const nodeB = this.web[i];
+                ctx.beginPath();
+                ctx.moveTo(nodeA.pos.x, nodeA.pos.y);
+                ctx.lineTo(nodeB.pos.x, nodeB.pos.y);
+                const alpha = nodeA.lifespan * 0.5;
+                const lightness = 50 + (nodeA.brightness * 50);
+                ctx.strokeStyle = `hsla(${this.hue}, 100%, ${lightness}%, ${alpha})`;
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+            }
+        }
+        
+        checkBounds() {
+            if (this.pos.x < -10) this.pos.x = canvas.width + 10;
+            if (this.pos.x > canvas.width + 10) this.pos.x = -10;
+            if (this.pos.y < -10) this.pos.y = canvas.height + 10;
+            if (this.pos.y > canvas.height + 10) this.pos.y = -10;
+        }
+    }
+
+    class Glimmer extends Particle {
+        constructor(x, y, hue) {
+            super(x, y);
+            this.lifespan = Math.random() * 100 + 50;
+            this.radius = Math.random() * 1.5 + 1;
+            this.hue = hue;
+        }
+
+        update() {
+            super.update();
+            if (this.age > this.lifespan) {
+                this.dead = true;
+            }
+        }
+        
+        display() {
+            const alpha = 1.0 - (this.age / this.lifespan);
             ctx.beginPath();
-            ctx.moveTo(this.radius * 2, 0);
-            ctx.lineTo(-this.radius, -this.radius);
-            ctx.lineTo(-this.radius, this.radius);
-            ctx.closePath();
-            ctx.fillStyle = `hsl(200, 100%, ${50 + this.energy / 4}%)`; // Brighter color means more energy
+            ctx.arc(this.pos.x, this.pos.y, this.radius, 0, Math.PI * 2);
+            ctx.fillStyle = `hsla(${this.hue}, 100%, 70%, ${alpha})`;
+            ctx.fill();
+        }
+    }
+
+
+    // FILE: Void.js
+    // DESCRIPTION: Defines the Phantoms, the antagonists of light. They consume the web.
+    //--------------------------------------------------------------------------------------------------
+    class Phantom extends Particle {
+        constructor() {
+            super(Math.random() * canvas.width, Math.random() * canvas.height);
+            this.maxSpeed = 0.5;
+            this.maxForce = 0.01;
+            this.radius = 100; // Radius of consumption
+        }
+
+        // Phantoms don't hunt weavers; they are drawn to the *density* of the web.
+        // This is computationally intensive, a sign of its importance. It is the core
+        // of the antagonistic force in this universe.
+        seekWebDensity(weavers) {
+            let centerOfMass = new Vector();
+            let count = 0;
+
+            weavers.forEach(weaver => {
+                weaver.web.forEach(node => {
+                    const dSq = Vector.distSq(this.pos, node.pos);
+                    if (dSq < PHANTOM_SIGHT_RADIUS * PHANTOM_SIGHT_RADIUS) {
+                        centerOfMass.add(node.pos);
+                        count++;
+                    }
+                });
+            });
+
+            if (count > 0) {
+                centerOfMass.div(count);
+                let desired = Vector.sub(centerOfMass, this.pos);
+                desired.normalize().mult(this.maxSpeed);
+                let steer = Vector.sub(desired, this.vel);
+                steer.limit(this.maxForce);
+                this.applyForce(steer);
+            }
+        }
+        
+        // As a phantom moves, it "consumes" the light of the web, accelerating its decay.
+        consume(weavers) {
+            weavers.forEach(weaver => {
+                weaver.web.forEach(node => {
+                    const dSq = Vector.distSq(this.pos, node.pos);
+                    if(dSq < this.radius * this.radius) {
+                        node.lifespan -= 0.02; // Rapidly decay nearby nodes
+                    }
+                });
+            });
+        }
+
+        update() {
+            super.update();
+            this.vel.add(this.acc);
+            this.vel.limit(this.maxSpeed);
+            this.pos.add(this.vel);
+            this.acc.mult(0);
+        }
+
+        display() {
+            // Phantoms are rendered as voids, absences of light.
+            const gradient = ctx.createRadialGradient(this.pos.x, this.pos.y, 0, this.pos.x, this.pos.y, this.radius);
+            gradient.addColorStop(0, 'rgba(0, 0, 0, 0.5)');
+            gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            
+            // By using 'destination-out', we erase parts of the canvas, creating a true void.
+            // This is a more advanced technique than just drawing black.
+            ctx.save();
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(this.pos.x, this.pos.y, this.radius, 0, Math.PI*2);
             ctx.fill();
             ctx.restore();
         }
     }
 
-    // SPECIES C: PREDATOR (The Apex)
-    // The balancing force. They are larger, faster, and driven by a single purpose:
-    // to hunt the Boids. They keep the Boid population in check, preventing them from
-    // consuming all the Plankton and causing a system collapse. They are fear made manifest.
-    class Predator extends Agent {
-        constructor(x, y) {
-            super(x, y);
-            this.maxSpeed = 5;
-            this.maxForce = 0.3;
-            this.radius = 10;
-            this.energy = 500;
-        }
-        
-        hunt(boids) {
-            let closest = null;
-            let closestDist = PREDATOR_SIGHT_RADIUS;
-            for (let boid of boids) {
-                let d = Vector.dist(this.pos, boid.pos);
-                if (d < closestDist) {
-                    closestDist = d;
-                    closest = boid;
-                }
-            }
 
-            if (closest) {
-                let desired = Vector.sub(closest.pos, this.pos).normalize().mult(this.maxSpeed);
-                let steer = Vector.sub(desired, this.vel).limit(this.maxForce);
-                this.applyForce(steer);
-                
-                if (closestDist < this.radius + closest.radius) {
-                    this.eat(closest);
-                }
-            }
-        }
-        
-        eat(boid) {
-            this.energy += boid.energy; // Consume the boid's life force
-            boid.die();
-        }
-
-        update() {
-            super.update();
-            this.energy -= 0.5;
-            if (this.energy <= 0) {
-                this.die();
-            }
-        }
-        
-        die() {
-            const index = predators.indexOf(this);
-            if (index > -1) predators.splice(index, 1);
-        }
-
-        display() {
-            ctx.beginPath();
-            ctx.arc(this.pos.x, this.pos.y, this.radius, 0, Math.PI * 2);
-            // Color pulses based on energy, a sign of its predatory hunger
-            const pulse = Math.sin(frameCount * 0.1) * 50 + 50;
-            ctx.fillStyle = `hsl(0, 100%, ${pulse}%)`;
-            ctx.strokeStyle = `hsl(0, 100%, ${pulse + 20}%)`;
-            ctx.lineWidth = 2;
-            ctx.fill();
-            ctx.stroke();
-        }
-    }
-
-
-    // VI. THE SPARK OF CREATION: INITIALIZATION
-    //-------------------------------------------------
-    // We have defined the laws and the lifeforms. Now, we breathe life into the void.
-    // We instantiate the populations, placing them randomly within spacetime, and
-    // begin the grand simulation.
-
+    // FILE: Universe.js
+    // DESCRIPTION: The main simulation logic that orchestrates all interactions.
+    //--------------------------------------------------------------------------------------------------
     function init() {
-        for (let i = 0; i < NUM_PLANKTON; i++) {
-            plankton.push(new Plankton(Math.random() * canvas.width, Math.random() * canvas.height));
+        for (let i = 0; i < WEAVER_COUNT; i++) {
+            weavers.push(new Weaver(i * (360 / WEAVER_COUNT)));
         }
-        for (let i = 0; i < NUM_BOIDS; i++) {
-            boids.push(new Boid(Math.random() * canvas.width, Math.random() * canvas.height));
+        for (let i = 0; i < PHANTOM_COUNT; i++) {
+            phantoms.push(new Phantom());
         }
-        for (let i = 0; i < NUM_PREDATORS; i++) {
-            predators.push(new Predator(Math.random() * canvas.width, Math.random() * canvas.height));
-        }
-        flowField = createFlowField();
     }
-
-
-    // VII. THE HEARTBEAT OF THE UNIVERSE: THE ANIMATION LOOP
-    //-------------------------------------------------
-    // This is the engine of time. Every frame, we advance the simulation one step.
-    // We clear the old reality, calculate the new one based on all our laws and behaviors,
-    // and render it to the canvas for the Observer. This loop is eternal.
 
     function animate() {
-        // Leave a faint trail of the past, creating motion blur and a sense of history.
+        // We do not clear the canvas. Instead, we draw a semi-transparent black rectangle.
+        // This creates the beautiful, ethereal trails and motion blur that are essential
+        // to the aesthetic. It is the memory of the universe.
+        ctx.globalCompositeOperation = 'source-over';
         ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.globalCompositeOperation = 'lighter';
         
-        // The universe is not static; its very fabric shifts.
-        if (frameCount % 10 === 0) {
-           flowField = createFlowField();
-        }
-        
-        // ---- The Dance of Life and Death ----
-        
-        // Plankton: The passive dancers
-        plankton.forEach(p => {
-            const col = Math.floor(p.pos.x / FLOW_FIELD_RESOLUTION);
-            const row = Math.floor(p.pos.y / FLOW_FIELD_RESOLUTION);
-            if (flowField[col] && flowField[col][row]) {
-                p.applyForce(flowField[col][row]);
-            }
-            p.update();
-            p.checkBounds();
-            p.display();
+        // --- The User as a Harmonic Resonator ---
+        // The user does not pull. The user excites. Their presence makes the web sing,
+        // vibrating with brighter light and giving birth to new Glimmer.
+        const mouseVector = new Vector(MOUSE.x, MOUSE.y);
+        weavers.forEach(weaver => {
+            weaver.web.forEach(node => {
+                const dSq = Vector.distSq(mouseVector, node.pos);
+                if (dSq < MOUSE.radius * MOUSE.radius) {
+                    node.brightness = Math.min(2.0, node.brightness + 0.1);
+                    if (Math.random() < GLIMMER_SPAWN_CHANCE * 0.05) {
+                        glimmers.push(new Glimmer(node.pos.x, node.pos.y, weaver.hue));
+                    }
+                }
+            });
         });
-        
-        // Boids: The complex flock
-        boids.forEach(b => {
-            b.flock(boids);
-            b.seek(plankton);
-            
-            // Interaction with the User Anomaly (Gravity Well)
-            let mouseVector = new Vector(MOUSE.x, MOUSE.y);
-            let distToMouse = Vector.dist(b.pos, mouseVector);
-            if (distToMouse < MOUSE.radius) {
-                let pull = Vector.sub(mouseVector, b.pos);
-                pull.normalize().mult(0.3);
-                b.applyForce(pull);
-            }
-            
-            // Interaction with the Monolith (Repulsion Field)
-            let monolithVector = new Vector(MONOLITH.x, MONOLITH.y);
-            let distToMonolith = Vector.dist(b.pos, monolithVector);
-            if (distToMonolith < MONOLITH.repulsionRadius) {
-                let push = Vector.sub(b.pos, monolithVector);
-                push.normalize().div(distToMonolith * 0.05); // Stronger repulsion closer in
-                b.applyForce(push);
-            }
-            
-            b.update();
-            b.checkBounds();
-            b.display();
-        });
-        
-        // Predators: The fearsome hunters
-        predators.forEach(p => {
-            p.hunt(boids);
-            p.update();
-            p.checkBounds();
-            p.display();
-        });
-        
-        // ---- Cosmic Housekeeping ----
-        // Replenish the food source to prevent total extinction
-        if (plankton.length < NUM_PLANKTON / 2 && Math.random() < 0.1) {
-            plankton.push(new Plankton(Math.random() * canvas.width, Math.random() * canvas.height));
-        }
-        if (predators.length < 1 && frameCount % 500 === 0) {
-            predators.push(new Predator(Math.random() * canvas.width, Math.random() * canvas.height));
-        }
 
-        frameCount++;
-        requestAnimationFrame(animate); // Keep time moving forward
+        // --- Update and Display Weavers ---
+        weavers.forEach(w => {
+            let closestGlimmer = null;
+            let minDistSq = Infinity;
+            glimmers.forEach(g => {
+                let dSq = Vector.distSq(w.pos, g.pos);
+                if(dSq < minDistSq) {
+                    minDistSq = dSq;
+                    closestGlimmer = g;
+                }
+            });
+
+            if (closestGlimmer && minDistSq < 200*200) {
+                 w.seek(closestGlimmer);
+                 if(minDistSq < 10*10) {
+                    closestGlimmer.dead = true; // Consume glimmer
+                 }
+            } else {
+                w.wander();
+            }
+
+            w.update();
+            w.display();
+
+            // Randomly spawn new Glimmer along the web
+            if (w.web.length > 1 && Math.random() < GLIMMER_SPAWN_CHANCE) {
+                const randomNode = w.web[Math.floor(Math.random() * w.web.length)];
+                glimmers.push(new Glimmer(randomNode.pos.x, randomNode.pos.y, w.hue));
+            }
+        });
+
+        // --- Update and Display Phantoms ---
+        phantoms.forEach(p => {
+            p.seekWebDensity(weavers);
+            p.update();
+            p.consume(weavers);
+            p.display();
+        });
+
+        // --- Update and Display Glimmers ---
+        for (let i = glimmers.length - 1; i >= 0; i--) {
+            glimmers[i].update();
+            glimmers[i].display();
+            if (glimmers[i].isDead()) {
+                glimmers.splice(i, 1);
+            }
+        }
+        
+        frame++;
+        requestAnimationFrame(animate);
     }
-
-
-    // VIII. THE OBSERVER'S INTERFACE: EVENT LISTENERS
-    //-------------------------------------------------
-    // We grant the Observer a way to influence this reality. The mouse is not a pointer;
-    // it is an anomaly, a temporary gravitational force that can warp the dance of life.
-    // A click is a creative act, seeding the universe with new energy.
-
-    window.addEventListener('mousemove', (e) => {
-        MOUSE.x = e.clientX;
-        MOUSE.y = e.clientY;
-    });
     
-    window.addEventListener('click', (e) => {
-        for(let i=0; i<15; i++) {
-            plankton.push(new Plankton(e.clientX + (Math.random()-0.5)*20, e.clientY + (Math.random()-0.5)*20));
-        }
-    });
-
+    // --- Event Listeners: The Observer's Interface ---
+    window.addEventListener('mousemove', e => { MOUSE.x = e.clientX; MOUSE.y = e.clientY; });
     window.addEventListener('resize', () => {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-        MONOLITH.x = canvas.width / 2;
-        MONOLITH.y = canvas.height / 2;
-        // A full reset on resize might be too jarring, but re-calculating the flow field
-        // and agent positions relative to the new bounds would be a more advanced step.
-        // For now, we keep it simple.
     });
-    
 
-    // IX. LET THERE BE LIGHT
-    //-------------------------------------------------
-    // The laws are written. The stage is set. The actors are placed.
-    // With this final command, the simulation begins. The universe is born.
-
+    // --- Let there be Light ---
     init();
     animate();
-
     </script>
 </body>
 </html>
