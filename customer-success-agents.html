@@ -69,19 +69,21 @@
         const end = { x: Math.random() * w, y: Math.random() * h };
         const ctrl = { x: (start.x + end.x) / 2 + (Math.random() - 0.5) * 80,
                        y: (start.y + end.y) / 2 + (Math.random() - 0.5) * 80 };
-        return { start, end, ctrl, life: 0, ttl: 220 + Math.random() * 120 };
+        const ttl = 140 + Math.random() * 100; // shorter lifetime for faster turnover
+        const life = Math.random() * ttl; // desynchronize spawn so no initial lag
+        return { start, end, ctrl, life, ttl };
     }
-    const threads = Array.from({ length: 18 }, spawnThread);
+    const threads = Array.from({ length: 24 }, spawnThread);
     let t = 0;
     function draw() {
-        ctx.fillStyle = 'rgba(2,2,5,0.06)';
+        ctx.fillStyle = 'rgba(2,2,5,0.04)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         for (let i = 0; i < threads.length; i++) {
             const th = threads[i];
             const p = th.life / th.ttl;
-            const alpha = 0.12 * (1 - p);
-            const cx = th.ctrl.x + Math.sin(t * 0.02 + i) * 6;
-            const cy = th.ctrl.y + Math.cos(t * 0.025 + i) * 6;
+            const alpha = 0.14 * (1 - p);
+            const cx = th.ctrl.x + Math.sin(t * 0.04 + i) * 6;
+            const cy = th.ctrl.y + Math.cos(t * 0.05 + i) * 6;
             ctx.beginPath();
             ctx.moveTo(th.start.x, th.start.y);
             ctx.quadraticCurveTo(cx, cy, th.end.x, th.end.y);
@@ -95,7 +97,7 @@
             th.life += 1;
             if (th.life >= th.ttl) threads[i] = spawnThread();
         }
-        t += 1;
+        t += 2; // speed up evolution
         if (!prefersReducedMotion) requestAnimationFrame(draw);
     }
     draw();
