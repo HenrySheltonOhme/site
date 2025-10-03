@@ -151,17 +151,17 @@
     // --- The Conscious Thoughts (Project Data with URLs) ---
     // This new structure holds both the name and the corresponding URL for each project.
     const projectData = [
-        { name: "Customer Success Agents", url: "https://ohmenergy.atlassian.net/wiki/spaces/DS/folder/2726133815?atlOrigin=eyJpIjoiOWU5ZmFiZjE0NjQwNDliZGI5YzIyMDYwNDRiYmE5MWMiLCJwIjoiYyJ9" },
-        { name: "ML/AIOps", url: "https://ohmenergy.atlassian.net/wiki/spaces/DS/folder/2726592564?atlOrigin=eyJpIjoiMDllMjUyYTIxOThlNDQ5NGJlMjk3OGU3NmVlMDJkYTciLCJwIjoiYyJ9" },
-        { name: "Ohme Enterprise Knowledge Center", url: "https://ohmenergy.atlassian.net/wiki/spaces/DS/folder/2726723585?atlOrigin=eyJpIjoiMzA3ZDVjYWUwZGE0NGUxNTgxNWQyNzAzYzAzNDEzZTQiLCJwIjoiYyJ9" },
-        { name: "Journey Computer Vision", url: "https://ohmenergy.atlassian.net/wiki/spaces/DS/folder/2726264863?atlOrigin=eyJpIjoiMWU1OWMyNTgxNzcyNGIwZjg5NWQ0NTRlYzEzNTc5YTQiLCJwIjoiYyJ9" },
-        { name: "Energy Consumption Forecasting", url: "https://ohmenergy.atlassian.net/wiki/spaces/DS/folder/2807824463?atlOrigin=eyJpIjoiMTliYWY3MWM5OWUzNDg3Nzg5ZDkzODdlZTJmOGI2NTgiLCJwIjoiYyJ9" },
-        { name: "Session Params Prediction", url: "https://ohmenergy.atlassian.net/wiki/spaces/DS/folder/2808086598?atlOrigin=eyJpIjoiNGU0YThhMGVjZjZmNDg4ZTk3NGI0ZjE1YTczYmVhOTIiLCJwIjoiYyJ9" },
-        { name: "CX Agents Evaluation", url: "https://ohmenergy.atlassian.net/wiki/spaces/DS/folder/2808086598?atlOrigin=eyJpIjoiOTVkN2U3OTYwNzU3NGM3NDhhZjQ0MzkyNTYzZjMzYzMiLCJwIjoiYyJ9" },
-        { name: "Sentinel", url: "https://ohmenergy.atlassian.net/wiki/spaces/DS/pages/3153723452/Sentinel?atlOrigin=eyJpIjoiYTk4MzA3ZWFlOGNkNDQwYjk2NTZhN2E5MjVkMjlkOWEiLCJwIjoiYyJ9" },
-        { name: "CX Engine", url: "https://ohmenergy.atlassian.net/wiki/spaces/DS/folder/2739109892?atlOrigin=eyJpIjoiNzBhOWQwMjgwN2RiNDg3ZGIyNmJiMTE3M2IxYTkyYzMiLCJwIjoiYyJ9" },
-        { name: "Crowdflex", url: "https://ohmenergy.atlassian.net/wiki/spaces/DS/folder/2736357397?atlOrigin=eyJpIjoiOWU2OGQ4MDM4NjBjNDc4OTlkNjk0MDdiNzQyODU3OTYiLCJwIjoiYyJ9" },
-        { name: "POCs", url: "#" } // Placeholder link as one was not provided
+        { name: "Customer Success Agents", url: "customer-success-agents.html" },
+        { name: "ML/AIOps", url: "ml-aiops.html" },
+        { name: "Ohme Enterprise Knowledge Center", url: "ohme-enterprise-knowledge-center.html" },
+        { name: "Journey Computer Vision", url: "journey-computer-vision.html" },
+        { name: "Energy Consumption Forecasting", url: "energy-consumption-forecasting.html" },
+        { name: "Session Params Prediction", url: "session-params-prediction.html" },
+        { name: "CX Agents Evaluation", url: "cx-agents-evaluation.html" },
+        { name: "Sentinel", url: "sentinel.html" },
+        { name: "CX Engine", url: "cx-engine.html" },
+        { name: "Crowdflex", url: "crowdflex.html" },
+        { name: "POCs", url: "pocs.html" }
     ];
     let thoughts = [];
 
@@ -389,8 +389,12 @@
         for (const project of projectData) {
             const el = document.createElement('a');
             el.href = project.url;
-            el.target = "_blank"; // Open link in a new tab
-            el.rel = "noopener noreferrer"; // Security measure for opening in new tab
+            if (/^https?:\/\//i.test(project.url)) {
+                el.target = "_blank";
+                el.rel = "noopener noreferrer";
+            } else {
+                el.target = "_self";
+            }
             el.classList.add('thought-node');
             el.textContent = project.name;
             thoughtsContainer.appendChild(el);
