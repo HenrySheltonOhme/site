@@ -156,7 +156,6 @@
         "POCs"
     ];
     let thoughts = [];
-    let spawnInterval;
 
     // --- The Subconscious (Neuron Simulation) ---
     const NEURON_COUNT = 200;
@@ -182,45 +181,51 @@
 
 
     // --- Layer 1: The Subconscious Neuron ---
-    // Represents the biological foundation. They pulse, connect, and form a living web.
+    // Represents the biological foundation. They now have their own physics and behaviors.
     class Neuron {
         constructor(x, y) {
             this.pos = new Vector(x, y);
-            this.originalPos = new Vector(x, y);
+            this.originalPos = new Vector(x, y); // A point to be tethered to
+            this.vel = new Vector(Math.random() * 2 - 1, Math.random() * 2 - 1);
+            this.acc = new Vector();
             this.radius = Math.random() * 2 + 1;
+            this.damping = 0.95; // A bit of friction
             this.color = `rgba(100, 120, 200, ${Math.random() * 0.3 + 0.1})`;
-            this.neighbors = [];
-            this.offset = Math.random() * 1000;
         }
 
-        findNeighbors(allNeurons) {
-            for (const other of allNeurons) {
-                if (other === this) continue;
-                if (Vector.distSq(this.pos, other.pos) < NEIGHBOR_RADIUS * NEIGHBOR_RADIUS) {
-                    this.neighbors.push(other);
-                }
+        applyForce(force) {
+            this.acc.add(force);
+        }
+
+        // New method to calculate behaviors
+        behaviors() {
+            // 1. A gentle force pulling it back towards its original position.
+            // This creates a beautiful, stretching, tethered motion.
+            let returnForce = new Vector(this.originalPos.x - this.pos.x, this.originalPos.y - this.pos.y);
+            returnForce.mult(0.0005); // Very weak force
+            this.applyForce(returnForce);
+
+            // 2. Repulsion from the mouse, making them "move out of the way".
+            const mouseDistSq = Vector.distSq(this.pos, mouse);
+            if (mouseDistSq < mouse.radius * mouse.radius) {
+                let mouseForce = new Vector(this.pos.x - mouse.x, this.pos.y - mouse.y);
+                const distance = Math.sqrt(mouseDistSq);
+                const forceMagnitude = (mouse.radius - distance) * 0.005;
+                mouseForce.normalize().mult(forceMagnitude);
+                this.applyForce(mouseForce);
             }
         }
 
         update() {
-            // A gentle, organic pulsing/drifting motion using sine waves
-            const time = Date.now() * 0.0002;
-            this.pos.x = this.originalPos.x + Math.sin(time + this.offset) * 5;
-            this.pos.y = this.originalPos.y + Math.cos(time + this.offset) * 5;
+            this.vel.add(this.acc);
+            this.vel.mult(this.damping);
+            this.pos.add(this.vel);
+            this.acc.mult(0); // Reset acceleration
         }
 
         draw(ctx) {
-            // Draw connections to neighbors first, so they are underneath
-            ctx.strokeStyle = `rgba(120, 150, 255, 0.05)`;
-            ctx.lineWidth = 0.5;
-            for (const neighbor of this.neighbors) {
-                ctx.beginPath();
-                ctx.moveTo(this.pos.x, this.pos.y);
-                ctx.lineTo(neighbor.pos.x, neighbor.pos.y);
-                ctx.stroke();
-            }
-
-            // Draw the neuron body
+            // We only draw the neuron body here now.
+            // Connections will be drawn dynamically in the main loop.
             ctx.beginPath();
             ctx.arc(this.pos.x, this.pos.y, this.radius, 0, Math.PI * 2);
             ctx.fillStyle = this.color;
@@ -293,29 +298,25 @@
     // --- Initialization Function ---
     // Sets up the entire scene.
     function init() {
-        // Create the subconscious neuron web
+        // Re-populate the subconscious neuron web
+        neurons.length = 0; // Clear existing neurons on resize
         for (let i = 0; i < NEURON_COUNT; i++) {
             neurons.push(new Neuron(Math.random() * width, Math.random() * height));
         }
-        for (const neuron of neurons) {
-            neuron.findNeighbors(neurons);
-        }
 
-        // Begin spawning the conscious thoughts one by one
-        let projectsToSpawn = [...projectNames];
-        spawnInterval = setInterval(() => {
-            if (projectsToSpawn.length > 0) {
-                const thoughtText = projectsToSpawn.shift();
-                const el = document.createElement('a');
-                el.href = "#"; // Fake link
-                el.classList.add('thought-node');
-                el.textContent = thoughtText;
-                thoughtsContainer.appendChild(el);
-                thoughts.push(new ThoughtNode(el));
-            } else {
-                clearInterval(spawnInterval);
-            }
-        }, 1500); // Spawn a new thought every 1.5 seconds
+        // Remove existing HTML elements and thoughts array
+        thoughtsContainer.innerHTML = '';
+        thoughts.length = 0;
+
+        // Instantly create all conscious thoughts
+        for (const thoughtText of projectNames) {
+            const el = document.createElement('a');
+            el.href = "#"; // Fake link
+            el.classList.add('thought-node');
+            el.textContent = thoughtText;
+            thoughtsContainer.appendChild(el);
+            thoughts.push(new ThoughtNode(el));
+        }
     }
 
 
@@ -340,10 +341,30 @@
         }
         
         // --- Layer 1: The Subconscious (The Brain) ---
-        // Update and draw the pulsing neuron web.
-        for (const neuron of neurons) {
-            neuron.update();
-            neuron.draw(ctx);
+        // Update neurons and draw dynamic connections
+        for (let i = 0; i < neurons.length; i++) {
+            const ni = neurons[i];
+            ni.behaviors(); // Apply forces first
+            ni.update();
+            ni.draw(ctx);
+
+            // Check for connections to other neurons and draw them
+            for (let j = i + 1; j < neurons.length; j++) {
+                const nj = neurons[j];
+                const distSq = Vector.distSq(ni.pos, nj.pos);
+
+                // If they are close enough, draw a connection
+                if (distSq < NEIGHBOR_RADIUS * NEIGHBOR_RADIUS) {
+                    // The closer they are, the more opaque the connection
+                    const opacity = 1 - (distSq / (NEIGHBOR_RADIUS * NEIGHBOR_RADIUS));
+                    ctx.strokeStyle = `rgba(120, 150, 255, ${opacity * 0.1})`;
+                    ctx.lineWidth = 0.5;
+                    ctx.beginPath();
+                    ctx.moveTo(ni.pos.x, ni.pos.y);
+                    ctx.lineTo(nj.pos.x, nj.pos.y);
+                    ctx.stroke();
+                }
+            }
         }
 
         // --- Layer 3: The Conscious Thoughts ---
@@ -363,9 +384,7 @@
     window.addEventListener('resize', () => {
         width = canvas.width = window.innerWidth;
         height = canvas.height = window.innerHeight;
-        // Re-initialize on resize to redistribute neurons. A more advanced version
-        // might try to reposition them intelligently.
-        neurons.length = 0;
+        // Re-initialize on resize to recreate all elements for the new size
         init();
     });
 
