@@ -326,8 +326,14 @@
             } else {
                 // projects: highlight active ones with green glow
                 if (n.active) {
-                    ctx.fillStyle = 'rgba(100, 255, 190, 0.22)';
-                    ctx.beginPath(); ctx.arc(n.x, n.y, rr + 6, 0, Math.PI * 2); ctx.fill();
+                    // soft outer glow
+                    ctx.save();
+                    ctx.shadowColor = 'rgba(100, 255, 190, 0.35)';
+                    ctx.shadowBlur = 14;
+                    ctx.fillStyle = 'rgba(100, 255, 190, 0.18)';
+                    ctx.beginPath(); ctx.arc(n.x, n.y, rr + 7, 0, Math.PI * 2); ctx.fill();
+                    ctx.restore();
+                    // inner halo
                     ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${isHover ? 0.22 : 0.12})`;
                 } else {
                     ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${isHover ? 0.28 : 0.16})`;
