@@ -118,10 +118,33 @@
         @media (prefers-reduced-motion: reduce) {
             .thought-node { transition: none; }
         }
+
+        /* Constellation entry (top-left) */
+        .ui-constellation { position: fixed; top: 12px; left: 12px; z-index: 20; }
+        .btn-constellation {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 6px 10px; border-radius: 999px;
+            border: 1px solid rgba(170, 200, 255, 0.28);
+            background: rgba(12,14,24,0.55);
+            color: rgba(230,235,255,0.92); text-decoration: none;
+            backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+            pointer-events: all;
+        }
+        .btn-constellation:hover { border-color: rgba(200, 220, 255, 0.5); }
+        @media (max-width: 480px) {
+            .btn-constellation span { display: none; }
+            .btn-constellation { padding: 6px; border-radius: 10px; }
+        }
     </style>
 </head>
 <body>
     <canvas id="mind-canvas"></canvas>
+    <div class="ui-constellation">
+        <a href="./constellation.html" class="btn-constellation" aria-label="Open Constellation">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.2 5.5L20 8l-4 4 1 6-5-3-5 3 1-6-4-4 5.8-.5L12 2z"/></svg>
+            <span>Constellation</span>
+        </a>
+    </div>
     <div class="title-container">
         <h1 class="title-text"><a href="./squadpluto.html" style="text-decoration:none; color: inherit; pointer-events: all;">Squad Pluto</a></h1>
         <div class="subtitle-text">AM | DS | HS | GB | DX</div>
