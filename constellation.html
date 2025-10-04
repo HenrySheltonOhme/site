@@ -46,9 +46,10 @@
     <div class="tooltip" id="tooltip" role="status" aria-live="polite"></div>
     <div class="panel" id="panel" aria-label="Controls">
         <h3>Constellation Controls</h3>
-        <div class="row"><label for="repulse">Repulsion</label><input id="repulse" type="range" min="500" max="6000" step="100" value="1050"></div>
+        <div class="row"><label for="repulse">Repulsion</label><input id="repulse" type="range" min="500" max="6000" step="100" value="3250"></div>
         <div class="row"><label for="spring">Spring</label><input id="spring" type="range" min="1" max="80" step="1" value="80"></div>
         <div class="row"><label for="rest">Rest length</label><input id="rest" type="range" min="40" max="160" step="2" value="90"></div>
+        <div class="row"><label for="edgeScale">Line thickness</label><input id="edgeScale" type="range" min="50" max="200" step="5" value="100"></div>
         <div class="toggle"><input id="contain" type="checkbox"><label for="contain">Contain nodes in view</label></div>
         <div class="actions">
             <button class="btn" id="recenter">Recenter</button>
@@ -172,12 +173,13 @@
 
     // Physics parameters
     let PARAMS = {
-        repulse: 1050,
+        repulse: 3250,
         spring: 0.8,
         damping: 0.9,
         center: 0.02,
         rest: 90,
-        contain: false
+        contain: false,
+        edgeScale: 1.0
     };
 
     // Pan/Zoom state
@@ -341,7 +343,7 @@
             const A = getNode(e.a), B = getNode(e.b);
             if ((A.type === 'theme' && !showThemes) || (A.type === 'project' && !showProjects)) continue;
             if ((B.type === 'theme' && !showThemes) || (B.type === 'project' && !showProjects)) continue;
-            const w = Math.max(0.6, 0.6 + 1.2 * (e.weight || 0.4));
+            const w = (Math.max(0.6, 0.6 + 1.2 * (e.weight || 0.4))) * (PARAMS.edgeScale || 1.0);
             const baseAlpha = (hoverId && (hoverId === A.id || hoverId === B.id)) ? 0.16 : 0.08;
             const alpha = Math.min(0.36, baseAlpha + 0.24 * (e.weight || 0.4));
             let cr = r, cg = g, cb = b;
@@ -451,7 +453,7 @@
 
     // Controls wiring + persistence + legend toggles
     const qs = (id) => document.getElementById(id);
-    const sliders = { repulse: qs('repulse'), spring: qs('spring'), rest: qs('rest') };
+    const sliders = { repulse: qs('repulse'), spring: qs('spring'), rest: qs('rest'), edgeScale: qs('edgeScale') };
     const contain = qs('contain');
     const recenterBtn = qs('recenter');
     const resetBtn = qs('reset');
@@ -483,6 +485,7 @@
     sliders.spring.value = String(Math.round(PARAMS.spring * 100));
     sliders.rest.value = String(PARAMS.rest);
     contain.checked = !!PARAMS.contain;
+    sliders.edgeScale.value = String(Math.round((PARAMS.edgeScale || 1.0) * 100));
     // reflect legend state
     toggleThemesBtn.classList.toggle('off', !showThemes);
     toggleThemesBtn.setAttribute('aria-pressed', String(showThemes));
@@ -492,6 +495,7 @@
     sliders.repulse.addEventListener('input', () => { PARAMS.repulse = Number(sliders.repulse.value); savePrefs(); });
     sliders.spring.addEventListener('input', () => { PARAMS.spring = Number(sliders.spring.value) / 100; savePrefs(); });
     sliders.rest.addEventListener('input', () => { PARAMS.rest = Number(sliders.rest.value); savePrefs(); });
+    sliders.edgeScale.addEventListener('input', () => { PARAMS.edgeScale = Number(sliders.edgeScale.value) / 100; savePrefs(); });
     contain.addEventListener('change', () => { PARAMS.contain = contain.checked; savePrefs(); });
     recenterBtn.addEventListener('click', () => { offsetX = 0; offsetY = 0; scale = 1; savePrefs(); });
     resetBtn.addEventListener('click', () => { init(); savePrefs(); });
