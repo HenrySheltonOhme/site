@@ -338,6 +338,7 @@
         ctx.save();
         ctx.translate(offsetX, offsetY);
         ctx.scale(scale, scale);
+        const now = performance.now() * 0.001; // seconds
         // edges
         for (const e of edges) {
             const A = getNode(e.a), B = getNode(e.b);
@@ -395,13 +396,21 @@
                     // soft outer glow (draw before core to ensure visibility)
                     ctx.save();
                     ctx.globalCompositeOperation = 'lighter';
-                    ctx.fillStyle = 'rgba(100, 255, 190, 0.18)';
+                    // gentle pulse over ~8s with per-node phase
+                    const phase = ((n.id.charCodeAt(0) + n.id.charCodeAt(n.id.length - 1)) % 10) / 10 * Math.PI * 2;
+                    const period = 8.0;
+                    const pulse = prefersReducedMotion ? 0 : (0.5 + 0.5 * Math.sin((now * (2 * Math.PI) / period) + phase));
+                    const outerAlpha = 0.14 + 0.08 * pulse; // 0.14..0.22 subtle
+                    const radiusJitter = 0.6 * pulse; // up to ~0.6px extra
+                    ctx.fillStyle = `rgba(100, 255, 190, ${outerAlpha})`;
                     for (let k = 0; k < 2; k++) {
-                        ctx.beginPath(); ctx.arc(n.x, n.y, rr + 7 + k, 0, Math.PI * 2); ctx.fill();
+                        ctx.beginPath(); ctx.arc(n.x, n.y, rr + 7 + k + radiusJitter, 0, Math.PI * 2); ctx.fill();
                     }
                     ctx.restore();
                     // inner halo tint
-                    ctx.fillStyle = `rgba(100, 255, 190, ${isHover ? 0.10 : 0.06})`;
+                    const innerAlphaBase = isHover ? 0.12 : 0.06;
+                    const innerAlpha = innerAlphaBase + (prefersReducedMotion ? 0 : 0.04 * pulse);
+                    ctx.fillStyle = `rgba(100, 255, 190, ${innerAlpha})`;
                 } else {
                     ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${isHover ? 0.28 : 0.16})`;
                 }
