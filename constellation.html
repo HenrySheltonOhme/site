@@ -10,6 +10,9 @@
         html, body { margin: 0; padding: 0; height: 100dvh; overflow: hidden; overscroll-behavior: none; background: radial-gradient(900px 600px at var(--radial-x) var(--radial-y), rgba(60, 70, 120, 0.18), rgba(0,0,0,0)), #020205; color: rgba(230, 235, 255, 0.9); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
         .ui { position: fixed; top: 12px; left: 12px; z-index: 2; display: flex; gap: 10px; align-items: center; }
         .legend { display: inline-flex; gap: 8px; align-items: center; padding: 8px 10px; border-radius: 10px; border: 1px solid rgba(170, 200, 255, 0.28); background: rgba(12, 14, 24, 0.6); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+        .legend-chip { display: inline-flex; gap: 8px; align-items: center; padding: 6px 8px; border-radius: 999px; border: 1px solid rgba(170, 200, 255, 0.28); background: rgba(12, 14, 24, 0.4); color: rgba(230, 235, 255, 0.92); cursor: pointer; }
+        .legend-chip:hover { border-color: rgba(200, 220, 255, 0.5); }
+        .legend-chip.off { opacity: 0.55; border-color: rgba(170, 200, 255, 0.18); }
         .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
         .dot.theme { background: rgba(150, 200, 255, 0.9); box-shadow: 0 0 14px rgba(150, 200, 255, 0.35); }
         .dot.project { background: rgba(200, 220, 255, 0.85); box-shadow: 0 0 10px rgba(200, 220, 255, 0.25); }
@@ -34,9 +37,9 @@
     <canvas id="bg"></canvas>
     <div class="ui">
         <div class="legend" aria-label="Legend">
-            <span class="dot theme"></span><span>Theme</span>
+            <button class="legend-chip" id="toggle-themes" aria-pressed="true" title="Toggle themes"><span class="dot theme"></span><span>Theme</span></button>
             <span class="sep"></span>
-            <span class="dot project"></span><span>Project</span>
+            <button class="legend-chip" id="toggle-projects" aria-pressed="true" title="Toggle projects"><span class="dot project"></span><span>Project</span></button>
         </div>
         <a class="btn" href="./index.html">Back to Home</a>
     </div>
@@ -95,17 +98,17 @@
         { id: 't-knowledge', label: 'Knowledge' }
     ];
     const projects = [
-        { id: 'p-sentinel', label: 'Sentinel', href: './sentinel.html', themes: ['t-data', 't-automation'] },
-        { id: 'p-spp', label: 'Session Params Prediction', href: './session-params-prediction.html', themes: ['t-forecasting', 't-data'] },
-        { id: 'p-crowdflex', label: 'Crowdflex', href: './crowdflex.html', themes: ['t-forecasting', 't-automation'] },
-        { id: 'p-jcv', label: 'Journey Computer Vision', href: './journey-computer-vision.html', themes: ['t-vision', 't-automation'] },
-        { id: 'p-csa', label: 'Customer Success Agents', href: './customer-success-agents.html', themes: ['t-automation', 't-knowledge'] },
-        { id: 'p-cx-eval', label: 'CX Agents Evaluation', href: './cx-agents-evaluation.html', themes: ['t-automation', 't-data'] },
-        { id: 'p-cx-engine', label: 'CX Engine', href: './cx-engine.html', themes: ['t-automation'] },
-        { id: 'p-ecf', label: 'Energy Consumption Forecasting', href: './energy-consumption-forecasting.html', themes: ['t-forecasting', 't-data'] },
-        { id: 'p-ml-aiops', label: 'ML/AIOps', href: './ml-aiops.html', themes: ['t-data'] },
-        { id: 'p-knowledge', label: 'Ohme Enterprise Knowledge Center', href: './ohme-enterprise-knowledge-center.html', themes: ['t-knowledge'] },
-        { id: 'p-pocs', label: 'POCs / Explorations', href: './pocs.html', themes: ['t-data', 't-vision', 't-forecasting', 't-automation'] }
+        { id: 'p-sentinel', label: 'Sentinel', href: './sentinel.html', themes: ['t-data', 't-automation'], active: true },
+        { id: 'p-spp', label: 'Session Params Prediction', href: './session-params-prediction.html', themes: ['t-forecasting', 't-data'], active: true },
+        { id: 'p-crowdflex', label: 'Crowdflex', href: './crowdflex.html', themes: ['t-forecasting', 't-automation'], active: true },
+        { id: 'p-jcv', label: 'Journey Computer Vision', href: './journey-computer-vision.html', themes: ['t-vision', 't-automation'], active: true },
+        { id: 'p-csa', label: 'Customer Success Agents', href: './customer-success-agents.html', themes: ['t-automation', 't-knowledge'], active: true },
+        { id: 'p-cx-eval', label: 'CX Agents Evaluation', href: './cx-agents-evaluation.html', themes: ['t-automation', 't-data'], active: false },
+        { id: 'p-cx-engine', label: 'CX Engine', href: './cx-engine.html', themes: ['t-automation'], active: false },
+        { id: 'p-ecf', label: 'Energy Consumption Forecasting', href: './energy-consumption-forecasting.html', themes: ['t-forecasting', 't-data'], active: true },
+        { id: 'p-ml-aiops', label: 'ML/AIOps', href: './ml-aiops.html', themes: ['t-data'], active: false },
+        { id: 'p-knowledge', label: 'Ohme Enterprise Knowledge Center', href: './ohme-enterprise-knowledge-center.html', themes: ['t-knowledge'], active: false },
+        { id: 'p-pocs', label: 'POCs / Explorations', href: './pocs.html', themes: ['t-data', 't-vision', 't-forecasting', 't-automation'], active: true }
     ];
 
     const nodes = [];
@@ -178,7 +181,9 @@
             const n = getNode(draggingId);
             if (n) {
                 const { x: wx, y: wy } = screenToWorld(e.clientX, e.clientY);
+                const prevX = n.x, prevY = n.y;
                 n.x = wx + dragOffsetX; n.y = wy + dragOffsetY; n.vx = 0; n.vy = 0; n.fixed = true;
+                if (Math.hypot(n.x - prevX, n.y - prevY) > 0.5) justDragged = true;
             }
         } else if (isPanning) { offsetX = startOffsetX + (e.clientX - panStartX); offsetY = startOffsetY + (e.clientY - panStartY); }
     }, { passive: true });
@@ -219,7 +224,9 @@
         }
     }
     window.addEventListener('pointermove', (e) => { updateHover(e.clientX, e.clientY); }, { passive: true });
+    let justDragged = false;
     window.addEventListener('click', (e) => {
+        if (justDragged) { justDragged = false; return; }
         if (!hoverId) return;
         const n = getNode(hoverId);
         if (n && n.href) {
@@ -289,6 +296,8 @@
         ctx.lineWidth = 1;
         for (const e of edges) {
             const A = getNode(e.a), B = getNode(e.b);
+            if ((A.type === 'theme' && !showThemes) || (A.type === 'project' && !showProjects)) continue;
+            if ((B.type === 'theme' && !showThemes) || (B.type === 'project' && !showProjects)) continue;
             const alpha = (hoverId && (hoverId === A.id || hoverId === B.id)) ? 0.16 : 0.08;
             ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
             ctx.beginPath();
@@ -304,6 +313,8 @@
         }
         // nodes
         for (const n of nodes) {
+            if (n.type === 'theme' && !showThemes) continue;
+            if (n.type === 'project' && !showProjects) continue;
             const isHover = hoverId === n.id;
             const rr = n.r;
             // glow
@@ -311,17 +322,24 @@
                 ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${isHover ? 0.35 : 0.22})`;
                 ctx.beginPath(); ctx.arc(n.x, n.y, rr + 6, 0, Math.PI * 2); ctx.fill();
             } else {
-                ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${isHover ? 0.28 : 0.16})`;
+                // projects: highlight active ones with green glow
+                if (n.active) {
+                    ctx.fillStyle = 'rgba(100, 255, 190, 0.22)';
+                    ctx.beginPath(); ctx.arc(n.x, n.y, rr + 6, 0, Math.PI * 2); ctx.fill();
+                    ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${isHover ? 0.22 : 0.12})`;
+                } else {
+                    ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${isHover ? 0.28 : 0.16})`;
+                }
                 ctx.beginPath(); ctx.arc(n.x, n.y, rr + 4, 0, Math.PI * 2); ctx.fill();
             }
             // core
             ctx.fillStyle = 'rgba(10, 12, 20, 0.9)';
             ctx.beginPath(); ctx.arc(n.x, n.y, rr, 0, Math.PI * 2); ctx.fill();
-            ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${isHover ? 0.9 : 0.55})`;
+            ctx.strokeStyle = n.active && n.type === 'project' ? 'rgba(100, 255, 190, 0.7)' : `rgba(${r}, ${g}, ${b}, ${isHover ? 0.9 : 0.55})`;
             ctx.lineWidth = 1;
             ctx.stroke();
             // label (always readable, centered)
-            ctx.fillStyle = 'rgba(220, 230, 255, 0.9)';
+            ctx.fillStyle = n.active && n.type === 'project' ? 'rgba(190, 255, 230, 0.95)' : 'rgba(220, 230, 255, 0.9)';
             ctx.font = `${n.type === 'theme' ? 12 : 11}px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif`;
             ctx.textAlign = 'center'; ctx.textBaseline = 'top';
             const label = n.label;
@@ -342,13 +360,16 @@
     }
     loop();
 
-    // Controls wiring + persistence
+    // Controls wiring + persistence + legend toggles
     const qs = (id) => document.getElementById(id);
     const sliders = { repulse: qs('repulse'), spring: qs('spring'), rest: qs('rest') };
     const contain = qs('contain');
     const recenterBtn = qs('recenter');
     const resetBtn = qs('reset');
     const unpinBtn = qs('unpin');
+    const toggleThemesBtn = document.getElementById('toggle-themes');
+    const toggleProjectsBtn = document.getElementById('toggle-projects');
+    let showThemes = true, showProjects = true;
 
     function loadPrefs() {
         try {
@@ -382,6 +403,15 @@
     recenterBtn.addEventListener('click', () => { offsetX = 0; offsetY = 0; scale = 1; savePrefs(); });
     resetBtn.addEventListener('click', () => { init(); savePrefs(); });
     unpinBtn.addEventListener('click', () => { nodes.forEach(n => n.fixed = false); savePrefs(); });
+
+    toggleThemesBtn.addEventListener('click', () => {
+        showThemes = !showThemes;
+        toggleThemesBtn.classList.toggle('off', !showThemes);
+    });
+    toggleProjectsBtn.addEventListener('click', () => {
+        showProjects = !showProjects;
+        toggleProjectsBtn.classList.toggle('off', !showProjects);
+    });
 
     // Save occasionally
     setInterval(savePrefs, 1500);
