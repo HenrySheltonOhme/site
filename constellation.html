@@ -17,6 +17,15 @@
         .btn { appearance: none; border: 1px solid rgba(170, 200, 255, 0.28); background: rgba(12, 14, 24, 0.6); color: rgba(230, 235, 255, 0.92); padding: 8px 10px; border-radius: 10px; font-size: 12px; letter-spacing: 0.2px; text-decoration: none; cursor: pointer; backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
         .btn:hover { border-color: rgba(200, 220, 255, 0.5); }
         .tooltip { position: fixed; z-index: 3; transform: translate(-50%, -120%); pointer-events: none; padding: 6px 8px; border-radius: 8px; font-size: 12px; color: rgba(235, 240, 255, 0.96); background: rgba(12, 14, 24, 0.85); border: 1px solid rgba(170, 200, 255, 0.28); display: none; }
+        /* Controls panel (top-right) */
+        .panel { position: fixed; top: 12px; right: 12px; z-index: 2; width: 260px; padding: 10px; border-radius: 12px; border: 1px solid rgba(170, 200, 255, 0.28); background: rgba(12, 14, 24, 0.6); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); color: rgba(230,235,255,0.92); }
+        .panel h3 { margin: 0 0 8px; font-size: 13px; font-weight: 600; letter-spacing: .3px; color: rgba(210, 220, 255, 0.9); }
+        .row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 8px; margin: 8px 0; }
+        .row label { font-size: 12px; color: rgba(200, 210, 245, 0.9); }
+        .row input[type="range"] { width: 140px; }
+        .toggle { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+        .panel .actions { display: flex; gap: 6px; margin-top: 8px; }
+        .panel .btn { padding: 6px 8px; font-size: 12px; }
         @media (prefers-reduced-motion: reduce) { .btn { transition: none; } }
     </style>
     <meta name="description" content="Interactive constellation map of Squad Pluto projects and themes." />
@@ -32,6 +41,18 @@
         <a class="btn" href="./index.html">Back to Home</a>
     </div>
     <div class="tooltip" id="tooltip" role="status" aria-live="polite"></div>
+    <div class="panel" id="panel" aria-label="Controls">
+        <h3>Constellation Controls</h3>
+        <div class="row"><label for="repulse">Repulsion</label><input id="repulse" type="range" min="500" max="6000" step="100" value="2500"></div>
+        <div class="row"><label for="spring">Spring</label><input id="spring" type="range" min="1" max="80" step="1" value="2"></div>
+        <div class="row"><label for="rest">Rest length</label><input id="rest" type="range" min="40" max="160" step="2" value="90"></div>
+        <div class="toggle"><input id="contain" type="checkbox"><label for="contain">Contain nodes in view</label></div>
+        <div class="actions">
+            <button class="btn" id="recenter">Recenter</button>
+            <button class="btn" id="reset">Reset Layout</button>
+            <button class="btn" id="unpin">Unpin All</button>
+        </div>
+    </div>
     <script>
     'use strict';
     // DPR setup
@@ -112,11 +133,14 @@
     function getNode(id) { return nodes.find(n => n.id === id); }
 
     // Physics parameters
-    const REPULSE = 2500;   // Coulomb-like constant
-    const SPRING = 0.02;    // Hooke spring
-    const DAMPING = 0.9;    // velocity damping
-    const CENTER = 0.02;    // pull to center
-    const REST = 90;        // desired edge length
+    let PARAMS = {
+        repulse: 2500,
+        spring: 0.02,
+        damping: 0.9,
+        center: 0.02,
+        rest: 90,
+        contain: false
+    };
 
     // Pan/Zoom state
     let scale = 1;
@@ -124,17 +148,44 @@
     let offsetY = 0;
     let isPanning = false;
     let panStartX = 0, panStartY = 0, startOffsetX = 0, startOffsetY = 0;
+    let draggingId = null; let dragOffsetX = 0; let dragOffsetY = 0;
 
     function worldToScreen(x, y) { return { x: (x * scale) + offsetX, y: (y * scale) + offsetY }; }
     function screenToWorld(x, y) { return { x: (x - offsetX) / scale, y: (y - offsetY) / scale }; }
 
+    function hitNode(mx, my) {
+        const { x: wx, y: wy } = screenToWorld(mx, my);
+        for (const n of nodes) {
+            const dx = n.x - wy; // placeholder to keep structure
+        }
+        let best = null, bestD = Infinity;
+        for (const n of nodes) {
+            const dx = n.x - wx, dy = n.y - wy; const d2 = dx*dx + dy*dy; if (d2 < (n.r+6)*(n.r+6) && d2 < bestD) { best = n; bestD = d2; }
+        }
+        return best;
+    }
+
     canvas.addEventListener('pointerdown', (e) => {
-        isPanning = true; panStartX = e.clientX; panStartY = e.clientY; startOffsetX = offsetX; startOffsetY = offsetY; canvas.setPointerCapture(e.pointerId);
+        const n = hitNode(e.clientX, e.clientY);
+        if (n) {
+            draggingId = n.id;
+            const { x: wx, y: wy } = screenToWorld(e.clientX, e.clientY);
+            dragOffsetX = n.x - wx; dragOffsetY = n.y - wy;
+            canvas.setPointerCapture(e.pointerId);
+        } else {
+            isPanning = true; panStartX = e.clientX; panStartY = e.clientY; startOffsetX = offsetX; startOffsetY = offsetY; canvas.setPointerCapture(e.pointerId);
+        }
     });
     canvas.addEventListener('pointermove', (e) => {
-        if (isPanning) { offsetX = startOffsetX + (e.clientX - panStartX); offsetY = startOffsetY + (e.clientY - panStartY); }
+        if (draggingId) {
+            const n = getNode(draggingId);
+            if (n) {
+                const { x: wx, y: wy } = screenToWorld(e.clientX, e.clientY);
+                n.x = wx + dragOffsetX; n.y = wy + dragOffsetY; n.vx = 0; n.vy = 0; n.fixed = true;
+            }
+        } else if (isPanning) { offsetX = startOffsetX + (e.clientX - panStartX); offsetY = startOffsetY + (e.clientY - panStartY); }
     }, { passive: true });
-    canvas.addEventListener('pointerup', (e) => { isPanning = false; canvas.releasePointerCapture(e.pointerId); });
+    canvas.addEventListener('pointerup', (e) => { isPanning = false; draggingId = null; canvas.releasePointerCapture(e.pointerId); });
     canvas.addEventListener('pointercancel', () => { isPanning = false; });
     canvas.addEventListener('wheel', (e) => {
         e.preventDefault();
@@ -180,21 +231,30 @@
     });
 
     // Simulation tick
+    function containNode(n) {
+        if (!PARAMS.contain) return;
+        const pad = 20; const minX = (-offsetX / scale) + pad; const minY = (-offsetY / scale) + pad; const maxX = (W() - offsetX) / scale - pad; const maxY = (H() - offsetY) / scale - pad;
+        if (n.x < minX) { n.x = minX; n.vx *= -0.2; }
+        if (n.x > maxX) { n.x = maxX; n.vx *= -0.2; }
+        if (n.y < minY) { n.y = minY; n.vy *= -0.2; }
+        if (n.y > maxY) { n.y = maxY; n.vy *= -0.2; }
+    }
+
     function tick() {
         const cx = W() / 2, cy = H() / 2;
         // Repulsion
         for (let i = 0; i < nodes.length; i++) {
             const a = nodes[i];
             if (!prefersReducedMotion) {
-                const gx = (cx - a.x) * CENTER; // center pull
-                const gy = (cy - a.y) * CENTER;
+                const gx = (cx - a.x) * PARAMS.center; // center pull
+                const gy = (cy - a.y) * PARAMS.center;
                 a.vx += gx; a.vy += gy;
             }
             for (let j = i + 1; j < nodes.length; j++) {
                 const b = nodes[j];
                 let dx = a.x - b.x, dy = a.y - b.y;
                 let d2 = dx*dx + dy*dy + 0.01;
-                const f = REPULSE / d2;
+                const f = PARAMS.repulse / d2;
                 const fx = f * dx, fy = f * dy;
                 a.vx += fx; a.vy += fy;
                 b.vx -= fx; b.vy -= fy;
@@ -205,8 +265,8 @@
             const A = getNode(e.a), B = getNode(e.b);
             let dx = B.x - A.x, dy = B.y - A.y;
             const d = Math.max(0.001, Math.sqrt(dx*dx + dy*dy));
-            const k = SPRING;
-            const target = REST * (A.type === 'theme' || B.type === 'theme' ? 1.0 : 0.9);
+            const k = PARAMS.spring;
+            const target = PARAMS.rest * (A.type === 'theme' || B.type === 'theme' ? 1.0 : 0.9);
             const diff = (d - target);
             const fx = (dx / d) * diff * k;
             const fy = (dy / d) * diff * k;
@@ -216,8 +276,9 @@
         // Integrate
         for (const n of nodes) {
             if (prefersReducedMotion) continue; // static layout
-            n.vx *= DAMPING; n.vy *= DAMPING;
-            n.x += n.vx * 0.02; n.y += n.vy * 0.02;
+            if (n.fixed) { n.vx = 0; n.vy = 0; containNode(n); continue; }
+            n.vx *= PARAMS.damping; n.vy *= PARAMS.damping;
+            n.x += n.vx * 0.02; n.y += n.vy * 0.02; containNode(n);
         }
     }
 
@@ -283,6 +344,50 @@
         draw();
     }
     loop();
+
+    // Controls wiring + persistence
+    const qs = (id) => document.getElementById(id);
+    const sliders = { repulse: qs('repulse'), spring: qs('spring'), rest: qs('rest') };
+    const contain = qs('contain');
+    const recenterBtn = qs('recenter');
+    const resetBtn = qs('reset');
+    const unpinBtn = qs('unpin');
+
+    function loadPrefs() {
+        try {
+            const raw = localStorage.getItem('constellation-prefs');
+            if (!raw) return;
+            const obj = JSON.parse(raw);
+            Object.assign(PARAMS, obj.params || {});
+            scale = obj.view?.scale ?? scale;
+            offsetX = obj.view?.offsetX ?? offsetX;
+            offsetY = obj.view?.offsetY ?? offsetY;
+            (obj.pins || []).forEach(pin => { const n = getNode(pin.id); if (n) { n.x = pin.x; n.y = pin.y; n.fixed = true; } });
+        } catch {}
+    }
+    function savePrefs() {
+        try {
+            const pins = nodes.filter(n => n.fixed).map(n => ({ id: n.id, x: n.x, y: n.y }));
+            localStorage.setItem('constellation-prefs', JSON.stringify({ params: PARAMS, view: { scale, offsetX, offsetY }, pins }));
+        } catch {}
+    }
+    loadPrefs();
+    // reflect UI
+    sliders.repulse.value = String(PARAMS.repulse);
+    sliders.spring.value = String(Math.round(PARAMS.spring * 100));
+    sliders.rest.value = String(PARAMS.rest);
+    contain.checked = !!PARAMS.contain;
+
+    sliders.repulse.addEventListener('input', () => { PARAMS.repulse = Number(sliders.repulse.value); savePrefs(); });
+    sliders.spring.addEventListener('input', () => { PARAMS.spring = Number(sliders.spring.value) / 100; savePrefs(); });
+    sliders.rest.addEventListener('input', () => { PARAMS.rest = Number(sliders.rest.value); savePrefs(); });
+    contain.addEventListener('change', () => { PARAMS.contain = contain.checked; savePrefs(); });
+    recenterBtn.addEventListener('click', () => { offsetX = 0; offsetY = 0; scale = 1; savePrefs(); });
+    resetBtn.addEventListener('click', () => { init(); savePrefs(); });
+    unpinBtn.addEventListener('click', () => { nodes.forEach(n => n.fixed = false); savePrefs(); });
+
+    // Save occasionally
+    setInterval(savePrefs, 1500);
     </script>
 </body>
 </html>
