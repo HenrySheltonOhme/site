@@ -127,7 +127,7 @@
         });
         projects.forEach((p, i) => {
             const a = (i / projects.length) * Math.PI * 2 + 0.2;
-            nodes.push({ id: p.id, label: p.label, type: 'project', href: p.href, x: cx + Math.cos(a) * projRadius, y: cy + Math.sin(a) * projRadius, vx: 0, vy: 0, r: 7, fixed: false });
+            nodes.push({ id: p.id, label: p.label, type: 'project', href: p.href, active: !!p.active, x: cx + Math.cos(a) * projRadius, y: cy + Math.sin(a) * projRadius, vx: 0, vy: 0, r: 7, fixed: false });
             p.themes.forEach(tid => edges.push({ a: p.id, b: tid }));
         });
     }
@@ -326,15 +326,16 @@
             } else {
                 // projects: highlight active ones with green glow
                 if (n.active) {
-                    // soft outer glow
+                    // soft outer glow (draw before core to ensure visibility)
                     ctx.save();
-                    ctx.shadowColor = 'rgba(100, 255, 190, 0.35)';
-                    ctx.shadowBlur = 14;
+                    ctx.globalCompositeOperation = 'lighter';
                     ctx.fillStyle = 'rgba(100, 255, 190, 0.18)';
-                    ctx.beginPath(); ctx.arc(n.x, n.y, rr + 7, 0, Math.PI * 2); ctx.fill();
+                    for (let k = 0; k < 2; k++) {
+                        ctx.beginPath(); ctx.arc(n.x, n.y, rr + 7 + k, 0, Math.PI * 2); ctx.fill();
+                    }
                     ctx.restore();
-                    // inner halo
-                    ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${isHover ? 0.22 : 0.12})`;
+                    // inner halo tint
+                    ctx.fillStyle = `rgba(100, 255, 190, ${isHover ? 0.10 : 0.06})`;
                 } else {
                     ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${isHover ? 0.28 : 0.16})`;
                 }
