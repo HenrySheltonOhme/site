@@ -164,7 +164,6 @@
     let width = window.innerWidth;
     let height = window.innerHeight;
     const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     function resizeCanvas() {
         const cssW = Math.floor(window.innerWidth);
         const cssH = Math.floor(window.innerHeight);
@@ -182,37 +181,6 @@
         y: height / 2,
         radius: 150 // Radius of influence
     };
-
-    // --- Cursor Aurora (subtle filaments around cursor) ---
-    let auroraEnabled = !prefersReducedMotion;
-    let auroraTime = 0;
-    function drawAurora() {
-        const cx = mouse.x;
-        const cy = mouse.y;
-        const filaments = 7;
-        const baseLen = Math.min(width, height) * 0.06; // scale with viewport
-        const prevComp = ctx.globalCompositeOperation;
-        ctx.globalCompositeOperation = 'lighter';
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
-        for (let i = 0; i < filaments; i++) {
-            const phase = (i / filaments) * Math.PI * 2 + auroraTime * 0.9;
-            const len = baseLen * (0.7 + 0.3 * Math.sin(auroraTime * 1.3 + i));
-            const sway = Math.sin(auroraTime * 1.1 + i * 1.7) * (len * 0.25);
-            const ex = cx + Math.cos(phase) * len;
-            const ey = cy + Math.sin(phase) * len;
-            const cpx = cx + Math.cos(phase + Math.PI / 2) * sway;
-            const cpy = cy + Math.sin(phase + Math.PI / 2) * sway;
-            ctx.beginPath();
-            ctx.moveTo(cx, cy);
-            ctx.quadraticCurveTo(cpx, cpy, ex, ey);
-            ctx.strokeStyle = 'rgba(170, 195, 255, 0.06)';
-            ctx.lineWidth = 0.9;
-            ctx.stroke();
-        }
-        ctx.globalCompositeOperation = prevComp;
-        auroraTime += 0.02;
-    }
 
     // --- The Conscious Thoughts (Project Data with URLs) ---
     // This new structure holds both the name and the corresponding URL for each project.
@@ -550,11 +518,6 @@
             }
         }
 
-        // --- Cursor Aurora Layer (very subtle, additive) ---
-        if (auroraEnabled) {
-            drawAurora();
-        }
-
         // --- Layer 3: The Conscious Thoughts ---
         // Update the physics and render the position of the HTML elements.
         for (const thought of thoughts) {
@@ -580,14 +543,6 @@
         mouse.x = e.clientX;
         mouse.y = e.clientY;
     }, { passive: true });
-
-    // Toggle aurora with 'g'
-    document.addEventListener('keydown', e => {
-        const k = e.key && e.key.toLowerCase();
-        if (k === 'g') {
-            auroraEnabled = !auroraEnabled;
-        }
-    });
 
     // --- Let there be thought ---
     resizeCanvas();
