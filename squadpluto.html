@@ -57,10 +57,22 @@
         .cmdk-item .label { font-size: 14px; }
         .cmdk-item .meta { font-size: 11px; color: rgba(170, 190, 255, 0.8); }
         .cmdk-item.is-active { background: rgba(160, 195, 255, 0.08); color: rgba(240, 245, 255, 0.98); }
+
+        /* Command-K trigger button */
+        .cmdk-trigger { position: fixed; top: 12px; left: 12px; z-index: 3; display: inline-flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 10px; border: 1px solid rgba(170, 200, 255, 0.28); background: rgba(12, 14, 24, 0.6); color: rgba(230, 235, 255, 0.92); cursor: pointer; backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+        .cmdk-trigger:hover { border-color: rgba(200, 220, 255, 0.5); }
+        .cmdk-trigger svg { width: 16px; height: 16px; display: block; }
     </style>
 </head>
 <body>
     <canvas id="bg"></canvas>
+    <button class="cmdk-trigger" id="cmdk-trigger" aria-label="Search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="7"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <span>Search</span>
+    </button>
     <div class="container">
         <div>
             <h1 class="title">Squad Pluto</h1>
@@ -308,6 +320,7 @@
         const overlay = document.getElementById('cmdk');
         const input = document.getElementById('cmdk-input');
         const list = document.getElementById('cmdk-list');
+        const trigger = document.getElementById('cmdk-trigger');
         const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         let index = [];
         let built = false;
@@ -472,6 +485,13 @@
         overlay.addEventListener('click', (e) => {
             if (e.target === overlay) close();
         });
+
+        if (trigger) {
+            trigger.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (overlay.classList.contains('open')) { close(); } else { open(); }
+            });
+        }
     })();
     </script>
 </body>
