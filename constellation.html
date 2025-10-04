@@ -89,30 +89,64 @@
     function mulberry32(a) { return function() { let t = a += 0x6D2B79F5; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; } }
     const rand = mulberry32(0xC0FFEE);
 
-    // Data model
-    const themes = [
-        { id: 't-data', label: 'Data & AI' },
-        { id: 't-automation', label: 'Automation' },
-        { id: 't-vision', label: 'Vision' },
-        { id: 't-forecasting', label: 'Forecasting' },
-        { id: 't-knowledge', label: 'Knowledge' }
-    ];
-    const projects = [
-        { id: 'p-sentinel', label: 'Sentinel', href: './sentinel.html', themes: ['t-data', 't-automation'], active: true },
-        { id: 'p-spp', label: 'Session Params Prediction', href: './session-params-prediction.html', themes: ['t-forecasting', 't-data'], active: true },
-        { id: 'p-crowdflex', label: 'Crowdflex', href: './crowdflex.html', themes: ['t-forecasting', 't-automation'], active: true },
-        { id: 'p-jcv', label: 'Journey Computer Vision', href: './journey-computer-vision.html', themes: ['t-vision', 't-automation'], active: true },
-        { id: 'p-csa', label: 'Customer Success Agents', href: './customer-success-agents.html', themes: ['t-automation', 't-knowledge'], active: true },
-        { id: 'p-cx-eval', label: 'CX Agents Evaluation', href: './cx-agents-evaluation.html', themes: ['t-automation', 't-data'], active: false },
-        { id: 'p-cx-engine', label: 'CX Engine', href: './cx-engine.html', themes: ['t-automation'], active: false },
-        { id: 'p-ecf', label: 'Energy Consumption Forecasting', href: './energy-consumption-forecasting.html', themes: ['t-forecasting', 't-data'], active: true },
-        { id: 'p-ml-aiops', label: 'ML/AIOps', href: './ml-aiops.html', themes: ['t-data'], active: false },
-        { id: 'p-knowledge', label: 'Ohme Enterprise Knowledge Center', href: './ohme-enterprise-knowledge-center.html', themes: ['t-knowledge'], active: false },
-        { id: 'p-pocs', label: 'POCs / Explorations', href: './pocs.html', themes: ['t-data', 't-vision', 't-forecasting', 't-automation'], active: true }
-    ];
+    // External data (provided by user)
+    const DATA = {
+        "themes": [
+            { "id": "t-data", "label": "Data & AI", "color": "#9ec2ff" },
+            { "id": "t-automation", "label": "Automation", "color": "#a9d2ff" },
+            { "id": "t-vision", "label": "Vision", "color": "#b3e6ff" },
+            { "id": "t-forecasting", "label": "Forecasting", "color": "#b6d7a8" },
+            { "id": "t-knowledge", "label": "Knowledge", "color": "#c9c9ff" }
+        ],
+        "projects": [
+            { "id": "p-sentinel", "label": "Sentinel", "href": "./sentinel.html", "active": true, "owners": ["HS"], "tags": ["anomaly", "alerting", "ops"], "summary": "Proactive anomaly detection and alerting platform for Ohme network issues." },
+            { "id": "p-spp", "label": "Session Params Prediction", "href": "./session-params-prediction.html", "active": true, "owners": ["DS"], "tags": ["prediction", "charging", "energy"], "summary": "Predicts total kWh and SoC for charge sessions using historical data." },
+            { "id": "p-crowdflex", "label": "Crowdflex", "href": "./crowdflex.html", "active": false, "owners": ["PLU"], "tags": ["flexibility", "grid", "demand"], "summary": "Energy flexibility initiatives coordinated with grid signals and incentives." },
+            { "id": "p-jcv", "label": "Journey Computer Vision", "href": "./journey-computer-vision.html", "active": true, "owners": ["DS"], "tags": ["vision", "automation", "survey"], "summary": "Automates QA and feature extraction from customer-uploaded images." },
+            { "id": "p-csa", "label": "Customer Success Agents", "href": "./customer-success-agents.html", "active": true, "owners": ["GB"], "tags": ["agents", "support", "llm"], "summary": "Agentic system for automated and suggested replies to customer queries." },
+            { "id": "p-ecf", "label": "Energy Consumption Forecasting", "href": "./energy-consumption-forecasting.html", "active": true, "owners": ["HS"], "tags": ["forecasting", "energy", "prophet"], "summary": "Time series forecasting of half-hourly energy consumption per GSP." },
+            { "id": "p-cx-engine", "label": "CX Engine", "href": "./cx-engine.html", "active": true, "owners": ["GB", "DS", "AM"], "tags": ["automation", "support", "workflow"], "summary": "Suite of automations for CX: tagging, summarisation, OOO filter, and more." },
+            { "id": "p-cx-eval", "label": "CX Agents Evaluation", "href": "./cx-agents-evaluation.html", "active": true, "owners": ["DS", "GB"], "tags": ["evaluation", "agents", "coaching"], "summary": "AI-reviewed customer interactions for agent performance and coaching." },
+            { "id": "p-pocs", "label": "POCs / Explorations", "href": "./pocs.html", "active": false, "owners": ["Squad Pluto"], "tags": ["prototype", "exploration"], "summary": "Rapid experiments and MVPs to de-risk ideas." }
+        ],
+        "edges": [
+            { "a": "p-sentinel", "b": "t-data", "kind": "belongsTo", "weight": 0.9, "sources": ["https://ohmenergy.atlassian.net/wiki/spaces/DS/pages/3153723452/Sentinel"] },
+            { "a": "p-sentinel", "b": "t-automation", "kind": "belongsTo", "weight": 0.8, "sources": ["https://ohmenergy.atlassian.net/wiki/spaces/DS/pages/3270803533/2025-09-25+-+Sentinel+Capability+Roadmap"] },
+            { "a": "p-sentinel", "b": "t-vision", "kind": "belongsTo", "weight": 0.4, "sources": ["https://ohmenergy.atlassian.net/wiki/spaces/DS/pages/3270803533/2025-09-25+-+Sentinel+Capability+Roadmap"] },
+            { "a": "p-spp", "b": "t-forecasting", "kind": "belongsTo", "weight": 0.9, "sources": ["https://ohmenergy.atlassian.net/wiki/spaces/DS/pages/2808381544/SPP+-+Project+Page"] },
+            { "a": "p-spp", "b": "t-data", "kind": "belongsTo", "weight": 0.6, "sources": ["https://ohmenergy.atlassian.net/wiki/spaces/DS/pages/2808381544/SPP+-+Project+Page"] },
+            { "a": "p-crowdflex", "b": "t-forecasting", "kind": "belongsTo", "weight": 0.8, "sources": ["https://ohmenergy.atlassian.net/wiki/spaces/DS/pages/2247491696/V1+-+CrowdFlex+Energy+Demand+Forecasting"] },
+            { "a": "p-jcv", "b": "t-vision", "kind": "belongsTo", "weight": 0.95, "sources": ["https://ohmenergy.atlassian.net/wiki/spaces/DS/pages/2431975453/Journey+Computer+Vision"] },
+            { "a": "p-jcv", "b": "t-automation", "kind": "belongsTo", "weight": 0.5, "sources": ["https://ohmenergy.atlassian.net/wiki/spaces/DS/pages/2431975453/Journey+Computer+Vision"] },
+            { "a": "p-csa", "b": "t-automation", "kind": "belongsTo", "weight": 0.8, "sources": ["https://ohmenergy.atlassian.net/wiki/spaces/DS/pages/2755821643/Customer+Success+Agents+-+Project+Page"] },
+            { "a": "p-csa", "b": "t-knowledge", "kind": "belongsTo", "weight": 0.6, "sources": ["https://ohmenergy.atlassian.net/wiki/spaces/DS/pages/2625929223/High+Level+Overview"] },
+            { "a": "p-ecf", "b": "t-forecasting", "kind": "belongsTo", "weight": 0.95, "sources": ["https://ohmenergy.atlassian.net/wiki/spaces/DS/pages/2890727425/V2+-+ESO+Energy+Consumption+Forecasting+CF2"] },
+            { "a": "p-ecf", "b": "t-data", "kind": "belongsTo", "weight": 0.5, "sources": ["https://ohmenergy.atlassian.net/wiki/spaces/DS/pages/2890727425/V2+-+ESO+Energy+Consumption+Forecasting+CF2"] },
+            { "a": "p-cx-engine", "b": "t-automation", "kind": "belongsTo", "weight": 0.9, "sources": ["https://ohmenergy.atlassian.net/wiki/spaces/DS/pages/2832466006/CX+Engine+-+Project+Page"] },
+            { "a": "p-cx-engine", "b": "t-knowledge", "kind": "belongsTo", "weight": 0.5, "sources": ["https://ohmenergy.atlassian.net/wiki/spaces/DS/pages/2832466006/CX+Engine+-+Project+Page"] },
+            { "a": "p-cx-eval", "b": "t-knowledge", "kind": "belongsTo", "weight": 0.8, "sources": ["./cx-agents-evaluation.html"] },
+            { "a": "p-cx-eval", "b": "t-automation", "kind": "belongsTo", "weight": 0.5, "sources": ["./cx-agents-evaluation.html"] },
+            { "a": "p-pocs", "b": "t-data", "kind": "belongsTo", "weight": 0.5, "sources": ["./pocs.html"] },
+            { "a": "p-sentinel", "b": "p-spp", "kind": "related", "weight": 0.4, "sources": ["https://ohmenergy.atlassian.net/wiki/spaces/DS/pages/3270803533/2025-09-25+-+Sentinel+Capability+Roadmap", "https://ohmenergy.atlassian.net/wiki/spaces/DS/pages/2808381544/SPP+-+Project+Page"] },
+            { "a": "p-ecf", "b": "p-crowdflex", "kind": "related", "weight": 0.6, "sources": ["https://ohmenergy.atlassian.net/wiki/spaces/DS/pages/2890727425/V2+-+ESO+Energy+Consumption+Forecasting+CF2", "https://ohmenergy.atlassian.net/wiki/spaces/DS/pages/2247491696/V1+-+CrowdFlex+Energy+Demand+Forecasting"] },
+            { "a": "p-csa", "b": "p-cx-engine", "kind": "related", "weight": 0.4, "sources": ["https://ohmenergy.atlassian.net/wiki/spaces/DS/pages/2755821643/Customer+Success+Agents+-+Project+Page", "https://ohmenergy.atlassian.net/wiki/spaces/DS/pages/2832466006/CX+Engine+-+Project+Page"] },
+            { "a": "t-automation", "b": "t-data", "kind": "related", "weight": 0.3, "sources": ["https://ohmenergy.atlassian.net/wiki/spaces/DS/pages/2832531577/Project+Ownership+Log"] }
+        ],
+        "settings": {
+            "notes": "All projects mapped to at least one theme. Activeness based on recent updates and labels. Edges reflect shared tags, interlinks, and topical similarity."
+        }
+    };
+
+    // Data model (from DATA)
+    const themes = DATA.themes.map(t => ({ id: t.id, label: t.label, color: t.color || accent }));
+    const projects = DATA.projects.map(p => ({ id: p.id, label: p.label, href: p.href, active: !!p.active, owners: p.owners || [], tags: p.tags || [], summary: p.summary || '' }));
+    const edgesRaw = DATA.edges.map(e => ({ a: e.a, b: e.b, kind: e.kind || 'related', weight: (typeof e.weight === 'number' ? e.weight : 0.5) }));
 
     const nodes = [];
     const edges = [];
+    // Theme color map
+    const themeRgbById = {};
+    for (const t of themes) { themeRgbById[t.id] = hexToRgb(t.color || accent); }
     const W = () => canvas.width / dpr, H = () => canvas.height / dpr;
 
     // Initialize node positions in a ring for stability
@@ -127,9 +161,10 @@
         });
         projects.forEach((p, i) => {
             const a = (i / projects.length) * Math.PI * 2 + 0.2;
-            nodes.push({ id: p.id, label: p.label, type: 'project', href: p.href, active: !!p.active, x: cx + Math.cos(a) * projRadius, y: cy + Math.sin(a) * projRadius, vx: 0, vy: 0, r: 7, fixed: false });
-            p.themes.forEach(tid => edges.push({ a: p.id, b: tid }));
+            nodes.push({ id: p.id, label: p.label, type: 'project', href: p.href, active: !!p.active, owners: p.owners, tags: p.tags, summary: p.summary, x: cx + Math.cos(a) * projRadius, y: cy + Math.sin(a) * projRadius, vx: 0, vy: 0, r: 7, fixed: false });
         });
+        // use provided edges
+        edges.push(...edgesRaw);
     }
     init();
 
@@ -217,7 +252,12 @@
         }
         hoverId = best ? best.id : null;
         if (hoverId) {
-            tooltip.textContent = best.label;
+            // Tooltip: label + optional summary for projects
+            if (best.type === 'project' && best.summary) {
+                tooltip.textContent = best.label + ' — ' + best.summary;
+            } else {
+                tooltip.textContent = best.label;
+            }
             tooltip.style.left = mx + 'px';
             tooltip.style.top = my + 'px';
             tooltip.style.display = 'block';
@@ -266,13 +306,15 @@
                 b.vx -= fx; b.vy -= fy;
             }
         }
-        // Springs
+        // Springs (by edge kind and weight)
         for (const e of edges) {
             const A = getNode(e.a), B = getNode(e.b);
             let dx = B.x - A.x, dy = B.y - A.y;
             const d = Math.max(0.001, Math.sqrt(dx*dx + dy*dy));
-            const k = PARAMS.spring;
-            const target = PARAMS.rest * (A.type === 'theme' || B.type === 'theme' ? 1.0 : 0.9);
+            const weight = Math.max(0.1, Math.min(1.0, e.weight || 0.4));
+            const isBelongs = e.kind === 'belongsTo';
+            const k = PARAMS.spring * (isBelongs ? (0.6 + 0.6 * weight) : (0.5 + 0.5 * weight));
+            const target = PARAMS.rest * (isBelongs ? 1.0 : 1.2);
             const diff = (d - target);
             const fx = (dx / d) * diff * k;
             const fy = (dy / d) * diff * k;
@@ -295,13 +337,22 @@
         ctx.translate(offsetX, offsetY);
         ctx.scale(scale, scale);
         // edges
-        ctx.lineWidth = 1;
         for (const e of edges) {
             const A = getNode(e.a), B = getNode(e.b);
             if ((A.type === 'theme' && !showThemes) || (A.type === 'project' && !showProjects)) continue;
             if ((B.type === 'theme' && !showThemes) || (B.type === 'project' && !showProjects)) continue;
-            const alpha = (hoverId && (hoverId === A.id || hoverId === B.id)) ? 0.16 : 0.08;
-            ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+            const w = Math.max(0.6, 0.6 + 1.2 * (e.weight || 0.4));
+            const baseAlpha = (hoverId && (hoverId === A.id || hoverId === B.id)) ? 0.16 : 0.08;
+            const alpha = Math.min(0.36, baseAlpha + 0.24 * (e.weight || 0.4));
+            let cr = r, cg = g, cb = b;
+            if (e.kind === 'belongsTo') {
+                const themeNode = A.type === 'theme' ? A : (B.type === 'theme' ? B : null);
+                if (themeNode && themeRgbById[themeNode.id]) {
+                    const c = themeRgbById[themeNode.id]; cr = c.r; cg = c.g; cb = c.b;
+                }
+            }
+            ctx.lineWidth = w;
+            ctx.strokeStyle = `rgba(${cr}, ${cg}, ${cb}, ${alpha})`;
             ctx.beginPath();
             // subtle curve: control point at mid plus slight normal offset
             const mx = (A.x + B.x) / 2, my = (A.y + B.y) / 2;
@@ -325,11 +376,12 @@
                 ctx.save();
                 ctx.translate(n.x, n.y);
                 ctx.rotate(Math.PI / 4);
-                ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${isHover ? 0.32 : 0.20})`;
+                const tc = themeRgbById[n.id] || { r, g, b };
+                ctx.fillStyle = `rgba(${tc.r}, ${tc.g}, ${tc.b}, ${isHover ? 0.32 : 0.20})`;
                 ctx.beginPath();
                 ctx.rect(-(rr + 6), -(rr + 6), (rr + 6) * 2, (rr + 6) * 2);
                 ctx.fill();
-                ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${isHover ? 0.7 : 0.45})`;
+                ctx.strokeStyle = `rgba(${tc.r}, ${tc.g}, ${tc.b}, ${isHover ? 0.7 : 0.45})`;
                 ctx.setLineDash([4, 3]);
                 ctx.lineWidth = 1;
                 ctx.strokeRect(-(rr + 2), -(rr + 2), (rr + 2) * 2, (rr + 2) * 2);
@@ -360,7 +412,8 @@
                 ctx.rotate(Math.PI / 4);
                 ctx.fillStyle = 'rgba(10, 12, 20, 0.9)';
                 ctx.beginPath(); ctx.rect(-rr, -rr, rr * 2, rr * 2); ctx.fill();
-                ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${isHover ? 0.9 : 0.55})`;
+                const tc = themeRgbById[n.id] || { r, g, b };
+                ctx.strokeStyle = `rgba(${tc.r}, ${tc.g}, ${tc.b}, ${isHover ? 0.9 : 0.55})`;
                 ctx.lineWidth = 1; ctx.strokeRect(-rr, -rr, rr * 2, rr * 2);
                 ctx.restore();
             } else {
@@ -370,7 +423,12 @@
                 ctx.lineWidth = 1; ctx.stroke();
             }
             // label (always readable, centered)
-            ctx.fillStyle = n.type === 'theme' ? 'rgba(190, 210, 255, 0.92)' : (n.active && n.type === 'project' ? 'rgba(190, 255, 230, 0.95)' : 'rgba(220, 230, 255, 0.9)');
+            if (n.type === 'theme') {
+                const tc = themeRgbById[n.id] || { r: 190, g: 210, b: 255 };
+                ctx.fillStyle = `rgba(${Math.min(255, tc.r + 30)}, ${Math.min(255, tc.g + 30)}, ${Math.min(255, tc.b + 30)}, 0.92)`;
+            } else {
+                ctx.fillStyle = n.active ? 'rgba(190, 255, 230, 0.95)' : 'rgba(220, 230, 255, 0.9)';
+            }
             ctx.font = `${n.type === 'theme' ? 12 : 11}px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif`;
             ctx.textAlign = 'center'; ctx.textBaseline = 'top';
             const label = n.label;
