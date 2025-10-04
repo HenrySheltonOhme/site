@@ -45,6 +45,18 @@
         .members ul { list-style: none; margin: 8px 0 0; padding: 0; }
         .members li { color: rgba(195, 205, 245, 0.82); font-size: 12.5px; margin: 4px 0; display: flex; gap: 8px; align-items: center; }
         .badge { font-size: 10px; padding: 2px 7px; border-radius: 999px; border: 1px solid rgba(170, 200, 255, 0.18); color: rgba(210, 220, 255, 0.88); background: rgba(14, 18, 30, 0.35); }
+
+        /* Command-K palette */
+        .cmdk-overlay { position: fixed; inset: 0; display: none; background: rgba(2, 2, 5, 0.45); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); z-index: 9999; }
+        .cmdk-overlay.open { display: block; }
+        .cmdk { position: absolute; top: 10%; left: 50%; transform: translateX(-50%); width: min(800px, calc(100vw - 32px)); border: 1px solid rgba(170, 200, 255, 0.28); background: rgba(12, 14, 24, 0.92); border-radius: 12px; box-shadow: 0 20px 60px var(--glow); overflow: hidden; }
+        .cmdk-input { width: 100%; padding: 14px 16px; background: transparent; color: rgba(235, 240, 255, 0.98); border: none; outline: none; font-size: 16px; letter-spacing: 0.2px; }
+        .cmdk-sep { height: 1px; background: rgba(170, 200, 255, 0.18); }
+        .cmdk-list { max-height: 50vh; overflow: auto; padding: 6px 0; }
+        .cmdk-item { padding: 10px 14px; display: flex; align-items: baseline; justify-content: space-between; gap: 10px; color: rgba(210, 220, 255, 0.88); cursor: pointer; }
+        .cmdk-item .label { font-size: 14px; }
+        .cmdk-item .meta { font-size: 11px; color: rgba(170, 190, 255, 0.8); }
+        .cmdk-item.is-active { background: rgba(160, 195, 255, 0.08); color: rgba(240, 245, 255, 0.98); }
     </style>
 </head>
 <body>
@@ -60,7 +72,7 @@
         </div>
     </div>
 
-    <div class="section">
+    <div class="section" id="roadmap">
         <h2 class="section-title">Roadmap</h2>
         <div class="grid">
             <!-- 1) Sentinel -->
@@ -150,7 +162,7 @@
         </div>
     </div>
 
-    <div class="org">
+    <div class="org" id="org">
         <h2 class="org-title">Where Squad Pluto sits</h2>
         <svg viewBox="0 0 1150 240" preserveAspectRatio="xMidYMid meet" aria-hidden="true" style="transform: translateX(-80px);">
             <g transform="translate(-120,0)">
@@ -199,7 +211,7 @@
             <text x="800" y="199" text-anchor="middle">Data Innovation</text>
             </g>
         </svg>
-        <div class="members">
+        <div class="members" id="members">
             <div class="card">
                 <h3>Members</h3>
                 <ul>
@@ -213,6 +225,14 @@
         </div>
     </div>
     <div class="footer">Squad Pluto</div>
+    <!-- Command-K overlay -->
+    <div class="cmdk-overlay" id="cmdk" aria-hidden="true">
+        <div class="cmdk" role="dialog" aria-modal="true" aria-label="Quick Search">
+            <input class="cmdk-input" id="cmdk-input" type="text" placeholder="Search (projects, sections, members)…" autocomplete="off" spellcheck="false" />
+            <div class="cmdk-sep"></div>
+            <div class="cmdk-list" id="cmdk-list" role="listbox" aria-label="Results"></div>
+        </div>
+    </div>
     <script>
     'use strict';
     const canvas = document.getElementById('bg');
@@ -280,6 +300,179 @@
         if (!prefersReducedMotion) requestAnimationFrame(animate);
     }
     animate();
+
+    // =====================
+    // Command-K Navigator
+    // =====================
+    (function commandK() {
+        const overlay = document.getElementById('cmdk');
+        const input = document.getElementById('cmdk-input');
+        const list = document.getElementById('cmdk-list');
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        let index = [];
+        let built = false;
+        let activeIdx = 0;
+
+        function ensureId(el, base) {
+            if (!el.id) {
+                const slug = (base || (el.textContent || 'section')).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+                el.id = slug || ('sec-' + Math.random().toString(36).slice(2));
+            }
+            return '#' + el.id;
+        }
+
+        function buildIndex() {
+            if (built) return;
+            built = true;
+            const items = [];
+
+            // Title
+            const titleEl = document.querySelector('.title');
+            if (titleEl) {
+                const href = ensureId(titleEl, 'top');
+                items.push({ type: 'Section', title: 'Top', subtitle: 'Hero', href, weight: 2 });
+            }
+
+            // Roadmap section and cards
+            const roadmapEl = document.getElementById('roadmap');
+            if (roadmapEl) {
+                const href = ensureId(roadmapEl, 'roadmap');
+                items.push({ type: 'Section', title: 'Roadmap', subtitle: 'Section', href, weight: 2 });
+                const cards = roadmapEl.querySelectorAll('.card');
+                cards.forEach(card => {
+                    const h3 = card.querySelector('h3');
+                    const meta = Array.from(card.querySelectorAll('.tag')).map(t => t.textContent.trim()).join(' · ');
+                    const p = Array.from(card.querySelectorAll('p')).map(x => x.textContent.trim()).join(' ');
+                    const link = card.querySelector('.actions a');
+                    const hrefCard = link ? link.getAttribute('href') : href;
+                    if (h3) {
+                        items.push({ type: 'Project', title: h3.textContent.trim(), subtitle: meta || p, href: hrefCard, weight: 4 });
+                    }
+                });
+            }
+
+            // Org section
+            const orgEl = document.getElementById('org');
+            if (orgEl) {
+                const href = ensureId(orgEl, 'org');
+                items.push({ type: 'Section', title: 'Org Tree', subtitle: 'Structure', href, weight: 2 });
+            }
+
+            // Members
+            const membersEl = document.getElementById('members');
+            if (membersEl) {
+                const href = ensureId(membersEl, 'members');
+                items.push({ type: 'Section', title: 'Members', subtitle: 'Team', href, weight: 2 });
+                const lis = membersEl.querySelectorAll('li');
+                lis.forEach(li => {
+                    const role = li.textContent.trim();
+                    items.push({ type: 'Member', title: role.replace(/^[A-Z]{1,3}\s+/, ''), subtitle: role, href, weight: 3 });
+                });
+            }
+
+            index = items;
+        }
+
+        function normalize(s) { return (s || '').toLowerCase(); }
+        function tokenize(q) { return normalize(q).split(/\s+/).filter(Boolean); }
+
+        function scoreItem(item, tokens) {
+            if (tokens.length === 0) return 0;
+            let score = 0;
+            const hayTitle = normalize(item.title);
+            const haySub = normalize(item.subtitle || '');
+            for (const t of tokens) {
+                const inTitle = hayTitle.indexOf(t);
+                const inSub = haySub.indexOf(t);
+                if (inTitle === 0) score += 30; else if (inTitle > -1) score += 20;
+                if (inSub === 0) score += 10; else if (inSub > -1) score += 5;
+            }
+            return score * (item.weight || 1);
+        }
+
+        function search(q) {
+            buildIndex();
+            const tokens = tokenize(q);
+            if (tokens.length === 0) return index.slice(0, 8);
+            const scored = index.map(it => ({ it, s: scoreItem(it, tokens) }))
+                .filter(x => x.s > 0)
+                .sort((a, b) => b.s - a.s)
+                .slice(0, 8)
+                .map(x => x.it);
+            return scored;
+        }
+
+        function render(results) {
+            list.innerHTML = '';
+            results.forEach((r, i) => {
+                const div = document.createElement('div');
+                div.className = 'cmdk-item' + (i === activeIdx ? ' is-active' : '');
+                div.setAttribute('role', 'option');
+                div.innerHTML = `<span class="label">${r.title}</span><span class="meta">${r.type}${r.subtitle ? ' · ' + r.subtitle : ''}</span>`;
+                div.addEventListener('mouseenter', () => { activeIdx = i; highlight(); });
+                div.addEventListener('click', () => navigate(r));
+                list.appendChild(div);
+            });
+        }
+
+        function highlight() {
+            Array.from(list.children).forEach((el, i) => {
+                if (i === activeIdx) el.classList.add('is-active'); else el.classList.remove('is-active');
+            });
+        }
+
+        function navigate(item) {
+            close();
+            const href = item && item.href ? item.href : '#';
+            const isHash = href && href.startsWith('#');
+            if (isHash) {
+                const el = document.querySelector(href);
+                if (el) {
+                    el.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth', block: 'start' });
+                }
+            } else if (href) {
+                window.location.href = href;
+            }
+        }
+
+        function open() {
+            overlay.classList.add('open');
+            overlay.setAttribute('aria-hidden', 'false');
+            input.value = '';
+            activeIdx = 0;
+            render(search(''));
+            setTimeout(() => input.focus(), 0);
+        }
+
+        function close() {
+            overlay.classList.remove('open');
+            overlay.setAttribute('aria-hidden', 'true');
+        }
+
+        document.addEventListener('keydown', (e) => {
+            const isMac = /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform);
+            const k = e.key.toLowerCase();
+            const meta = isMac ? e.metaKey : e.ctrlKey;
+            if (meta && k === 'k') {
+                e.preventDefault();
+                if (overlay.classList.contains('open')) close(); else open();
+            } else if (overlay.classList.contains('open')) {
+                if (k === 'escape') { e.preventDefault(); close(); }
+                else if (k === 'arrowdown') { e.preventDefault(); activeIdx = Math.min(activeIdx + 1, list.children.length - 1); highlight(); }
+                else if (k === 'arrowup') { e.preventDefault(); activeIdx = Math.max(activeIdx - 1, 0); highlight(); }
+                else if (k === 'enter') { e.preventDefault(); const r = search(input.value)[activeIdx]; navigate(r); }
+            }
+        }, { passive: false });
+
+        input.addEventListener('input', () => {
+            activeIdx = 0;
+            render(search(input.value));
+        });
+
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) close();
+        });
+    })();
     </script>
 </body>
 </html>
