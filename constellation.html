@@ -406,10 +406,12 @@
 
     toggleThemesBtn.addEventListener('click', () => {
         showThemes = !showThemes;
+        if (!showThemes && !showProjects) { showProjects = true; toggleProjectsBtn.classList.remove('off'); }
         toggleThemesBtn.classList.toggle('off', !showThemes);
     });
     toggleProjectsBtn.addEventListener('click', () => {
         showProjects = !showProjects;
+        if (!showThemes && !showProjects) { showThemes = true; toggleThemesBtn.classList.remove('off'); }
         toggleProjectsBtn.classList.toggle('off', !showProjects);
     });
 
