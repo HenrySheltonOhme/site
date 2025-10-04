@@ -152,6 +152,8 @@
     let isPanning = false;
     let panStartX = 0, panStartY = 0, startOffsetX = 0, startOffsetY = 0;
     let draggingId = null; let dragOffsetX = 0; let dragOffsetY = 0;
+    // Visibility toggles (must exist before animation starts)
+    let showThemes = true, showProjects = true;
 
     function worldToScreen(x, y) { return { x: (x * scale) + offsetX, y: (y * scale) + offsetY }; }
     function screenToWorld(x, y) { return { x: (x - offsetX) / scale, y: (y - offsetY) / scale }; }
@@ -369,7 +371,6 @@
     const unpinBtn = qs('unpin');
     const toggleThemesBtn = document.getElementById('toggle-themes');
     const toggleProjectsBtn = document.getElementById('toggle-projects');
-    let showThemes = true, showProjects = true;
 
     function loadPrefs() {
         try {
@@ -395,6 +396,11 @@
     sliders.spring.value = String(Math.round(PARAMS.spring * 100));
     sliders.rest.value = String(PARAMS.rest);
     contain.checked = !!PARAMS.contain;
+    // reflect legend state
+    toggleThemesBtn.classList.toggle('off', !showThemes);
+    toggleThemesBtn.setAttribute('aria-pressed', String(showThemes));
+    toggleProjectsBtn.classList.toggle('off', !showProjects);
+    toggleProjectsBtn.setAttribute('aria-pressed', String(showProjects));
 
     sliders.repulse.addEventListener('input', () => { PARAMS.repulse = Number(sliders.repulse.value); savePrefs(); });
     sliders.spring.addEventListener('input', () => { PARAMS.spring = Number(sliders.spring.value) / 100; savePrefs(); });
@@ -406,13 +412,15 @@
 
     toggleThemesBtn.addEventListener('click', () => {
         showThemes = !showThemes;
-        if (!showThemes && !showProjects) { showProjects = true; toggleProjectsBtn.classList.remove('off'); }
+        if (!showThemes && !showProjects) { showProjects = true; toggleProjectsBtn.classList.remove('off'); toggleProjectsBtn.setAttribute('aria-pressed', 'true'); }
         toggleThemesBtn.classList.toggle('off', !showThemes);
+        toggleThemesBtn.setAttribute('aria-pressed', String(showThemes));
     });
     toggleProjectsBtn.addEventListener('click', () => {
         showProjects = !showProjects;
-        if (!showThemes && !showProjects) { showThemes = true; toggleThemesBtn.classList.remove('off'); }
+        if (!showThemes && !showProjects) { showThemes = true; toggleThemesBtn.classList.remove('off'); toggleThemesBtn.setAttribute('aria-pressed', 'true'); }
         toggleProjectsBtn.classList.toggle('off', !showProjects);
+        toggleProjectsBtn.setAttribute('aria-pressed', String(showProjects));
     });
 
     // Save occasionally
